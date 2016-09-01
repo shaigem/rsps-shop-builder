@@ -1,0 +1,29 @@
+.runescape-button {
+    -fx-skin: "org.bitbucket.shaigem.rssb.fx.skin.RuneScapeButtonSkin";
+    -fx-text-fill: #f1aa3e;
+    -fx-border-color: #df6e0e;
+    -fx-background-color: linear-gradient(#413b36 0%, #322b26 25%, #2f241c 75%, #2b221b 100%);
+    -fx-background-radius: 6;
+    -fx-background-insets: 0;
+    -fx-border-insets: -0.5;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-effect: null;
+}
+
+.runescape-button:hover {
+    -fx-effect: dropshadow(two-pass-box, #da6b0f, 0, 1.0, 0, 0);
+}
+
+.runescape-button:focused {
+    -fx-background-color: linear-gradient(#413b36 0%, #322b26 25%, #2f241c 75%, #2b221b 100%);
+    -fx-border-color: #ff6e00;
+    -fx-border-width: 1;
+
+}
+
+.runescape-button:pressed {
+    -fx-background-color: linear-gradient(#413b36 0%, #413524 25%, #574821 75%, #695922 100%);
+
+}
+

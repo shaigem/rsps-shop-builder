@@ -1,0 +1,6 @@
+*.jar
+.idea
+*.iml
+/data/
+/dummy/
+/plugins/

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.*?>
+<AnchorPane minHeight="187.0" minWidth="131.0" prefHeight="187.0" prefWidth="160.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.itemlist.ItemListPresenter">
+    <children>
+        <ListView fx:id="itemListView" layoutX="10.0" layoutY="48.0" prefHeight="417.0" prefWidth="199.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="48.0">
+         <contextMenu>
+            <ContextMenu>
+              <items>
+                <MenuItem fx:id="addSelectedMenuItem" mnemonicParsing="false" onAction="#onAddSelectedAction" text="Add selected" />
+              </items>
+            </ContextMenu>
+         </contextMenu></ListView>
+    </children>
+</AnchorPane>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<HBox fx:id="searchTopElement" alignment="CENTER" prefWidth="-1.0" spacing="0.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.search.SearchPresenter">
+    <children>
+        <TextField fx:id="searchField" maxWidth="1.7976931348623157E308" minHeight="-1.0" minWidth="80.0" prefWidth="-1.0" promptText="" HBox.hgrow="ALWAYS" />
+        <StackPane fx:id="searchIcon" HBox.hgrow="NEVER">
+            <HBox.margin>
+                <Insets />
+            </HBox.margin>
+        </StackPane>
+    </children>
+</HBox>

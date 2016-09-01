@@ -1,0 +1,9 @@
+.shop-display-radio-button{
+
+    -fx-skin: "org.bitbucket.shaigem.rssb.fx.skin.ShopDisplayRadioButtonSkin";
+
+}
+
+.shop-display-radio-button:hover .display-radio {
+    -fx-border-color: #da6b0f;
+}
