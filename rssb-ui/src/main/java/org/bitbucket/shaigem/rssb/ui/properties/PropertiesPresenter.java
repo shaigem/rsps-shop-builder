@@ -28,7 +28,8 @@ public class PropertiesPresenter implements Initializable {
 
     @FXML
     AnchorPane rootPane;
-    private PropertySheet propertySheet = new PropertySheet();
+    @FXML
+    PropertySheet propertySheet;
     @Inject
     ShopTabManager tabManager;
 
