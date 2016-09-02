@@ -34,7 +34,7 @@ public class ShopBuilderApp extends Application {
         scene.getStylesheets().addAll
                 (this.getClass().getClassLoader().getResource("css/builder_style.css").toExternalForm());
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Shop Builder 0.1");
+        primaryStage.setTitle("Shop Builder");
         primaryStage.show();
 
 
