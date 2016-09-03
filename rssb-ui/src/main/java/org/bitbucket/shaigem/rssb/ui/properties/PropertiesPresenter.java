@@ -18,6 +18,8 @@ import org.controlsfx.control.PropertySheet;
 import org.controlsfx.property.BeanPropertyUtils;
 import org.sejda.eventstudio.DefaultEventStudio;
 import org.sejda.eventstudio.annotation.EventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -35,6 +37,9 @@ import java.util.ResourceBundle;
  *         Created on 2015-08-13.
  */
 public class PropertiesPresenter implements Initializable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PropertiesPresenter.class);
+
     /**
      * An array list that will only contain ONE element. The reason why this is done in a <code>ArrayList</code>
      * is so that a <code>extractor</code> can be applied to the list so the element's properties can be observed.
@@ -73,13 +78,16 @@ public class PropertiesPresenter implements Initializable {
     private void onShopTabClose(ShopCloseEvent event) {
         // we gotta clear the cached properties as we are not dealing with it anymore
         propertiesManager.removeProperties(event.getClosingShopPresenter());
+
     }
 
-    @EventListener
+
+    @EventListener(priority = -1)
     private void onSaveShop(ShopSaveEvent saveEvent) {
-        if (saveEvent.success()) { // only when it actually saved something
-            checkAndUpdateShopProperties(saveEvent.getSavedShopPresenter().
-                    getPropertySheetItemsForShop());
+        if (saveEvent.success()) {
+            // only happens if there was something to save
+            final ShopPresenter presenter = saveEvent.getSavedShopPresenter();
+            checkAndUpdateShopProperties(presenter);
         }
     }
 
@@ -98,7 +106,8 @@ public class PropertiesPresenter implements Initializable {
             shopToEdit = shopPresenter.getShop().copy();
             beanProperties = BeanPropertyUtils.getProperties(shopToEdit, propertyDescriptor ->
                     !propertyDescriptor.getName().equals("name")
-                            && !propertyDescriptor.getName().equals("items"));
+                            && !propertyDescriptor.getName().equals("items")
+                            && !propertyDescriptor.getName().equals("customPropertiesToObserve"));
             propertiesManager.cacheProperties(shopPresenter, shopToEdit, beanProperties);
         }
         setShop(shopToEdit);
@@ -125,14 +134,27 @@ public class PropertiesPresenter implements Initializable {
     /**
      * Updates the original shop's properties with the edited ones.
      *
-     * @param oldItems the original/old shop property items
+     * @param presenter the shop editor presenter to apply the properties to
      */
-    private void checkAndUpdateShopProperties(ObservableList<PropertySheet.Item> oldItems) {
-        oldItems.forEach((oldItem ->
-                propertySheet.getItems().filtered(updatedItem ->
-                        oldItem.getName().equals(updatedItem.getName())
-                                && oldItem.getValue() != updatedItem.getValue()).
-                        forEach((newItem -> oldItem.setValue(newItem.getValue())))));
+    private void checkAndUpdateShopProperties(ShopPresenter presenter) {
+        // fixed bug: should use cached properties instead of propertySheet.getItems()
+        // Reason: If user closes a tab that is marked dirty,
+        // it will use the current tab shop's properties instead
+        // of using the one that is closing!
+        final ObservableList<PropertySheet.Item> propertiesToChange = presenter.
+                getPropertySheetItemsForShop();
+        if (propertiesManager.hasCached(presenter)) {
+            ObservableList<PropertySheet.Item> cachedProperties =
+                    propertiesManager.getCachedProperties(presenter).getValue();
+            propertiesToChange.forEach((propertyToChange ->
+                    cachedProperties.filtered(updatedItem ->
+                            propertyToChange.getName().equals(updatedItem.getName())
+                                    && propertyToChange.getValue() != updatedItem.getValue()).
+                            forEach((newItem -> propertyToChange.setValue(newItem.getValue())))));
+        } else {
+            // should not reach
+            LOG.error("No properties cached for shop: " + presenter.getShop());
+        }
     }
 
     /**

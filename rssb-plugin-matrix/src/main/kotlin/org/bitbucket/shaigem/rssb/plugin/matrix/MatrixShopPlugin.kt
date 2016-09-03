@@ -8,8 +8,8 @@ import org.bitbucket.shaigem.rssb.model.item.Item
 import org.bitbucket.shaigem.rssb.model.shop.Shop
 import org.bitbucket.shaigem.rssb.plugin.AbstractShopPlugin
 import org.bitbucket.shaigem.rssb.plugin.ShopFormat
-import org.bitbucket.shaigem.rssb.plugin.getProperty
-import org.bitbucket.shaigem.rssb.plugin.property
+import org.bitbucket.shaigem.rssb.plugin.getValue
+import org.bitbucket.shaigem.rssb.plugin.setValue
 import java.io.File
 import java.util.*
 
@@ -71,15 +71,11 @@ class MatrixUnpackedShopFormat : ShopFormat<MatrixShop> {
 
 class MatrixShop(key: Int, name: String, itemArray: List<Item>, currency: Int,
                  canSellTo: Boolean) : Shop(name, itemArray, currency, canSellTo) {
-    // order is important if it is done this way.
-    var key: Int by property(key)
-    private val keyProperty = getProperty(MatrixShop::key)
-
-    // alternative:
+    // Must import these:
     // import org.bitbucket.shaigem.rssb.plugin.getValue
     // import org.bitbucket.shaigem.rssb.plugin.setValue
-    // private val keyProperty = SimpleIntegerProperty(key)
-    // var key : Int by keyProperty
+    private val keyProperty = SimpleIntegerProperty(key)
+    var key: Int by keyProperty
 
     override fun getCustomPropertiesToObserve(): Array<out Observable> {
         return arrayOf(keyProperty)

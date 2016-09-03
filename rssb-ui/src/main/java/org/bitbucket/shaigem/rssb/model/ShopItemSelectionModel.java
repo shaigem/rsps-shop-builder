@@ -95,8 +95,6 @@ public final class ShopItemSelectionModel {
                             view.getStyleClass().setAll("shop-item-deselected");
                         }
                     }
-
                 }));
     }
-
 }

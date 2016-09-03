@@ -49,7 +49,7 @@ public class ItemInputDialog extends Dialog<String> {
         final DialogPane dialogPane = getDialogPane();
 
         // -- textfield
-        this.textField = new ItemListNumericField(Integer.class);
+        this.textField = new ItemListNumericField(true, Integer.class);
         this.textField.setText(defaultValue);
         this.textField.setMaxWidth(Double.MAX_VALUE);
         GridPane.setHgrow(textField, Priority.ALWAYS);

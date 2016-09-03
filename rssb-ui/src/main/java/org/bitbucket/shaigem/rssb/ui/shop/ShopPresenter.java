@@ -35,7 +35,6 @@ import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.item.Item;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter;
-import org.bitbucket.shaigem.rssb.ui.properties.PropertiesPresenter;
 import org.bitbucket.shaigem.rssb.ui.shop.item.ShopItemView;
 import org.bitbucket.shaigem.rssb.util.AlertDialogUtil;
 import org.bitbucket.shaigem.rssb.util.ItemAmountUtil;
@@ -59,15 +58,13 @@ public class ShopPresenter implements Initializable {
 
     private TextField nameTextField;
 
-    private final ShopItemSelectionModel selectionModel = new ShopItemSelectionModel();
+    private ShopItemSelectionModel selectionModel = new ShopItemSelectionModel();
 
     private Tab tab;
 
     private BooleanProperty modifiedProperty;
 
     private BuilderWindowPresenter mainWindowPresenter;
-
-    private PropertiesPresenter propertiesPresenter;
 
     private ObservableList<PropertySheet.Item> shopBeanProperties;
 
@@ -153,6 +150,11 @@ public class ShopPresenter implements Initializable {
         };
     }
 
+    public final void cleanup() {
+        shopBeanProperties = null;
+        shop = null;
+        selectionModel = null;
+    }
 
     public void selectAllItems() {
         shopItemPane.getChildren().forEach((node -> {
@@ -409,8 +411,6 @@ public class ShopPresenter implements Initializable {
                 group.selectToggle(iconButton);
 
         }));
-
-
         expandedButton.setToggleGroup(group);
         iconButton.setToggleGroup(group);
         expandedButton.setTooltip(new Tooltip("Toggle expanded item view"));
@@ -573,13 +573,14 @@ public class ShopPresenter implements Initializable {
 
     public ObservableList<PropertySheet.Item> getPropertySheetItemsForShop() {
         if (shopBeanProperties == null) {
-            shopBeanProperties = BeanPropertyUtils.getProperties(shop);
+            shopBeanProperties = BeanPropertyUtils.getProperties(shop, propertyDescriptor -> !propertyDescriptor.getName().equals("name")
+                    && !propertyDescriptor.getName().equals("items")
+                    && !propertyDescriptor.getName().equals("customPropertiesToObserve"));
         }
         return shopBeanProperties;
     }
 
     public void setMainWindowPresenter(BuilderWindowPresenter mainWindowPresenter) {
         this.mainWindowPresenter = mainWindowPresenter;
-        propertiesPresenter = mainWindowPresenter.getPropertiesPresenter();
     }
 }

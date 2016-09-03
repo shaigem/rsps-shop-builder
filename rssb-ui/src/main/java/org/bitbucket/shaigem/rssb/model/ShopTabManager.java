@@ -87,13 +87,10 @@ public final class ShopTabManager {
                     shopPresenter.save();
                 }
             }
-        } else {
-            //  builderWindowPresenter.getExplorerPresenter().checkForDuplicateKeys(shopPresenter.getShop());
-            // builderWindowPresenter.getExplorerPresenter().refreshListView();
         }
         eventStudio.broadcast(new ShopCloseEvent(shopPresenter));
-        LOG.debug("Closed tab: " + shopPresenter.getShop().getName() + " Removed?: "
-                + openShops.remove(shopPresenter));
+        shopPresenter.cleanup();
+        openShops.remove(shopPresenter);
     }
 
 

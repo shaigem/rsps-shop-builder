@@ -28,6 +28,7 @@ package org.bitbucket.shaigem.rssb.fx.controlsfx;
 
 import javafx.beans.binding.NumberExpression;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
@@ -57,16 +58,19 @@ public class ItemListNumericField extends TextField {
 
     private final NumericValidator<? extends Number> value;
 
-    public ItemListNumericField(Class<? extends Number> cls) {
-        TextFields.bindAutoCompletion(this, ItemNameStore.getNamesMap().entrySet());
+    public ItemListNumericField(boolean itemList, Class<? extends Number> cls) {
+        if (itemList)
+            TextFields.bindAutoCompletion(this, ItemNameStore.getNamesMap().entrySet());
         registerValidator();
 
-        if (cls == byte.class || cls == Byte.class || cls == short.class || cls == Short.class ||
-                cls == int.class || cls == Integer.class || cls == long.class || cls == Long.class ||
+        if (cls == byte.class || cls == Byte.class || cls == short.class || cls == Short.class || cls == long.class || cls == Long.class ||
                 cls == BigInteger.class) {
             value = new LongValidator(this);
+        } else if (cls == int.class || cls == Integer.class) {
+            value = new IntegerValidator(this);
         } else {
             value = new DoubleValidator(this);
+
         }
 
         textProperty().addListener((observable, oldValue, newValue) -> setText(newValue.split("=")[0]));
@@ -122,7 +126,11 @@ public class ItemListNumericField extends TextField {
             if (d.endsWith("f") || d.endsWith("d") || d.endsWith("F") || d.endsWith("D")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 throw new NumberFormatException("There should be no alpha symbols"); //$NON-NLS-1$
             }
-            return new Double(d);
+            Double doub = new Double(d);
+            if (doub < 0) {
+                doub *= -1;
+            }
+            return doub;
         }
     }
 
@@ -144,7 +152,38 @@ public class ItemListNumericField extends TextField {
         public Long toNumber(String s) {
             if (s == null || s.trim().isEmpty()) return 0L;
             String d = s.trim();
-            return new Long(d);
+            Long l = new Long(d);
+            if (l < 0) {
+                l *= -1;
+            }
+            return l;
+        }
+    }
+
+
+    private static class IntegerValidator extends SimpleIntegerProperty implements NumericValidator<Integer> {
+
+        private ItemListNumericField field;
+
+        IntegerValidator(ItemListNumericField field) {
+            super(field, "value", 0); //$NON-NLS-1$
+            this.field = field;
+        }
+
+        @Override
+        protected void invalidated() {
+            field.setText(Integer.toString(get()));
+        }
+
+        @Override
+        public Integer toNumber(String s) {
+            if (s == null || s.trim().isEmpty()) return 0;
+            String d = s.trim();
+            Integer l = new Integer(d);
+            if (l < 0) {
+                l *= -1;
+            }
+            return l;
         }
     }
 }

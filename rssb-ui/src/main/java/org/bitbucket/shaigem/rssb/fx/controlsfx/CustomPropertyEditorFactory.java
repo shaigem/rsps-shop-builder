@@ -42,15 +42,18 @@ public class CustomPropertyEditorFactory extends DefaultPropertyEditorFactory {
 
     @Override
     public PropertyEditor<?> call(PropertySheet.Item item) {
-        if (item.getName().equals("currency")) {
-            return createNumericEditorWithItemList(item);
+       // Class<?> type = item.getType();
+
+        if (item.getName().equals("currency")) { // must be higher than isNumber
+            return createNumericEditor(true, item);
         }
+
         return super.call(item);
     }
 
-    private static PropertyEditor<?> createNumericEditorWithItemList(PropertySheet.Item property) {
+    private static PropertyEditor<?> createNumericEditor(boolean itemList, PropertySheet.Item property) {
 
-        return new AbstractPropertyEditor<Number, ItemListNumericField>(property, new ItemListNumericField((Class<? extends Number>) property.getType())) {
+        return new AbstractPropertyEditor<Number, ItemListNumericField>(property, new ItemListNumericField(itemList, (Class<? extends Number>) property.getType())) {
 
             private Class<? extends Number> sourceClass = (Class<? extends Number>) property.getType(); //Double.class;
 
