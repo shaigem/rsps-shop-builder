@@ -44,7 +44,7 @@ import java.math.BigInteger;
  * A numeric text field that has autocomplete features from the item list. It only accepts numbers as a value.
  * However, normal text can be inputted to allow for suggestions from the item list.
  */
-class ItemListNumericField extends TextField {
+public class ItemListNumericField extends TextField {
 
     private final String validationRegex = "[\\dMmKk]+";
 
@@ -57,7 +57,7 @@ class ItemListNumericField extends TextField {
 
     private final NumericValidator<? extends Number> value;
 
-    ItemListNumericField(Class<? extends Number> cls) {
+    public ItemListNumericField(Class<? extends Number> cls) {
         TextFields.bindAutoCompletion(this, ItemNameStore.getNamesMap().entrySet());
         registerValidator();
 
