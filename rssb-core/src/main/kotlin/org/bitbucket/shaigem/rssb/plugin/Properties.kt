@@ -15,45 +15,9 @@ package org.bitbucket.shaigem.rssb.plugin
 
 import javafx.beans.property.*
 import javafx.beans.value.*
-import java.lang.reflect.Field
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
-
-fun <T> property(value: T? = null) = PropertyDelegate(SimpleObjectProperty<T>(value))
-fun <T> property(block: () -> Property<T>) = PropertyDelegate(block())
-
-fun <T> Any.getProperty(prop: KMutableProperty1<*, T>): ObjectProperty<T> {
-    // avoid kotlin-reflect dependency
-    val field = javaClass.findFieldByName("${prop.name}\$delegate")
-            ?: throw IllegalArgumentException("No delegate field with name '${prop.name}' found")
-
-    field.isAccessible = true
-    @Suppress("UNCHECKED_CAST")
-    val delegate = field.get(this) as PropertyDelegate<T>
-    return delegate.fxProperty as ObjectProperty<T>
-}
-
-fun Class<*>.findFieldByName(name: String): Field? {
-    val field = (declaredFields + fields).find { it.name == name }
-    if (field != null) return field
-    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-    if (superclass == java.lang.Object::class.java) return null
-    return superclass.findFieldByName(name)
-}
-
-
-class PropertyDelegate<T>(val fxProperty: Property<T>) : ReadWriteProperty<Any, T> {
-
-    override fun getValue(thisRef: Any, property: KProperty<*>): T {
-        return fxProperty.value
-    }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
-        fxProperty.value = value
-    }
-}
 
 /**
  * Convert an owner instance and a corresponding property reference into an observable
