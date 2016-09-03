@@ -13,7 +13,6 @@ public class AlertDialogUtil {
 
     public static Alert createExceptionDialog(Throwable ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-// Create expandable Exception.
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
@@ -35,7 +34,7 @@ public class AlertDialogUtil {
         expContent.add(label, 0, 0);
         expContent.add(textArea, 0, 1);
 
-        alert.getDialogPane().setExpandableContent(expContent);
+        alert.getDialogPane().setContent(expContent);
         alert.getDialogPane().setExpanded(true);
         return alert;
     }
