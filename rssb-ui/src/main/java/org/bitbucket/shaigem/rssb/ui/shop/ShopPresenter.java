@@ -26,16 +26,22 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import org.bitbucket.shaigem.rssb.fx.control.ItemInputDialog;
 import org.bitbucket.shaigem.rssb.fx.control.RuneScapeButton;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.DragItemManager;
 import org.bitbucket.shaigem.rssb.model.ShopItemSelectionModel;
+import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.item.Item;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter;
+import org.bitbucket.shaigem.rssb.ui.properties.PropertiesPresenter;
 import org.bitbucket.shaigem.rssb.ui.shop.item.ShopItemView;
 import org.bitbucket.shaigem.rssb.util.AlertDialogUtil;
 import org.bitbucket.shaigem.rssb.util.ItemAmountUtil;
+import org.controlsfx.control.PropertySheet;
+import org.controlsfx.property.BeanPropertyUtils;
+import org.sejda.eventstudio.DefaultEventStudio;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -61,9 +67,15 @@ public class ShopPresenter implements Initializable {
 
     private BuilderWindowPresenter mainWindowPresenter;
 
+    private PropertiesPresenter propertiesPresenter;
+
+    private ObservableList<PropertySheet.Item> shopBeanProperties;
 
     @Inject
     DragItemManager dragItemManager;
+
+    @Inject
+    ShopRepository shopRepository;
 
     @FXML
     AnchorPane rootPane;
@@ -105,11 +117,12 @@ public class ShopPresenter implements Initializable {
     @FXML
     TilePane selectedItemInfoTilePane;
 
+    @Inject
+    DefaultEventStudio eventStudio;
+
     private ObjectProperty<ShopDisplayRadioButton.DisplayMode> displayModeProperty;
 
     private BooleanProperty generalStoreImageVisibility;
-
-
 
     public void initialize(URL location, ResourceBundle resources) {
         displayModeProperty = new SimpleObjectProperty<>();
@@ -126,9 +139,20 @@ public class ShopPresenter implements Initializable {
         listenForModifiedPropertyChange();
         //scrollWhenHeightIncreases();
         handleNameChangeEvents();
-
-
     }
+
+
+    public static ListChangeListener<Shop> onPropertyChangeListener(ShopPresenter presenter) {
+        return c -> {
+            while (c.next()) {
+                if (c.wasUpdated()) {
+                    presenter.markAsModified();
+                }
+            }
+
+        };
+    }
+
 
     public void selectAllItems() {
         shopItemPane.getChildren().forEach((node -> {
@@ -216,8 +240,9 @@ public class ShopPresenter implements Initializable {
     }
 
     public void save() {
-        mainWindowPresenter.getExplorerPresenter().checkForDuplicateKeys(shop);
-        if (hasBeenModified()) {
+        // mainWindowPresenter.getExplorerPresenter().checkForDuplicateKeys(shop);
+        boolean needsSaving = hasBeenModified();
+        if (needsSaving) {
             shop.getItems().clear();
             shopItemPane.getChildren().forEach(node -> {
                 ShopItemView view = (ShopItemView) node;
@@ -226,7 +251,7 @@ public class ShopPresenter implements Initializable {
             shop.setName(shopNameLabel.getText());
             markAsNotModified();
         }
-        mainWindowPresenter.getExplorerPresenter().refreshListView();
+        eventStudio.broadcast(new ShopSaveEvent(this, needsSaving));
     }
 
     public void updateSelectionInformation() {
@@ -273,7 +298,6 @@ public class ShopPresenter implements Initializable {
         return noShopLabel;
     }
 
-
     private void shopDidChange() {
         clear();
         setShopNameLabel(shop.getName());
@@ -283,10 +307,7 @@ public class ShopPresenter implements Initializable {
             ShopItemView firstShopItem = (ShopItemView) shopItemPane.getChildren().get(0);
             selectionModel.setSelected(firstShopItem);
         }
-
-        shopNameLabel.textProperty().addListener(((observable, oldValue, newValue) -> {
-            setModified(true);
-        }));
+        shopNameLabel.textProperty().addListener(((observable, oldValue, newValue) -> setModified(true)));
         // ShopItemView lastItem = (ShopItemView) shopItemPane.getChildren().get
         //        (shopItemPane.getChildren().size() - 1);
         //  selectionModel.setSelected(lastItem);
@@ -313,7 +334,6 @@ public class ShopPresenter implements Initializable {
         });
         selectedItemInfoTilePane.getChildren().add(editIndexButton);
         selectedItemInfoTilePane.visibleProperty().bind(Bindings.isNotNull(selectedItemImageView.imageProperty()));
-
     }
 
 
@@ -334,7 +354,7 @@ public class ShopPresenter implements Initializable {
     }
 
     private void openAddItemByIndexDialog() {
-        TextInputDialog dialog = new TextInputDialog("11694");
+        ItemInputDialog dialog = new ItemInputDialog("11694");
         dialog.setTitle("Add by Item Index Input");
         dialog.setHeaderText("Add by Item Index");
         dialog.setContentText("Please enter the id of the item:");
@@ -551,7 +571,15 @@ public class ShopPresenter implements Initializable {
         return mainWindowPresenter;
     }
 
+    public ObservableList<PropertySheet.Item> getPropertySheetItemsForShop() {
+        if (shopBeanProperties == null) {
+            shopBeanProperties = BeanPropertyUtils.getProperties(shop);
+        }
+        return shopBeanProperties;
+    }
+
     public void setMainWindowPresenter(BuilderWindowPresenter mainWindowPresenter) {
         this.mainWindowPresenter = mainWindowPresenter;
+        propertiesPresenter = mainWindowPresenter.getPropertiesPresenter();
     }
 }

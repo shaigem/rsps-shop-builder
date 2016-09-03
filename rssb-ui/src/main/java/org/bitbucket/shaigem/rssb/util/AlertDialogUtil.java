@@ -36,6 +36,7 @@ public class AlertDialogUtil {
         expContent.add(textArea, 0, 1);
 
         alert.getDialogPane().setExpandableContent(expContent);
+        alert.getDialogPane().setExpanded(true);
         return alert;
     }
 

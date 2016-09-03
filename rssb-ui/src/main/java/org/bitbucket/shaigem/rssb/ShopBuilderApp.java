@@ -36,14 +36,12 @@ public class ShopBuilderApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Shop Builder");
         primaryStage.show();
-
-
     }
 
     @Override
     public void stop() throws Exception {
         Injector.forgetAll();
-        ShopPluginManager.shutdown();
+        ShopPluginManager.INSTANCE.shutdown();
     }
 
     public static void main(String[] args) {
@@ -52,7 +50,7 @@ public class ShopBuilderApp extends Application {
 
 
     private void loadResources() {
-        ShopPluginManager.initialize(ShopPluginManager.DEBUG ? new File("rssb-plugin-matrix/target/classes/").toURI(): new File("./plugins/").toURI());
+        ShopPluginManager.INSTANCE.initialize(ShopPluginManager.DEBUG ? new File("rssb-plugin-matrix/target/classes/").toURI(): new File("./plugins/").toURI());
         try {
             ItemNameStore.parseItemNames();
         } catch (Exception e) {

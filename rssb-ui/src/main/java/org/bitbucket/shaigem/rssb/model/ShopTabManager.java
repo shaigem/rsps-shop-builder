@@ -3,6 +3,7 @@ package org.bitbucket.shaigem.rssb.model;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
@@ -12,10 +13,15 @@ import javafx.stage.StageStyle;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter;
+import org.bitbucket.shaigem.rssb.ui.shop.ShopCloseEvent;
 import org.bitbucket.shaigem.rssb.ui.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.ui.shop.ShopView;
+import org.sejda.eventstudio.DefaultEventStudio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,11 +30,16 @@ import java.util.Optional;
  */
 public final class ShopTabManager {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ShopTabManager.class);
+
     private BuilderWindowPresenter builderWindowPresenter;
 
     private ObjectProperty<ShopPresenter> currentShopProperty;
 
-    private List<ShopPresenter> openShops;
+    private ObservableList<ShopPresenter> openShops;
+
+    @Inject
+    DefaultEventStudio eventStudio;
 
     @PostConstruct
     public void init() {
@@ -47,11 +58,7 @@ public final class ShopTabManager {
         ShopPresenter shopPresenter = (ShopPresenter) shopView.getPresenter();
         Tab tab = new Tab(shop.getName());
         StackPane stackPane = new StackPane();
-        shopPresenter.setMainWindowPresenter(builderWindowPresenter);
-        shopPresenter.setTab(tab);
-        shopPresenter.setShop(shop);
-        shopPresenter.setDisplayMode(builderWindowPresenter.byDefaultExpandItemDisplay() ?
-                ShopDisplayRadioButton.DisplayMode.EXPANDED : ShopDisplayRadioButton.DisplayMode.ICON);
+        initializeShop(shopPresenter, tab, shop);
         stackPane.getChildren().add(shopView.getView());
         tab.setContent(stackPane);
         openShops.add(shopPresenter);
@@ -81,14 +88,14 @@ public final class ShopTabManager {
                 }
             }
         } else {
-            builderWindowPresenter.getExplorerPresenter().checkForDuplicateKeys(shopPresenter.getShop());
-            builderWindowPresenter.getExplorerPresenter().refreshListView();
+            //  builderWindowPresenter.getExplorerPresenter().checkForDuplicateKeys(shopPresenter.getShop());
+            // builderWindowPresenter.getExplorerPresenter().refreshListView();
         }
-
-        System.out.println("[TabManager] Closed tab: " + shopPresenter.getShop().getName() + " Response: "
-                + openShops.remove(shopPresenter) + " SIZE AFTER: " + openShops.size()
-        );
+        eventStudio.broadcast(new ShopCloseEvent(shopPresenter));
+        LOG.debug("Closed tab: " + shopPresenter.getShop().getName() + " Removed?: "
+                + openShops.remove(shopPresenter));
     }
+
 
     public Optional<ShopPresenter> getPresenterForTab(Tab tab) {
         return openShops.stream().filter((presenter -> presenter.getTab() == tab)).findFirst();
@@ -129,6 +136,14 @@ public final class ShopTabManager {
 
         });
 
+    }
+
+    private void initializeShop(ShopPresenter shopPresenter, Tab tab, Shop shop) {
+        shopPresenter.setMainWindowPresenter(builderWindowPresenter);
+        shopPresenter.setTab(tab);
+        shopPresenter.setShop(shop);
+        shopPresenter.setDisplayMode(builderWindowPresenter.byDefaultExpandItemDisplay() ?
+                ShopDisplayRadioButton.DisplayMode.EXPANDED : ShopDisplayRadioButton.DisplayMode.ICON);
     }
 
 

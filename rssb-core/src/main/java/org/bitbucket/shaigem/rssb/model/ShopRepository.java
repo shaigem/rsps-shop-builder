@@ -22,7 +22,6 @@ public final class ShopRepository {
     public void populate(Collection<Shop> collection) {
         masterShopDefinitions.clear();
         masterShopDefinitions.addAll(collection);
-
     }
 
     public ObservableList<Shop> getMasterShopDefinitions() {

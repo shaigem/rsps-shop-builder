@@ -1,0 +1,30 @@
+<configuration>
+
+    <!-- appender logging everything to STDOUT -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5level %d{hh:mm:ss.SSS} %c{5}[%thread] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- appender logging everything at WARN and above to STDERR -->
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>warn</level>
+        </filter>
+
+        <encoder>
+            <pattern>%-5level %d{hh:mm:ss.SSS} %c[%thread] %msg%n%ex{full}
+            </pattern>
+        </encoder>
+        <target>System.err</target>
+    </appender>
+
+    <logger name="org.bitbucket.shaigem" level="DEBUG"/>
+    <logger name="org.sejda.eventstudio" level="ERROR"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="STDERR"/>
+    </root>
+</configuration>

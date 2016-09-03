@@ -38,7 +38,6 @@ import java.util.ResourceBundle;
 public class BuilderWindowPresenter implements Initializable {
 
     private ShopView shopView;
-    private ShopPresenter shopPresenter;
     private ItemListPresenter itemListPresenter;
     private ShopExplorerPresenter explorerPresenter;
     private PropertiesPresenter propertiesPresenter;
@@ -95,7 +94,7 @@ public class BuilderWindowPresenter implements Initializable {
 
     @FXML
     public void onOpenAction() {
-        final ShopFormat shopFormat = ShopPluginManager.loadedShop();
+        final ShopFormat shopFormat = ShopPluginManager.INSTANCE.getLoadedFormat();
 
        FileChooser chooser = new FileChooser();
         chooser.setTitle("Open Shops");
@@ -115,8 +114,6 @@ public class BuilderWindowPresenter implements Initializable {
             }
 
         }));
-
-
     }
 
     @FXML

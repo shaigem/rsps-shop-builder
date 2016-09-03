@@ -14,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
+import org.bitbucket.shaigem.rssb.fx.control.ItemInputDialog;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.item.Item;
 import org.bitbucket.shaigem.rssb.ui.shop.ShopPresenter;
@@ -39,7 +40,7 @@ public final class ShopItemPresenter {
             ("application/x-java-serialized-object");
 
 
-    public ShopItemPresenter(ShopItemView shopItemView) {
+    ShopItemPresenter(ShopItemView shopItemView) {
         this.shopItemView = shopItemView;
         itemObjectProperty = new SimpleObjectProperty<>();
         finishedInitializing = new SimpleBooleanProperty();
@@ -56,7 +57,7 @@ public final class ShopItemPresenter {
 
     public boolean openEditIndexDialog() {
         Item item = shopItemView.getPresenter().getItem();
-        TextInputDialog dialog = new TextInputDialog(item.getId() + "");
+        ItemInputDialog dialog = new ItemInputDialog(item.getId() + "");
         dialog.setTitle("Change Item");
         dialog.setHeaderText("Editing Item: " + item.getName());
         dialog.setContentText("Please enter the id of the item:");
@@ -106,7 +107,6 @@ public final class ShopItemPresenter {
     public ShopPresenter getShopPresenter() {
         return this.shopPresenter;
     }
-
 
     public void setItem(Item item) {
         itemObjectProperty.set(item);
@@ -283,12 +283,8 @@ public final class ShopItemPresenter {
         });
     }
 
-
     private void onDeleteAction() {
         shopItemView.getDeleteMenuItem().setOnAction((event ->
                 shopPresenter.deleteItem(shopPresenter.getSelectionModel().getSelectedShopItems())));
     }
-
-
-
 }
