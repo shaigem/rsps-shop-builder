@@ -11,24 +11,33 @@ import java.net.URI;
  */
 public class ShopPluginManager {
 
+    public static final ShopPluginManager INSTANCE = new ShopPluginManager();
     public static final boolean DEBUG = true;
+    private AbstractShopPlugin plugin;
+    private PluginManagerUtil pluginManager;
 
-    private static PluginManagerUtil pluginManager;
-
-    public static ShopFormat loadedShop() {
-        return pluginManager.getPlugins(ShopFormat.class).stream().findFirst().orElseThrow(RuntimeException::new);
-    }
-
-    public static void initialize(URI... pluginURIs) {
+    public void initialize(URI... pluginURIs) {
         final net.xeoh.plugins.base.PluginManager pm = PluginManagerFactory.createPluginManager();
         for (URI pluginURI : pluginURIs) {
             pm.addPluginsFrom(pluginURI, new OptionReportAfter());
         }
         pluginManager = new PluginManagerUtil(pm);
+        //TODO ref issue #4 - create a user interface to allow for people to select the plugin!
+        // For now just load the first plugin as debug
+        plugin = (AbstractShopPlugin)
+                pluginManager.getPlugins(ShopPlugin.class).stream().findFirst().orElseThrow(RuntimeException::new);
     }
 
-    public static void shutdown() {
+    public void shutdown() {
         if (pluginManager != null)
             pluginManager.shutdown();
+    }
+
+    public AbstractShopPlugin getLoadedPlugin() {
+        return plugin;
+    }
+
+    public ShopFormat getLoadedFormat() {
+        return plugin.getFormat();
     }
 }

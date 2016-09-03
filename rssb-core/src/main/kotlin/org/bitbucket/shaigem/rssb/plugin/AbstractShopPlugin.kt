@@ -41,3 +41,4 @@ abstract class AbstractShopPlugin : ShopPlugin {
         customTableColumns.add(column)
     }
 }
+
