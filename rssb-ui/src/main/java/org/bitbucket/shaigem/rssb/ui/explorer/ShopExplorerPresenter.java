@@ -55,7 +55,7 @@ public class ShopExplorerPresenter implements Initializable {
 
     @EventListener
     private void onSaveShop(ShopSaveEvent saveShopEvent) {
-        if (saveShopEvent.success()) {
+        if (saveShopEvent.onSuccess()) {
             refreshExplorer();
         }
     }

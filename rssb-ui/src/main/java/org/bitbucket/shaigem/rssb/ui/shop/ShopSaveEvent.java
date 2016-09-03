@@ -22,7 +22,7 @@ public class ShopSaveEvent {
      *
      * @return true if the shop had changes to be saved
      */
-    public boolean success() {
+    public boolean onSuccess() {
         return success;
     }
 }

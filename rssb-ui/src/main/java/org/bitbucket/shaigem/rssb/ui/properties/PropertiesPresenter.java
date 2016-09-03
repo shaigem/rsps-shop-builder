@@ -84,7 +84,7 @@ public class PropertiesPresenter implements Initializable {
 
     @EventListener(priority = -1)
     private void onSaveShop(ShopSaveEvent saveEvent) {
-        if (saveEvent.success()) {
+        if (saveEvent.onSuccess()) {
             // only happens if there was something to save
             final ShopPresenter presenter = saveEvent.getSavedShopPresenter();
             checkAndUpdateShopProperties(presenter);

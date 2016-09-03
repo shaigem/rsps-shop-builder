@@ -73,27 +73,6 @@ public final class ShopTabManager {
     }
 
 
-    public void handleOnTabClose(ShopPresenter shopPresenter) {
-        if (shopPresenter.hasBeenModified()) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.initStyle(StageStyle.UTILITY);
-            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-            alert.setTitle("Unsaved Changes");
-            alert.setHeaderText("Save: " + shopPresenter.getShop());
-            alert.setContentText("You have some unsaved changes. Would you like to save them before closing?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent()) {
-                if (result.get() == ButtonType.YES) {
-                    shopPresenter.save();
-                }
-            }
-        }
-        eventStudio.broadcast(new ShopCloseEvent(shopPresenter));
-        shopPresenter.cleanup();
-        openShops.remove(shopPresenter);
-    }
-
-
     public Optional<ShopPresenter> getPresenterForTab(Tab tab) {
         return openShops.stream().filter((presenter -> presenter.getTab() == tab)).findFirst();
     }
@@ -123,17 +102,31 @@ public final class ShopTabManager {
         return openShops;
     }
 
+
     private void registerTabCloseEvent(Tab tab, ShopPresenter presenter) {
-        tab.setOnCloseRequest((e) -> {
-            //    Tab targetTab = (Tab) e.getTarget();
-            handleOnTabClose(presenter);
-            // openShops.stream().filter((shopPresenter1 -> shopPresenter1.getTab() == targetTab)).findFirst().
-            //      ifPresent((this::handleOnTabClose));
-
-
-        });
-
+        tab.setOnCloseRequest((e) -> handleOnTabClose(presenter));
     }
+
+    private void handleOnTabClose(ShopPresenter shopPresenter) {
+        if (shopPresenter.hasBeenModified()) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initStyle(StageStyle.UTILITY);
+            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+            alert.setTitle("Unsaved Changes");
+            alert.setHeaderText("Save: " + shopPresenter.getShop());
+            alert.setContentText("You have some unsaved changes. Would you like to save them before closing?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent()) {
+                if (result.get() == ButtonType.YES) {
+                    shopPresenter.save();
+                }
+            }
+        }
+        eventStudio.broadcast(new ShopCloseEvent(shopPresenter));
+        shopPresenter.cleanup();
+        openShops.remove(shopPresenter);
+    }
+
 
     private void initializeShop(ShopPresenter shopPresenter, Tab tab, Shop shop) {
         shopPresenter.setMainWindowPresenter(builderWindowPresenter);

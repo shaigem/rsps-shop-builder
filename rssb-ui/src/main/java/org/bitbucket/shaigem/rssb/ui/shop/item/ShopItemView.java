@@ -21,7 +21,7 @@ import org.bitbucket.shaigem.rssb.ui.shop.item.popover.ShopItemInfoPopoverView;
 import org.bitbucket.shaigem.rssb.util.ItemAmountUtil;
 import org.controlsfx.control.PopOver;
 
-import java.util.Optional;
+import java.util.Objects;
 
 
 /**
@@ -35,7 +35,7 @@ public class ShopItemView extends Region {
     private static final Image ITEM_BACKGROUND_EXPANDED = new Image(ShopItemView.class.
             getClassLoader().getResourceAsStream("images/shop_holder_exp.png"));
 
-    private Optional<PopOver> infoPopOver;
+    private PopOver popOver;
     private ShopItemInfoPopoverPresenter shopItemInfoPopoverPresenter;
 
     private final ShopItemPresenter shopItemPresenter;
@@ -59,7 +59,6 @@ public class ShopItemView extends Region {
         super();
         getStyleClass().addAll("shop-item-view");
         shopItemPresenter = new ShopItemPresenter(this);
-        infoPopOver = Optional.empty();
         setupNodes();
 //        updateDisplayMode(ShopDisplayRadioButton.DisplayMode.ICON);
         handleMouseOverEffects();
@@ -68,15 +67,16 @@ public class ShopItemView extends Region {
 
 
     public void showInfoPopOver() {
-        if (!infoPopOver.isPresent()) {
-            infoPopOver = Optional.of(constructInfoPopOver());
+        if (Objects.isNull(popOver)) {
+            popOver = constructInfoPopOver();
             shopItemInfoPopoverPresenter.refreshNodes();
         }
-        infoPopOver.ifPresent(popOver -> {
-            if (!popOver.isShowing())
+        if(Objects.nonNull(popOver)) {
+            if (!popOver.isShowing()) {
                 popOver.show(this);
+            }
             shopItemInfoPopoverPresenter.refreshAmountText();
-        });
+        }
     }
 
     public Label getAmountLabel() {
@@ -124,8 +124,8 @@ public class ShopItemView extends Region {
         return shopItemInfoPopoverPresenter;
     }
 
-    public Optional<PopOver> getInfoPopOver() {
-        return infoPopOver;
+    public PopOver getPopOver() {
+        return popOver;
     }
 
     public void updateDisplayMode(ShopDisplayRadioButton.DisplayMode mode) {
@@ -225,7 +225,9 @@ public class ShopItemView extends Region {
         setOnMousePressed((event -> {
             if (event.isSecondaryButtonDown()) {
                 contextMenu.show(this, event.getScreenX(), event.getScreenY());
-                infoPopOver.ifPresent(PopOver::hide);
+                if(Objects.nonNull(popOver)) {
+                    popOver.hide();
+                }
             } else {
                 contextMenu.hide();
             }
