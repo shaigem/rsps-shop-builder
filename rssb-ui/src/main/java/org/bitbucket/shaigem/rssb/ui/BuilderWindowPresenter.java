@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -102,13 +103,19 @@ public class BuilderWindowPresenter implements Initializable {
             eventStudio.broadcast(new ActiveFormatPluginChangedEvent(
                     requestedFormatPlugin));
         }
+        removeBlurFromWindow();
     }
+
 
     @FXML
     public void onSwitchFormatAction() {
         Stage builderStage = getStage();
         Stage owner = (Stage) builderStage.getOwner();
+        blurWindow();
         owner.show();
+        if (owner.getOnCloseRequest() == null) {
+            owner.setOnCloseRequest(event -> removeBlurFromWindow());
+        }
     }
 
     @FXML
@@ -186,6 +193,16 @@ public class BuilderWindowPresenter implements Initializable {
     private void updateStageTitle() {
         getStage().setTitle("Shop Builder [" +
                 activeFormat.getFormat().descriptor().getName() + "]");
+    }
+
+    private final BoxBlur boxBlur = new BoxBlur(5, 5, 2);
+
+    private void blurWindow() {
+        rootPane.setEffect(boxBlur);
+    }
+
+    private void removeBlurFromWindow() {
+        rootPane.setEffect(null);
     }
 
     public TabPane getShopTabPane() {
