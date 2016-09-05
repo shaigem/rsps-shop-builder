@@ -1,4 +1,6 @@
-package org.bitbucket.shaigem.rssb.ui.shop;
+package org.bitbucket.shaigem.rssb.event;
+
+import org.bitbucket.shaigem.rssb.ui.shop.ShopPresenter;
 
 /**
  * Created on 02/09/16.
@@ -8,7 +10,7 @@ public class ShopSaveEvent {
     private final ShopPresenter shopEditorPresenter;
     private final boolean success;
 
-    ShopSaveEvent(ShopPresenter shopEditorPresenter, boolean success) {
+    public ShopSaveEvent(ShopPresenter shopEditorPresenter, boolean success) {
         this.shopEditorPresenter = shopEditorPresenter;
         this.success = success;
     }

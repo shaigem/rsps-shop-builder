@@ -75,20 +75,8 @@ public class ItemListPresenter implements Initializable {
     }
 
     private void searchPatternChange() {
-        filteredList.setPredicate(item -> {
-            if (searchPattern == null || searchPattern.isEmpty() || searchPattern.length() < 3) {
-                return true;
-            }
-
-            if (item.getName().toLowerCase()
-                    .contains(searchPattern.toLowerCase())) {
-                return true;
-            }
-
-            return false;
-        });
-
-
+        filteredList.setPredicate(item ->
+                searchPattern == null || searchPattern.isEmpty() || searchPattern.length() < 3 || item.getName().toLowerCase().contains(searchPattern.toLowerCase()));
     }
 
     private void listenForDoubleClick() {

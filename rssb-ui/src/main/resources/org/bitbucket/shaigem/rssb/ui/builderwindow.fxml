@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter">
+<VBox fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1240.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter">
     <children>
       <MenuBar>
         <menus>
@@ -29,11 +29,16 @@
               <MenuItem fx:id="selectAllMenuItem" mnemonicParsing="false" onAction="#onSelectAllMenuAction" text="Select All" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Default Settings">
+          <Menu mnemonicParsing="false" text="View">
                <items>
                   <RadioMenuItem fx:id="expandedItemDisplayRadioItem" mnemonicParsing="false" text="Expanded Item Display" />
                </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Plugin">
+              <items>
+                <MenuItem fx:id="switchFormatMenuItem" mnemonicParsing="false" onAction="#onSwitchFormatAction" text="Switch Format..." />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
         <SplitPane dividerPositions="0.16720516962843296, 0.8069466882067852" VBox.vgrow="ALWAYS">

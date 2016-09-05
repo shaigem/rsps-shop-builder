@@ -3,11 +3,12 @@ package org.bitbucket.shaigem.rssb;
 import com.airhacks.afterburner.injection.Injector;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.bitbucket.shaigem.rssb.plugin.ShopPluginManager;
 import org.bitbucket.shaigem.rssb.store.ItemImageStore;
 import org.bitbucket.shaigem.rssb.store.ItemNameStore;
-import org.bitbucket.shaigem.rssb.ui.BuilderWindowView;
+import org.bitbucket.shaigem.rssb.ui.dashboard.DashboardView;
 
 import java.io.File;
 
@@ -16,25 +17,22 @@ import java.io.File;
  */
 public class ShopBuilderApp extends Application {
 
-    private static ShopBuilderApp singleton;
-
-    public static ShopBuilderApp getSingleton() {
-        return singleton;
-    }
-
-    public ShopBuilderApp() {
-        singleton = this;
-    }
-
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage stage) throws Exception {
+        Stage primaryStage = new Stage();
         loadResources();
-        BuilderWindowView mainWindowView = new BuilderWindowView();
+        DashboardView dashboardView = new DashboardView();
+        Scene scene = new Scene(dashboardView.getView());
+       /* BuilderWindowView mainWindowView = new BuilderWindowView();
         Scene scene = new Scene(mainWindowView.getView());
         scene.getStylesheets().addAll
                 (this.getClass().getClassLoader().getResource("css/builder_style.css").toExternalForm());
+       */
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Shop Builder");
+        primaryStage.setMinWidth(713);
+        primaryStage.setMinHeight(467);
+        primaryStage.initModality(Modality.APPLICATION_MODAL);
+        primaryStage.setTitle("Shop Builder by AbyssPartyy");
         primaryStage.show();
     }
 
@@ -48,9 +46,8 @@ public class ShopBuilderApp extends Application {
         launch(args);
     }
 
-
     private void loadResources() {
-        ShopPluginManager.INSTANCE.initialize(ShopPluginManager.DEBUG ? new File("rssb-plugin-matrix/target/classes/").toURI(): new File("./plugins/").toURI());
+        ShopPluginManager.INSTANCE.initialize(ShopPluginManager.DEBUG ? new File("rssb-plugin-matrix/target/classes/").toURI() : new File("./plugins/").toURI());
         try {
             ItemNameStore.parseItemNames();
         } catch (Exception e) {
@@ -59,6 +56,4 @@ public class ShopBuilderApp extends Application {
         ItemImageStore.setupStoreArchiveDetecter();
 
     }
-
-
 }

@@ -5,12 +5,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
+import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
+import org.bitbucket.shaigem.rssb.event.CreateNewShopTabRequest;
+import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
-import org.bitbucket.shaigem.rssb.plugin.AbstractShopPlugin;
-import org.bitbucket.shaigem.rssb.plugin.ShopPluginManager;
-import org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter;
-import org.bitbucket.shaigem.rssb.ui.shop.ShopSaveEvent;
+import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
 import org.sejda.eventstudio.DefaultEventStudio;
 import org.sejda.eventstudio.annotation.EventListener;
 
@@ -23,15 +23,13 @@ import java.util.ResourceBundle;
  */
 public class ShopExplorerPresenter implements Initializable {
 
-    private BuilderWindowPresenter builderWindowPresenter;
-
     @Inject
     ShopRepository repository;
 
     @FXML
     TableView<Shop> shopTableView;
-    @FXML
-    TableColumn<Shop, String> nameColumn;
+
+    private final TableColumn<Shop, String> nameColumn = new TableColumn<>("Name");
 
     @Inject
     DefaultEventStudio eventStudio;
@@ -40,12 +38,11 @@ public class ShopExplorerPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         shopTableView.setItems(repository.getMasterShopDefinitions());
         setupNameColumn();
-        setupCustomPluginColumns();
         shopTableView.setOnMousePressed((event -> {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
                 if (event.getClickCount() == 2) {
                     final Shop selectedShop = shopTableView.getSelectionModel().getSelectedItem();
-                    builderWindowPresenter.updateShowingShop(selectedShop);
+                    eventStudio.broadcast(new CreateNewShopTabRequest(selectedShop));
                 }
             }
         }));
@@ -60,6 +57,12 @@ public class ShopExplorerPresenter implements Initializable {
         }
     }
 
+    @EventListener
+    private void onActiveFormatPluginChanged(ActiveFormatPluginChangedEvent event) {
+        shopTableView.getColumns().clear();
+        shopTableView.getColumns().add(nameColumn);
+        setupCustomPluginColumns(event.getFormatPlugin());
+    }
 
     private void refreshExplorer() {
         shopTableView.refresh();
@@ -69,15 +72,12 @@ public class ShopExplorerPresenter implements Initializable {
 
     private void setupNameColumn() {
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        shopTableView.getColumns().add(nameColumn);
     }
 
-    private void setupCustomPluginColumns() {
-        AbstractShopPlugin plugin = ShopPluginManager.INSTANCE.getLoadedPlugin();
-        plugin.getCustomTableColumns().forEach(tableColumn -> shopTableView.getColumns().add((TableColumn<Shop, ?>) tableColumn));
+    private void setupCustomPluginColumns(BaseShopFormatPlugin baseShopFormatPlugin) {
+        baseShopFormatPlugin.getCustomTableColumns().forEach(tableColumn -> shopTableView.getColumns().add((TableColumn<Shop, ?>) tableColumn));
     }
 
-    public void setBuilderWindowPresenter(BuilderWindowPresenter builderWindowPresenter) {
-        this.builderWindowPresenter = builderWindowPresenter;
-    }
 
 }

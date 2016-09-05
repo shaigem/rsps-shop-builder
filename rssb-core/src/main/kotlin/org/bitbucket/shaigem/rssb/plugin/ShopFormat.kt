@@ -11,4 +11,6 @@ interface ShopFormat<S : Shop> {
 
     fun load(selectedFile: File): ArrayList<S>
 
+    fun descriptor(): ShopFormatDescriptor
+
 }

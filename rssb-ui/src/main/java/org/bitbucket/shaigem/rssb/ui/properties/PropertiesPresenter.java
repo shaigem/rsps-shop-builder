@@ -7,12 +7,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Pair;
+import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
+import org.bitbucket.shaigem.rssb.event.LoadShopsEvent;
 import org.bitbucket.shaigem.rssb.fx.controlsfx.CustomPropertyEditorFactory;
-import org.bitbucket.shaigem.rssb.ui.shop.ShopCloseEvent;
+import org.bitbucket.shaigem.rssb.event.ShopCloseEvent;
 import org.bitbucket.shaigem.rssb.model.ShopPropertiesManager;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
-import org.bitbucket.shaigem.rssb.ui.shop.ShopSaveEvent;
+import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.ui.shop.ShopPresenter;
 import org.controlsfx.control.PropertySheet;
 import org.controlsfx.property.BeanPropertyUtils;
@@ -49,6 +51,9 @@ public class PropertiesPresenter implements Initializable {
 
     private ListChangeListener<Shop> propertyChangeListener = null;
 
+    private final ShopPropertiesManager propertiesManager = new ShopPropertiesManager();
+
+
     @FXML
     AnchorPane rootPane;
     @FXML
@@ -57,10 +62,7 @@ public class PropertiesPresenter implements Initializable {
     @Inject
     ShopTabManager tabManager;
     @Inject
-    ShopPropertiesManager propertiesManager;
-    @Inject
     DefaultEventStudio eventStudio;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -75,10 +77,21 @@ public class PropertiesPresenter implements Initializable {
     }
 
     @EventListener
+    private void onActiveFormatPluginChanged(ActiveFormatPluginChangedEvent event) {
+        propertiesManager.clear();
+    }
+
+
+    @EventListener
     private void onShopTabClose(ShopCloseEvent event) {
         // we gotta clear the cached properties as we are not dealing with it anymore
         propertiesManager.removeProperties(event.getClosingShopPresenter());
 
+    }
+
+    @EventListener
+    private void onLoadShops(LoadShopsEvent event) {
+        propertiesManager.clear();
     }
 
 

@@ -8,23 +8,23 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
+import org.bitbucket.shaigem.rssb.event.LoadShopsEvent;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
-import org.bitbucket.shaigem.rssb.model.shop.Shop;
+import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
 import org.bitbucket.shaigem.rssb.plugin.ShopFormat;
-import org.bitbucket.shaigem.rssb.plugin.ShopPluginManager;
-import org.bitbucket.shaigem.rssb.ui.explorer.ShopExplorerPresenter;
 import org.bitbucket.shaigem.rssb.ui.explorer.ShopExplorerView;
 import org.bitbucket.shaigem.rssb.ui.itemlist.ItemListPresenter;
 import org.bitbucket.shaigem.rssb.ui.itemlist.ItemListView;
-import org.bitbucket.shaigem.rssb.ui.properties.PropertiesPresenter;
 import org.bitbucket.shaigem.rssb.ui.properties.PropertiesView;
 import org.bitbucket.shaigem.rssb.ui.search.SearchPresenter;
 import org.bitbucket.shaigem.rssb.ui.search.SearchView;
 import org.bitbucket.shaigem.rssb.ui.shop.ShopPresenter;
-import org.bitbucket.shaigem.rssb.ui.shop.ShopView;
 import org.bitbucket.shaigem.rssb.util.AlertDialogUtil;
+import org.sejda.eventstudio.DefaultEventStudio;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -37,13 +37,10 @@ import java.util.ResourceBundle;
  */
 public class BuilderWindowPresenter implements Initializable {
 
-    private ShopView shopView;
+    private BaseShopFormatPlugin activeFormat;
+
     private ItemListPresenter itemListPresenter;
-    private ShopExplorerPresenter explorerPresenter;
-    private PropertiesPresenter propertiesPresenter;
-
     private BooleanProperty defaultExpandedItemDisplay;
-
 
     @Inject
     ShopTabManager tabManager;
@@ -51,6 +48,8 @@ public class BuilderWindowPresenter implements Initializable {
     @Inject
     ShopRepository repository;
 
+    @Inject
+    DefaultEventStudio eventStudio;
 
     @FXML
     VBox rootPane;
@@ -73,9 +72,11 @@ public class BuilderWindowPresenter implements Initializable {
 
     @FXML
     StackPane propertiesPane;
+
     @FXML
     MenuItem selectAllMenuItem;
-
+    @FXML
+    MenuItem switchFormatMenuItem;
     @FXML
     RadioMenuItem expandedItemDisplayRadioItem;
 
@@ -90,13 +91,31 @@ public class BuilderWindowPresenter implements Initializable {
         setSearchField();
         listenForTabSelection();
         selectAllMenuItem.disableProperty().bind(Bindings.isNull(tabManager.currentShopProperty()));
+        eventStudio.addAnnotatedListeners(this);
+    }
+
+    public void onShow(BaseShopFormatPlugin requestedFormatPlugin) {
+        boolean needsChanging = activeFormat != requestedFormatPlugin;
+        if (needsChanging) {
+            activeFormat = requestedFormatPlugin;
+            updateStageTitle();
+            eventStudio.broadcast(new ActiveFormatPluginChangedEvent(
+                    requestedFormatPlugin));
+        }
+    }
+
+    @FXML
+    public void onSwitchFormatAction() {
+        Stage builderStage = getStage();
+        Stage owner = (Stage) builderStage.getOwner();
+        owner.show();
     }
 
     @FXML
     public void onOpenAction() {
-        final ShopFormat shopFormat = ShopPluginManager.INSTANCE.getLoadedFormat();
+        final ShopFormat shopFormat = activeFormat.getFormat();
 
-       FileChooser chooser = new FileChooser();
+        FileChooser chooser = new FileChooser();
         chooser.setTitle("Open Shops");
         //TODO save last directory and use it here
 
@@ -105,7 +124,7 @@ public class BuilderWindowPresenter implements Initializable {
         chosenFile.ifPresent((file -> {
             try {
                 repository.populate(shopFormat.load(file));
-                tabManager.closeAll();
+                eventStudio.broadcast(new LoadShopsEvent());
             } catch (Throwable throwable) {
                 Alert exceptionAlert = AlertDialogUtil.createExceptionDialog(throwable);
                 exceptionAlert.setHeaderText("Error");
@@ -119,25 +138,11 @@ public class BuilderWindowPresenter implements Initializable {
     @FXML
     public void onSelectAllMenuAction() {
         tabManager.getCurrentViewingShop().selectAllItems();
-
-    }
-
-    public void updateShowingShop(Shop shop) {
-        tabManager.createNewTab(shop);
-       /* Parent shopNode = shopView.getView();
-        if (!shopPane.getChildren().contains(shopNode)) {
-            shopPane.setCenter(shopNode);
-        }
-        shopPresenter.setShop(shop);
-        /*/
     }
 
 
     private void setShopExplorerArea() {
         ShopExplorerView shopExplorerView = new ShopExplorerView();
-        ShopExplorerPresenter shopExplorerPresenter = (ShopExplorerPresenter) shopExplorerView.getPresenter();
-        shopExplorerPresenter.setBuilderWindowPresenter(this);
-        explorerPresenter = shopExplorerPresenter;
         explorerPane.getChildren().add(shopExplorerView.getViewWithoutRootContainer());
 
     }
@@ -150,7 +155,6 @@ public class BuilderWindowPresenter implements Initializable {
 
     private void setPropertiesArea() {
         PropertiesView propertiesView = new PropertiesView();
-        propertiesPresenter = (PropertiesPresenter) propertiesView.getPresenter();
         propertiesPane.getChildren().add(propertiesView.getViewWithoutRootContainer());
     }
 
@@ -179,13 +183,9 @@ public class BuilderWindowPresenter implements Initializable {
         }));
     }
 
-
-    public ShopExplorerPresenter getExplorerPresenter() {
-        return explorerPresenter;
-    }
-
-    public PropertiesPresenter getPropertiesPresenter() {
-        return propertiesPresenter;
+    private void updateStageTitle() {
+        getStage().setTitle("Shop Builder [" +
+                activeFormat.getFormat().descriptor().getName() + "]");
     }
 
     public TabPane getShopTabPane() {
@@ -198,6 +198,10 @@ public class BuilderWindowPresenter implements Initializable {
 
     private Window getWindow() {
         return rootPane.getScene().getWindow();
+    }
+
+    private Stage getStage() {
+        return (Stage) rootPane.getScene().getWindow();
     }
 
 

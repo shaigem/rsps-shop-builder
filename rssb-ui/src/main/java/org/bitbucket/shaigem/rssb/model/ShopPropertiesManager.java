@@ -43,7 +43,7 @@ public final class ShopPropertiesManager {
         // presenter is only used as a key to get the pair
         Pair<Shop, ObservableList<PropertySheet.Item>> shopPair = new Pair<>(shop, items);
         propertiesMap.put(presenter, shopPair);
-        LOG.debug("Cached properties: " + presenter.getShop());
+        LOG.debug("Cached properties: " + presenter.getShop() + ". :" + propertiesMap);
     }
 
     /**
@@ -66,6 +66,10 @@ public final class ShopPropertiesManager {
     (ShopPresenter presenter) {
         LOG.debug("Retrieved properties from " + presenter.getShop());
         return propertiesMap.get(presenter);
+    }
+
+    public final void clear() {
+        propertiesMap.clear();
     }
 
     public final boolean hasCached(ShopPresenter presenter) {

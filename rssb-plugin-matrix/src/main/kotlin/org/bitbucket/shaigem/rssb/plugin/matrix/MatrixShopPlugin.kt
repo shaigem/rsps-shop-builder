@@ -6,16 +6,13 @@ import net.xeoh.plugins.base.annotations.PluginImplementation
 import net.xeoh.plugins.base.annotations.meta.Author
 import org.bitbucket.shaigem.rssb.model.item.Item
 import org.bitbucket.shaigem.rssb.model.shop.Shop
-import org.bitbucket.shaigem.rssb.plugin.AbstractShopPlugin
-import org.bitbucket.shaigem.rssb.plugin.ShopFormat
-import org.bitbucket.shaigem.rssb.plugin.getValue
-import org.bitbucket.shaigem.rssb.plugin.setValue
+import org.bitbucket.shaigem.rssb.plugin.*
 import java.io.File
 import java.util.*
 
 @PluginImplementation
 @Author(name = "AbyssPartyy")
-class MatrixUnpackedShopPlugin : AbstractShopPlugin() {
+class MatrixUnpackedShopPlugin : BaseShopFormatPlugin() {
 
     override val format: ShopFormat<MatrixShop> = MatrixUnpackedShopFormat()
 
@@ -27,6 +24,12 @@ class MatrixUnpackedShopPlugin : AbstractShopPlugin() {
 }
 
 class MatrixUnpackedShopFormat : ShopFormat<MatrixShop> {
+
+    override fun descriptor(): ShopFormatDescriptor {
+        return ShopFormatDescriptor(
+                name = "Matrix Unpacked",
+                description = "Edit unpacked Matrix shops (unpackedShops.txt).")
+    }
 
     override fun load(selectedFile: File): ArrayList<MatrixShop> {
         val shops = arrayListOf<MatrixShop>()

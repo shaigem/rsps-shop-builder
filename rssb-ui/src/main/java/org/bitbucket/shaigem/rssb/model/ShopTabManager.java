@@ -10,13 +10,17 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.StageStyle;
+import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
+import org.bitbucket.shaigem.rssb.event.CreateNewShopTabRequest;
+import org.bitbucket.shaigem.rssb.event.LoadShopsEvent;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter;
-import org.bitbucket.shaigem.rssb.ui.shop.ShopCloseEvent;
+import org.bitbucket.shaigem.rssb.event.ShopCloseEvent;
 import org.bitbucket.shaigem.rssb.ui.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.ui.shop.ShopView;
 import org.sejda.eventstudio.DefaultEventStudio;
+import org.sejda.eventstudio.annotation.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +49,24 @@ public final class ShopTabManager {
     public void init() {
         openShops = FXCollections.observableArrayList();
         currentShopProperty = new SimpleObjectProperty<>();
+        eventStudio.addAnnotatedListeners(this);
     }
+
+    @EventListener
+    private void onActiveFormatPluginChangedEvent(ActiveFormatPluginChangedEvent event) {
+        closeAll();
+    }
+
+    @EventListener
+    private void onLoadShops(LoadShopsEvent event) {
+        closeAll();
+    }
+
+    @EventListener
+    private void onCreateNewShopTabRequest(CreateNewShopTabRequest request) {
+        createNewTab(request.getShop());
+    }
+
 
     public void createNewTab(Shop shop) {
         Optional<ShopPresenter> openTab = isOpen(shop);
@@ -67,7 +88,7 @@ public final class ShopTabManager {
         registerTabCloseEvent(tab, shopPresenter);
     }
 
-    public void closeAll() {
+    private void closeAll() {
         openShops.clear();
         getTabPane().getTabs().clear();
     }

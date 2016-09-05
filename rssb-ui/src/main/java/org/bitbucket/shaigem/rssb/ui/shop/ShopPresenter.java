@@ -26,6 +26,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.fx.control.ItemInputDialog;
 import org.bitbucket.shaigem.rssb.fx.control.RuneScapeButton;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;

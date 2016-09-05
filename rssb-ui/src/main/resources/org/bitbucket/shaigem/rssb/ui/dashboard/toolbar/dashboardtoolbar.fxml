@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.Region?>
+
+<ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="438.0" styleClass="dashboard-toolbar" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.dashboard.toolbar.DashboardToolbarPresenter">
+  <items>
+      <Label text="Choose Your Format" />
+      <Region fx:id="spacer" />
+  </items>
+</ToolBar>

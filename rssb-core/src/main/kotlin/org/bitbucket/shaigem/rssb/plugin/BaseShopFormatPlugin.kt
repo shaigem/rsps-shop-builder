@@ -10,7 +10,7 @@ import org.bitbucket.shaigem.rssb.model.shop.Shop
 /**
  * Created on 01/09/16.
  */
-abstract class AbstractShopPlugin : ShopPlugin {
+abstract class BaseShopFormatPlugin : ShopFormatPlugin {
 
     abstract val format: ShopFormat<*>
 
