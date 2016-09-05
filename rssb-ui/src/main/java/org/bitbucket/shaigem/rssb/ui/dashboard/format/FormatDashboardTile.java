@@ -1,17 +1,17 @@
-package org.bitbucket.shaigem.rssb.ui.dashboard;
+package org.bitbucket.shaigem.rssb.ui.dashboard.format;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.bitbucket.shaigem.rssb.event.SetActiveFormatPluginRequest;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
-import org.bitbucket.shaigem.rssb.plugin.ShopFormat;
 import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
+import org.bitbucket.shaigem.rssb.plugin.ShopFormat;
 import org.sejda.eventstudio.DefaultEventStudio;
 
 import java.util.Optional;
@@ -19,7 +19,7 @@ import java.util.Optional;
 /**
  * Created on 03/09/16.
  */
-public class FormatDashboardTile extends Region {
+public class FormatDashboardTile extends AnchorPane {
 
     private static final PseudoClass ARMED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("armed");
     private static final PseudoClass ACTIVE_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("active");
@@ -48,13 +48,14 @@ public class FormatDashboardTile extends Region {
 
         final VBox innerBox = new VBox();
         final StackPane stackPane = new StackPane(formatInformationBox, button);
+
         innerBox.getStyleClass().add(INNER_BOX_STYLE_CLASS);
         innerBox.getChildren().add(stackPane);
 
+        //setMaxHeight(USE_PREF_SIZE);
+        //  setMinHeight(USE_PREF_SIZE);
 
         prefHeightProperty().bind(innerBox.heightProperty());
-        setMaxHeight(USE_PREF_SIZE);
-        setMinHeight(USE_PREF_SIZE);
         getChildren().add(innerBox);
     }
 
