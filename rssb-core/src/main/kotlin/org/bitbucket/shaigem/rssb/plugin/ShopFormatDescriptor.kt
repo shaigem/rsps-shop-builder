@@ -3,4 +3,4 @@ package org.bitbucket.shaigem.rssb.plugin
 /**
  * Created on 03/09/16.
  */
-class ShopFormatDescriptor(val name: String, val description: String)
+data class ShopFormatDescriptor(val name: String, val description: String)

@@ -5,14 +5,20 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Pair;
+import org.bitbucket.shaigem.rssb.event.RefreshDashboardEvent;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
+import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowView;
-import org.bitbucket.shaigem.rssb.ui.dashboard.item.FormatPluginsPanePresenter;
-import org.bitbucket.shaigem.rssb.ui.dashboard.item.FormatPluginsPaneView;
+import org.bitbucket.shaigem.rssb.ui.dashboard.format.FormatPluginsPanePresenter;
+import org.bitbucket.shaigem.rssb.ui.dashboard.format.FormatPluginsPaneView;
+import org.bitbucket.shaigem.rssb.ui.dashboard.toolbar.DashboardToolbarPresenter;
 import org.bitbucket.shaigem.rssb.ui.dashboard.toolbar.DashboardToolbarView;
+import org.sejda.eventstudio.DefaultEventStudio;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -24,10 +30,18 @@ public class DashboardPresenter implements Initializable {
     @FXML
     BorderPane root;
 
+    @Inject
+    DefaultEventStudio eventStudio;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        setFormatPluginsPane(); // must be first or else it messes the shadow in setToolBar!
         setToolBar();
-        setFormatPluginsPane();
+        RSSBPluginManager.INSTANCE.addListenerToPluginSet(change -> {
+            if (change.wasAdded()) {
+                eventStudio.broadcast(new RefreshDashboardEvent(change.getElementAdded()));
+            }
+        });
     }
 
 
@@ -62,6 +76,8 @@ public class DashboardPresenter implements Initializable {
 
     private void setToolBar() {
         DashboardToolbarView toolbar = new DashboardToolbarView();
+        DashboardToolbarPresenter presenter = (DashboardToolbarPresenter) toolbar.getPresenter();
+        presenter.setDashboardPresenter(this);
         root.setTop(toolbar.getView());
     }
 
@@ -75,5 +91,9 @@ public class DashboardPresenter implements Initializable {
 
     private Stage getDashboardStage() {
         return (Stage) root.getScene().getWindow();
+    }
+
+    public Window getDashboardWindow() {
+        return root.getScene().getWindow();
     }
 }

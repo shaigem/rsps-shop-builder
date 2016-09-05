@@ -62,9 +62,15 @@ public class AlertDialogUtil {
         expContent.setMaxWidth(Double.MAX_VALUE);
         expContent.add(label, 0, 0);
         expContent.add(textArea, 0, 1);
+        // Fixes a problem where the dialog would not resize when you expand the content
+        // ONLY OCCURS ON LINUX
+        alert.getDialogPane().expandedProperty().addListener((l) -> Platform.runLater(() -> {
+            alert.getDialogPane().requestLayout();
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.sizeToScene();
+        }));
 
         alert.getDialogPane().setExpandableContent(expContent);
-        alert.getDialogPane().setExpanded(true);
         return alert;
     }
 }

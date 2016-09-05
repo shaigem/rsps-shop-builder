@@ -52,6 +52,5 @@ public class ShopBuilderApp extends Application {
             e.printStackTrace();
         }
         ItemImageStore.setupStoreArchiveDetecter();
-
     }
 }

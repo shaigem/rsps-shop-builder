@@ -1,7 +1,7 @@
 .dashboard-toolbar {
     -fx-background-color: #D4D4D4, white;
     -fx-spacing: 5;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 8.0, 0.0, 0.0, 3.0);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 8.0, 0.0, 0.0, 3.0);
 }
 
 .dashboard-toolbar-button {

@@ -1,6 +1,11 @@
 /*
  Format Tile
 */
+.format-container {
+    -fx-column-halignment: left;
+    -fx-row-valignment: top;
+    -fx-orientation: horizontal;
+}
 
 .format-tile {
     -fx-padding: 0px;

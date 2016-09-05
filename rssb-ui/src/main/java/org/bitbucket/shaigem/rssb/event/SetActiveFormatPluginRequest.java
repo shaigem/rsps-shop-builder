@@ -1,7 +1,7 @@
 package org.bitbucket.shaigem.rssb.event;
 
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
-import org.bitbucket.shaigem.rssb.ui.dashboard.FormatDashboardTile;
+import org.bitbucket.shaigem.rssb.ui.dashboard.format.FormatDashboardTile;
 
 /**
  * Created on 03/09/16.

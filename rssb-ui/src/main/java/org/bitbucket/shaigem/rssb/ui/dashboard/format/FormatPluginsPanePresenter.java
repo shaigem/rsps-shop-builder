@@ -1,16 +1,16 @@
-package org.bitbucket.shaigem.rssb.ui.dashboard.item;
+package org.bitbucket.shaigem.rssb.ui.dashboard.format;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
-import org.bitbucket.shaigem.rssb.event.RefreshShopFormatPluginsEvent;
+import org.bitbucket.shaigem.rssb.event.RefreshDashboardEvent;
 import org.bitbucket.shaigem.rssb.event.SetActiveFormatPluginRequest;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
 import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
 import org.bitbucket.shaigem.rssb.ui.dashboard.DashboardPresenter;
-import org.bitbucket.shaigem.rssb.ui.dashboard.FormatDashboardTile;
 import org.sejda.eventstudio.DefaultEventStudio;
 import org.sejda.eventstudio.annotation.EventListener;
 
@@ -29,10 +29,13 @@ public class FormatPluginsPanePresenter implements Initializable {
     @FXML
     FlowPane formatItemPane;
     @FXML
+    ScrollPane scrollPane;
+    @FXML
     Label noPluginsFoundLabel;
 
     @Inject
     DefaultEventStudio eventStudio;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -42,10 +45,9 @@ public class FormatPluginsPanePresenter implements Initializable {
     }
 
     @EventListener
-    private void onRefreshShopFormatPlugins(RefreshShopFormatPluginsEvent event) {
-        if (event.anyAdded()) {
-            populateDashboard();
-        }
+    private void onRefreshDashboard(RefreshDashboardEvent event) {
+        FormatDashboardTile tile = new FormatDashboardTile(eventStudio, (BaseShopFormatPlugin) event.getAddedPlugin());
+        formatItemPane.getChildren().add(tile);
     }
 
     @EventListener
@@ -69,9 +71,6 @@ public class FormatPluginsPanePresenter implements Initializable {
 
 
     private void populateDashboard() {
-        if (!formatItemPane.getChildren().isEmpty()) {
-            formatItemPane.getChildren().clear();
-        }
         RSSBPluginManager.INSTANCE.getLoadedPlugins().forEach((shopFormatPlugin -> formatItemPane.getChildren().add(
                 new FormatDashboardTile(eventStudio, (BaseShopFormatPlugin) shopFormatPlugin))));
     }

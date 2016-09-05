@@ -10,16 +10,16 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.bitbucket.shaigem.rssb.event.SetActiveFormatPluginRequest;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
-import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
 import org.bitbucket.shaigem.rssb.plugin.ShopFormat;
 import org.sejda.eventstudio.DefaultEventStudio;
-
-import java.util.Optional;
 
 /**
  * Created on 03/09/16.
  */
 public class FormatDashboardTile extends AnchorPane {
+    // use a AnchorPane instead of region. This fixed a bug with the scrollpane not
+    // updating its scrollbar when adding this to a node that is wrapped in a scrollpane
+    // ScrollPane -> FlowPane -> FormatDashboardTile (AnchorPane extended) = scroll pane resize bar properly
 
     private static final PseudoClass ARMED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("armed");
     private static final PseudoClass ACTIVE_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("active");
@@ -32,10 +32,10 @@ public class FormatDashboardTile extends AnchorPane {
     private static final String BUTTON_STYLE_CLASS = DEFAULT_STYLE_CLASS + "-button";
     private static final String INNER_BOX_STYLE_CLASS = DEFAULT_STYLE_CLASS + "-inner-box";
 
+    private BaseShopFormatPlugin formatPlugin;
 
-    private static final String PLUGIN_LABEL_STYLE_CLASS = DEFAULT_STYLE_CLASS + "-plugin-info";
-
-    public FormatDashboardTile(DefaultEventStudio eventStudio, BaseShopFormatPlugin shopFormatPlugin) {
+    FormatDashboardTile(DefaultEventStudio eventStudio, BaseShopFormatPlugin shopFormatPlugin) {
+        this.formatPlugin = shopFormatPlugin;
         getStyleClass().add(DEFAULT_STYLE_CLASS);
         VBox formatInformationBox = createFormatInformationBox(shopFormatPlugin);
         // create button (will be hidden)
@@ -51,29 +51,21 @@ public class FormatDashboardTile extends AnchorPane {
 
         innerBox.getStyleClass().add(INNER_BOX_STYLE_CLASS);
         innerBox.getChildren().add(stackPane);
-
-        //setMaxHeight(USE_PREF_SIZE);
-        //  setMinHeight(USE_PREF_SIZE);
-
         prefHeightProperty().bind(innerBox.heightProperty());
         getChildren().add(innerBox);
     }
 
     private VBox createFormatInformationBox(BaseShopFormatPlugin shopFormatPlugin) {
         final ShopFormat shopFormat = shopFormatPlugin.getFormat();
-        RSSBPluginManager pluginManager = RSSBPluginManager.INSTANCE;
         Label nameLabel = new Label(shopFormat.descriptor().getName());
         nameLabel.getStyleClass().add(NAME_LABEL_STYLE_CLASS);
 
-        Label versionLabel = new Label("v1.0.0");
+        Label versionLabel = new Label(shopFormatPlugin.getVersion());
         versionLabel.getStyleClass().add(VERSION_LABEL_STYLE_CLASS);
-        Optional<String> pluginVersion = pluginManager.getVersionForPlugin(shopFormatPlugin);
-        pluginVersion.ifPresent(versionLabel::setText);
 
         Label authorLabel = new Label("No Author");
         authorLabel.getStyleClass().add(AUTHOR_LABEL_STYLE_CLASS);
-        Optional<String> pluginAuthor = pluginManager.getAuthorForPlugin(shopFormatPlugin);
-        pluginAuthor.ifPresent(authorLabel::setText);
+        authorLabel.setText(shopFormatPlugin.getAuthor());
 
         Label descriptionLabel = new Label(shopFormat.descriptor().getDescription());
         descriptionLabel.getStyleClass().add(DESCRIPTION_LABEL_STYLE_CLASS);
@@ -85,6 +77,9 @@ public class FormatDashboardTile extends AnchorPane {
         return vBox;
     }
 
+    public BaseShopFormatPlugin getFormatPlugin() {
+        return formatPlugin;
+    }
 
     private ReadOnlyBooleanWrapper armed = new ReadOnlyBooleanWrapper(false) {
         @Override
