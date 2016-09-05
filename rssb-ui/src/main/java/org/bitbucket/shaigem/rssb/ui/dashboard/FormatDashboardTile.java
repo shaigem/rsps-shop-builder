@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
 import org.bitbucket.shaigem.rssb.event.SetActiveFormatPluginRequest;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
 import org.bitbucket.shaigem.rssb.plugin.ShopFormat;
-import org.bitbucket.shaigem.rssb.plugin.ShopPluginManager;
+import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
 import org.sejda.eventstudio.DefaultEventStudio;
 
 import java.util.Optional;
@@ -60,7 +60,7 @@ public class FormatDashboardTile extends Region {
 
     private VBox createFormatInformationBox(BaseShopFormatPlugin shopFormatPlugin) {
         final ShopFormat shopFormat = shopFormatPlugin.getFormat();
-        ShopPluginManager pluginManager = ShopPluginManager.INSTANCE;
+        RSSBPluginManager pluginManager = RSSBPluginManager.INSTANCE;
         Label nameLabel = new Label(shopFormat.descriptor().getName());
         nameLabel.getStyleClass().add(NAME_LABEL_STYLE_CLASS);
 

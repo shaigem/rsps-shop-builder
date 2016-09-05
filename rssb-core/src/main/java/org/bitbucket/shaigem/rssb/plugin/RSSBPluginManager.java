@@ -6,6 +6,7 @@ import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.options.addpluginsfrom.OptionReportAfter;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Optional;
@@ -13,14 +14,23 @@ import java.util.Optional;
 /**
  * Created on 30/08/16.
  */
-public class ShopPluginManager {
+public final class RSSBPluginManager {
 
-    public static final ShopPluginManager INSTANCE = new ShopPluginManager();
+    private RSSBPluginManager() {
+
+    }
+
+    public static final RSSBPluginManager INSTANCE = new RSSBPluginManager();
     public static final boolean DEBUG = true;
 
     private PluginManagerUtil pluginManager;
 
     private PluginInformation pluginInformation;
+
+    private static URI DEFAULT_SHOP_PLUGINS_URI = RSSBPluginManager.DEBUG ?
+            new File("rssb-plugin-matrix/target/classes/").toURI() :
+            new File("./plugins/").toURI();
+
 
     public void initialize(URI... pluginURIs) {
         final net.xeoh.plugins.base.PluginManager pm = PluginManagerFactory.createPluginManager();
@@ -31,17 +41,29 @@ public class ShopPluginManager {
         pluginInformation = pluginManager.getPlugin(PluginInformation.class);
     }
 
-    public final Optional<String> getAuthorForPlugin(Plugin plugin) {
+    public void initializeShopFormatPlugins() {
+        initialize(DEFAULT_SHOP_PLUGINS_URI);
+
+    }
+
+    public boolean refreshShopFormatPlugins() {
+        int pluginSize = pluginManager.getPlugins(ShopFormatPlugin.class).size();
+        pluginManager.addPluginsFrom(DEFAULT_SHOP_PLUGINS_URI, new OptionReportAfter());
+        int newSize = pluginManager.getPlugins(ShopFormatPlugin.class).size();
+        return pluginSize != newSize;
+    }
+
+    public Optional<String> getAuthorForPlugin(Plugin plugin) {
         return pluginInformation.getInformation
                 (PluginInformation.Information.AUTHORS, plugin).stream().findFirst();
     }
 
-    public final Optional<String> getVersionForPlugin(Plugin plugin) {
+    public Optional<String> getVersionForPlugin(Plugin plugin) {
         return pluginInformation.getInformation
                 (PluginInformation.Information.VERSION, plugin).stream().findFirst();
     }
 
-    public final Collection<ShopFormatPlugin> getLoadedPlugins() {
+    public Collection<ShopFormatPlugin> getLoadedPlugins() {
         return pluginManager.getPlugins(ShopFormatPlugin.class);
     }
 

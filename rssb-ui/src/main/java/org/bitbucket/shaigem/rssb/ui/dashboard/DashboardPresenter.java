@@ -10,9 +10,10 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import org.bitbucket.shaigem.rssb.event.RefreshShopFormatPluginsEvent;
 import org.bitbucket.shaigem.rssb.event.SetActiveFormatPluginRequest;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
-import org.bitbucket.shaigem.rssb.plugin.ShopPluginManager;
+import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowView;
 import org.bitbucket.shaigem.rssb.ui.dashboard.toolbar.DashboardToolbarView;
@@ -46,9 +47,15 @@ public class DashboardPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setToolBar();
         noPluginsFoundLabel.visibleProperty().bind(Bindings.isEmpty(formatItemPane.getChildren()));
-        ShopPluginManager.INSTANCE.getLoadedPlugins().forEach((shopFormatPlugin -> formatItemPane.getChildren().add(
-                new FormatDashboardTile(eventStudio, (BaseShopFormatPlugin) shopFormatPlugin))));
+        populateDashboard();
         eventStudio.addAnnotatedListeners(this);
+    }
+
+    @EventListener
+    private void onRefreshShopFormatPlugins(RefreshShopFormatPluginsEvent event) {
+        if (event.anyAdded()) {
+            populateDashboard();
+        }
     }
 
     @EventListener
@@ -56,6 +63,14 @@ public class DashboardPresenter implements Initializable {
         FormatDashboardTile tile = request.getSource();
         setActiveTile(tile);
         showBuilder(request.getShopFormatPlugin());
+    }
+
+    private void populateDashboard() {
+        if (!formatItemPane.getChildren().isEmpty()) {
+            formatItemPane.getChildren().clear();
+        }
+        RSSBPluginManager.INSTANCE.getLoadedPlugins().forEach((shopFormatPlugin -> formatItemPane.getChildren().add(
+                new FormatDashboardTile(eventStudio, (BaseShopFormatPlugin) shopFormatPlugin))));
     }
 
 

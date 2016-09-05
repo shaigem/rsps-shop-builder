@@ -5,12 +5,10 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.bitbucket.shaigem.rssb.plugin.ShopPluginManager;
+import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
 import org.bitbucket.shaigem.rssb.store.ItemImageStore;
 import org.bitbucket.shaigem.rssb.store.ItemNameStore;
 import org.bitbucket.shaigem.rssb.ui.dashboard.DashboardView;
-
-import java.io.File;
 
 /**
  * Created on 2015-08-10.
@@ -32,14 +30,14 @@ public class ShopBuilderApp extends Application {
         primaryStage.setMinWidth(713);
         primaryStage.setMinHeight(467);
         primaryStage.initModality(Modality.APPLICATION_MODAL);
-        primaryStage.setTitle("Shop Builder by AbyssPartyy");
+        primaryStage.setTitle("Shop Builder Dashboard by AbyssPartyy");
         primaryStage.show();
     }
 
     @Override
     public void stop() throws Exception {
         Injector.forgetAll();
-        ShopPluginManager.INSTANCE.shutdown();
+        RSSBPluginManager.INSTANCE.shutdown();
     }
 
     public static void main(String[] args) {
@@ -47,7 +45,7 @@ public class ShopBuilderApp extends Application {
     }
 
     private void loadResources() {
-        ShopPluginManager.INSTANCE.initialize(ShopPluginManager.DEBUG ? new File("rssb-plugin-matrix/target/classes/").toURI() : new File("./plugins/").toURI());
+        RSSBPluginManager.INSTANCE.initializeShopFormatPlugins();
         try {
             ItemNameStore.parseItemNames();
         } catch (Exception e) {
