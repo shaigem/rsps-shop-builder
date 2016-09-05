@@ -1,0 +1,70 @@
+/*
+ Format Tile
+*/
+
+.format-tile {
+    -fx-padding: 0px;
+}
+
+/* Custom pseudo selector*/
+.format-tile:active {
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 0, 0, 0.8), 8.0, 0.0, 0.0, 0.0);
+}
+
+.format-tile-name {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 8px;
+    -fx-padding: 6.0 0.0 -10.0 0.0;
+    -fx-wrap-text: true;
+}
+
+.format-tile-version {
+    -fx-font-size: 1.0em;
+    -fx-font-weight: bolder;
+    -fx-graphic-text-gap: 8px;
+    -fx-padding: 0.0 0.0 -10.0 0.0;
+    -fx-text-fill: gray;
+}
+
+.format-tile-author {
+    -fx-font-size: 1.0em;
+    -fx-font-weight: bolder;
+    -fx-graphic-text-gap: 8px;
+    -fx-padding: 0.0 0.0 4.0 0.0;
+    -fx-text-fill: gray;
+    -fx-wrap-text: true;
+
+}
+
+.format-tile-description {
+    -fx-font-size: 1.1em;
+    -fx-wrap-text: true;
+}
+
+.format-tile-button, .format-tile-button:hover,
+.format-tile-button:armed {
+    -fx-cursor: hand;
+    -fx-background-color: transparent;
+    -fx-background-radius: 0.0;
+}
+
+.format-tile:hover .format-tile-inner-box {
+    -fx-translate-y: -1;
+    -fx-effect: dropshadow(gaussian, rgba(0.0, 0.0, 0.0, 0.3), 8.0, 0.0, 2.0, 6.0);
+}
+
+.format-tile:armed .format-tile-inner-box {
+    -fx-effect: innershadow(three-pass-box, rgba(0.0, 0.0, 0.0, 0.4), 10.0, 0.0, 1.0, 1.0);
+}
+
+.format-tile-inner-box {
+    -fx-background-color: white;
+    -fx-background-insets: 0.0, 0.4;
+    -fx-background-radius: 8.0;
+    -fx-padding: 8px;
+    -fx-max-width: 220px;
+    -fx-min-width: 220px;
+    -fx-effect: dropshadow(gaussian, rgba(0.0, 0.0, 0.0, 0.2), 6.0, 0.0, 0.0, 4.0);
+
+}

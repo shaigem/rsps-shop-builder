@@ -1,28 +1,19 @@
 package org.bitbucket.shaigem.rssb.ui.dashboard;
 
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import org.bitbucket.shaigem.rssb.event.RefreshShopFormatPluginsEvent;
-import org.bitbucket.shaigem.rssb.event.SetActiveFormatPluginRequest;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
-import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowPresenter;
 import org.bitbucket.shaigem.rssb.ui.BuilderWindowView;
+import org.bitbucket.shaigem.rssb.ui.dashboard.item.FormatPluginsPanePresenter;
+import org.bitbucket.shaigem.rssb.ui.dashboard.item.FormatPluginsPaneView;
 import org.bitbucket.shaigem.rssb.ui.dashboard.toolbar.DashboardToolbarView;
-import org.sejda.eventstudio.DefaultEventStudio;
-import org.sejda.eventstudio.annotation.EventListener;
 
-import javax.inject.Inject;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -32,49 +23,15 @@ public class DashboardPresenter implements Initializable {
 
     @FXML
     BorderPane root;
-    @FXML
-    StackPane center;
-    @FXML
-    FlowPane formatItemPane;
-    @FXML
-    Label noPluginsFoundLabel;
-
-    @Inject
-    DefaultEventStudio eventStudio;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setToolBar();
-        noPluginsFoundLabel.visibleProperty().bind(Bindings.isEmpty(formatItemPane.getChildren()));
-        populateDashboard();
-        eventStudio.addAnnotatedListeners(this);
-    }
-
-    @EventListener
-    private void onRefreshShopFormatPlugins(RefreshShopFormatPluginsEvent event) {
-        if (event.anyAdded()) {
-            populateDashboard();
-        }
-    }
-
-    @EventListener
-    private void onSetActiveFormatRequest(SetActiveFormatPluginRequest request) {
-        FormatDashboardTile tile = request.getSource();
-        setActiveTile(tile);
-        showBuilder(request.getShopFormatPlugin());
-    }
-
-    private void populateDashboard() {
-        if (!formatItemPane.getChildren().isEmpty()) {
-            formatItemPane.getChildren().clear();
-        }
-        RSSBPluginManager.INSTANCE.getLoadedPlugins().forEach((shopFormatPlugin -> formatItemPane.getChildren().add(
-                new FormatDashboardTile(eventStudio, (BaseShopFormatPlugin) shopFormatPlugin))));
+        setFormatPluginsPane();
     }
 
 
-    private void showBuilder(BaseShopFormatPlugin formatPlugin) {
+    public void showBuilder(BaseShopFormatPlugin formatPlugin) {
         Stage dashboardStage = getDashboardStage();
         Stage builderStage = getBuilder().getKey();
         BuilderWindowPresenter presenter = getBuilder().getValue();
@@ -108,16 +65,13 @@ public class DashboardPresenter implements Initializable {
         root.setTop(toolbar.getView());
     }
 
-    private void setActiveTile(FormatDashboardTile tileToSet) {
-        // first set current active tile to inactive
-        Optional<FormatDashboardTile> currentActiveTile =
-                formatItemPane.getChildren().filtered(node ->
-                        node instanceof FormatDashboardTile).stream().map(
-                        node -> (FormatDashboardTile) node).filter(FormatDashboardTile::isActive).findFirst();
-        currentActiveTile.ifPresent(activeTile -> activeTile.setActive(false));
-        // then set the new tile to become active
-        tileToSet.setActive(true);
+    private void setFormatPluginsPane() {
+        FormatPluginsPaneView view = new FormatPluginsPaneView();
+        FormatPluginsPanePresenter presenter = (FormatPluginsPanePresenter) view.getPresenter();
+        presenter.setDashboardPresenter(this);
+        root.setCenter(view.getView());
     }
+
 
     private Stage getDashboardStage() {
         return (Stage) root.getScene().getWindow();

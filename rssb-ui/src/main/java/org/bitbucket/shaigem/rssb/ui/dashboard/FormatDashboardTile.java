@@ -35,7 +35,7 @@ public class FormatDashboardTile extends Region {
 
     private static final String PLUGIN_LABEL_STYLE_CLASS = DEFAULT_STYLE_CLASS + "-plugin-info";
 
-    FormatDashboardTile(DefaultEventStudio eventStudio, BaseShopFormatPlugin shopFormatPlugin) {
+    public FormatDashboardTile(DefaultEventStudio eventStudio, BaseShopFormatPlugin shopFormatPlugin) {
         getStyleClass().add(DEFAULT_STYLE_CLASS);
         VBox formatInformationBox = createFormatInformationBox(shopFormatPlugin);
         // create button (will be hidden)
@@ -112,11 +112,11 @@ public class FormatDashboardTile extends Region {
         return active.getReadOnlyProperty();
     }
 
-    final boolean isActive() {
+    public final boolean isActive() {
         return active.get();
     }
 
-    final void setActive(boolean active) {
+    public final void setActive(boolean active) {
         this.active.set(active);
     }
 }
