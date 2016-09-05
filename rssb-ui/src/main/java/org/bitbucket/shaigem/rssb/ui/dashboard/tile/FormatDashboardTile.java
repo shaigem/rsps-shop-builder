@@ -1,4 +1,4 @@
-package org.bitbucket.shaigem.rssb.ui.dashboard.format;
+package org.bitbucket.shaigem.rssb.ui.dashboard.tile;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
