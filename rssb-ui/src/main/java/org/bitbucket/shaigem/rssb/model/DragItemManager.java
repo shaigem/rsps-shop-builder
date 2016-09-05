@@ -17,6 +17,7 @@ public class DragItemManager {
 
     @PostConstruct
     public void init() {
+
         items = FXCollections.observableArrayList();
     }
 

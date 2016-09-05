@@ -1,6 +1,16 @@
-/*
- Format Tile
-*/
+.format-container-dnd-label {
+    -fx-font-size: 2.0em;
+    -fx-font-weight: bold;
+    -fx-background-color: white;
+    -fx-alignment: center;
+    -fx-padding: 25.0;
+    -fx-text-fill: black;
+    -fx-border-radius: 7px;
+    -fx-border-style: ridge;
+    -fx-border-width: 3px;
+    -fx-border-color: black;
+}
+
 .format-container {
     -fx-column-halignment: left;
     -fx-row-valignment: top;

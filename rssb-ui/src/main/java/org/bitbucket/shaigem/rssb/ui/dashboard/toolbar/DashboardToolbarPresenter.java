@@ -12,15 +12,18 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import org.bitbucket.shaigem.rssb.event.ImportPluginRequest;
 import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
 import org.bitbucket.shaigem.rssb.ui.dashboard.DashboardPresenter;
 import org.bitbucket.shaigem.rssb.util.AlertDialogUtil;
 import org.sejda.eventstudio.DefaultEventStudio;
+import org.sejda.eventstudio.annotation.EventListener;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -46,27 +49,30 @@ public class DashboardToolbarPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         HBox.setHgrow(spacer, Priority.ALWAYS);
         addToolbarItems();
+        eventStudio.addAnnotatedListeners(this);
     }
 
-    private void importPlugin() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JAR files", "*.jar"));
-        Optional<File> fileOptional =
-                Optional.ofNullable(fileChooser.showOpenDialog(dashboardPresenter.getDashboardWindow()));
-        fileOptional.ifPresent(source -> {
-            //TODO use RSSBPluginManager.DEFAULT_SHOP_PLUGINS_URI when jar plugins are built
-            File to = new File(System.getProperty("user.dir") + "/plugins/" + source.getName());
-            // try to load the selected plugin first
-            boolean added = RSSBPluginManager.INSTANCE.load(source.toURI());
+    @EventListener
+    private void onImportPluginRequest(ImportPluginRequest pluginRequest) {
+        File fileToImport = pluginRequest.getFileToImport();
+        importFileAsPlugin(fileToImport);
+    }
+
+    private void importFileAsPlugin(File fileToImport) {
+        //TODO use RSSBPluginManager.DEFAULT_SHOP_PLUGINS_URI when jar plugins are built
+        File to = new File(System.getProperty("user.dir") + "/plugins/" + fileToImport.getName());
+        // try to load the selected plugin first
+        try {
+            boolean added = RSSBPluginManager.INSTANCE.load(fileToImport.toURI());
             if (added) {
                 // if the plugin loaded successfully
                 // try to copy it to the plugin's directory
                 try {
-                    java.nio.file.Files.copy(source.toPath(), to.toPath());
+                    Files.copy(fileToImport.toPath(), to.toPath());
                 } catch (IOException e) {
                     Alert alert = AlertDialogUtil.createExceptionDialog(e);
-                    alert.setContentText("An exception has occurred while " +
-                            "trying to import the requested plugin!");
+                    alert.setHeaderText("Cannot Copy Plugin");
+                    alert.setContentText("Plugin can still be used.");
                     alert.show();
                 }
             } else {
@@ -78,7 +84,21 @@ public class DashboardToolbarPresenter implements Initializable {
                 alert.setContentText("Nothing interesting happens.");
                 alert.show();
             }
-        });
+        } catch (IllegalAccessError exception) { // rare exception
+            Alert alert = AlertDialogUtil.createExceptionDialog(exception);
+            alert.setHeaderText("Error Importing Plugin");
+            alert.setContentText("Cannot import plugin. Please check if this jar is a RSSB plugin.");
+            alert.getDialogPane().setPrefWidth(450);
+            alert.show();
+        }
+    }
+
+    private void openImportChooser() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JAR files", "*.jar"));
+        Optional<File> fileOptional =
+                Optional.ofNullable(fileChooser.showOpenDialog(dashboardPresenter.getDashboardWindow()));
+        fileOptional.ifPresent(this::importFileAsPlugin);
     }
 
     private final Button importButton =
@@ -88,7 +108,7 @@ public class DashboardToolbarPresenter implements Initializable {
             "About");
 
     private void addToolbarItems() {
-        importButton.setOnAction(event -> importPlugin());
+        importButton.setOnAction(event -> openImportChooser());
         refreshButton.setOnAction(event -> RSSBPluginManager.INSTANCE.refreshShopFormatPlugins());
         toolBar.getItems().addAll(importButton, refreshButton, aboutButton);
     }

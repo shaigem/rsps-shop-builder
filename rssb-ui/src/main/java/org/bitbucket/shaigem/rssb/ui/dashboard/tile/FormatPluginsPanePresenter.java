@@ -5,7 +5,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
+import org.bitbucket.shaigem.rssb.event.ImportPluginRequest;
 import org.bitbucket.shaigem.rssb.event.RefreshDashboardEvent;
 import org.bitbucket.shaigem.rssb.event.SetActiveFormatPluginRequest;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
@@ -18,13 +23,16 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 /**
- * Handles the presentation logic for the pane that is responsible for displaying any shop formats.
+ * Handles the presentation logic for the pane that is responsible for displaying any plugins.
  */
 public class FormatPluginsPanePresenter implements Initializable {
 
     private DashboardPresenter dashboardPresenter;
+
+    private DragAndDropManager dragAndDropManager = new DragAndDropManager();
 
     @FXML
     FlowPane formatItemPane;
@@ -32,6 +40,8 @@ public class FormatPluginsPanePresenter implements Initializable {
     ScrollPane scrollPane;
     @FXML
     Label noPluginsFoundLabel;
+    @FXML
+    Label dndLabel;
 
     @Inject
     DefaultEventStudio eventStudio;
@@ -40,6 +50,7 @@ public class FormatPluginsPanePresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         populateDashboard();
+        dragAndDropManager.init();
         noPluginsFoundLabel.visibleProperty().bind(Bindings.isEmpty(formatItemPane.getChildren()));
         eventStudio.addAnnotatedListeners(this);
     }
@@ -57,12 +68,10 @@ public class FormatPluginsPanePresenter implements Initializable {
         dashboardPresenter.showBuilder(request.getShopFormatPlugin());
     }
 
-
     private void setActiveTile(FormatDashboardTile tileToSet) {
         // first set current active tile to inactive
         Optional<FormatDashboardTile> currentActiveTile =
-                formatItemPane.getChildren().filtered(node ->
-                        node instanceof FormatDashboardTile).stream().map(
+                formatItemPane.getChildren().stream().map(
                         node -> (FormatDashboardTile) node).filter(FormatDashboardTile::isActive).findFirst();
         currentActiveTile.ifPresent(activeTile -> activeTile.setActive(false));
         // then set the new tile to become active
@@ -71,11 +80,57 @@ public class FormatPluginsPanePresenter implements Initializable {
 
 
     private void populateDashboard() {
-        RSSBPluginManager.INSTANCE.getLoadedPlugins().forEach((shopFormatPlugin -> formatItemPane.getChildren().add(
-                new FormatDashboardTile(eventStudio, (BaseShopFormatPlugin) shopFormatPlugin))));
+        for (int i = 0; i < 26; i++)
+
+
+            RSSBPluginManager.INSTANCE.getLoadedPlugins().forEach((shopFormatPlugin -> formatItemPane.getChildren().add(
+                    new FormatDashboardTile(eventStudio, (BaseShopFormatPlugin) shopFormatPlugin))));
     }
 
     public void setDashboardPresenter(DashboardPresenter dashboardPresenter) {
         this.dashboardPresenter = dashboardPresenter;
     }
+
+    private final class DragAndDropManager {
+        void init() {
+            dndLabel.setOnDragOver(event -> dragConsume(event, onDragOverConsumer()));
+            dndLabel.setOnDragDropped(event -> dragConsume(event, onDragDroppedConsumer()));
+            dndLabel.setOnDragExited(event -> dndLabel.setVisible(false));
+
+            formatItemPane.setOnDragOver(event -> dragConsume(event, onDragOverConsumer()));
+            formatItemPane.setOnDragDropped(event -> dragConsume(event, onDragDroppedConsumer()));
+            formatItemPane.setOnDragExited(event -> dndLabel.setVisible(false));
+        }
+
+        private Consumer<DragEvent> onDragOverConsumer() {
+            return dragEvent -> {
+                dndLabel.setVisible(true);
+                dragEvent.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            };
+        }
+
+        private Consumer<DragEvent> onDragDroppedConsumer() {
+            return dragEvent -> {
+                dragEvent.getDragboard().getFiles().forEach
+                        (file -> eventStudio.broadcast(new ImportPluginRequest(file)));
+                dndLabel.setVisible(false);
+                dragEvent.setDropCompleted(true);
+            };
+        }
+
+
+        private void dragConsume(DragEvent event, Consumer<DragEvent> consumer) {
+            if (
+                    event.getDragboard().hasFiles()
+                    && event.getDragboard().getFiles().stream().allMatch(file -> matchesJARExtension(file.getName()))) {
+                consumer.accept(event);
+            }
+            event.consume();
+        }
+
+        private boolean matchesJARExtension(String fileName) {
+            return FilenameUtils.wildcardMatch(fileName, "*.jar", IOCase.INSENSITIVE);
+        }
+    }
+
 }
