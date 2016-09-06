@@ -1,5 +1,7 @@
 package org.bitbucket.shaigem.rssb.ui.search;
 
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,6 +24,7 @@ public class SearchPresenter implements Initializable {
 
 
     public void initialize(URL location, ResourceBundle resources) {
+        searchIcon.getChildren().addAll(GlyphsDude.createIcon(FontAwesomeIcon.SEARCH));
         searchField.setPromptText("Search...");
     }
 
