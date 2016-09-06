@@ -6,7 +6,7 @@
     -fx-padding: 25.0;
     -fx-text-fill: black;
     -fx-border-radius: 7px;
-    -fx-border-style: ridge;
+    -fx-border-style: solid;
     -fx-border-width: 3px;
     -fx-border-color: green;
 }

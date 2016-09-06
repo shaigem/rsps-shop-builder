@@ -123,11 +123,12 @@ public class FormatPluginsPanePresenter implements Initializable {
 
         private void dragConsume(DragEvent event, Consumer<DragEvent> consumer) {
             if (event.getDragboard().hasFiles()) {
+                boolean multiple = event.getDragboard().getFiles().size() > 1;
                 if (!event.getDragboard().getFiles().stream().allMatch(file -> matchesJARExtension(file.getName()))) {
-                    dndLabel.setText("Cannot Add This File (JAR Only)");
+                    dndLabel.setText(multiple ? "Only One File Allowed" : "Cannot Add This File (JAR Only)");
                     dndLabel.setDisable(true);
                 } else {
-                    dndLabel.setText("Drop Plugin Anywhere");
+                    dndLabel.setText(multiple ? "Drop Plugins Anywhere" : "Drop Plugin Anywhere");
                     dndLabel.setDisable(false);
                 }
                 consumer.accept(event);

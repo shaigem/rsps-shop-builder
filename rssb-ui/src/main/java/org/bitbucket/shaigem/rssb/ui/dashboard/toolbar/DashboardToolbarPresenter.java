@@ -109,6 +109,7 @@ public class DashboardToolbarPresenter implements Initializable {
             "About");
 
     private void addToolbarItems() {
+        //TODO About dialog
         importButton.setOnAction(event -> openImportChooser());
         refreshButton.setOnAction(event -> RSSBPluginManager.INSTANCE.refreshShopFormatPlugins());
         toolBar.getItems().addAll(importButton, refreshButton, aboutButton);
