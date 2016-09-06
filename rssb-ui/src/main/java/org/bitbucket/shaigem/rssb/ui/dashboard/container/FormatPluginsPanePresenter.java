@@ -127,7 +127,7 @@ public class FormatPluginsPanePresenter implements Initializable {
                     dndLabel.setText("Cannot Add This File (JAR Only)");
                     dndLabel.setDisable(true);
                 } else {
-                    dndLabel.setText("Drop Plugin");
+                    dndLabel.setText("Drop Plugin Anywhere");
                     dndLabel.setDisable(false);
                 }
                 consumer.accept(event);
