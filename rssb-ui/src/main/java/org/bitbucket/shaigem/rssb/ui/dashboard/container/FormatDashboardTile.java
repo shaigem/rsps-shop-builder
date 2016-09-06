@@ -63,9 +63,8 @@ public class FormatDashboardTile extends AnchorPane {
         Label versionLabel = new Label(shopFormatPlugin.getVersion());
         versionLabel.getStyleClass().add(VERSION_LABEL_STYLE_CLASS);
 
-        Label authorLabel = new Label("No Author");
+        Label authorLabel = new Label(shopFormatPlugin.getAuthor());
         authorLabel.getStyleClass().add(AUTHOR_LABEL_STYLE_CLASS);
-        authorLabel.setText(shopFormatPlugin.getAuthor());
 
         Label descriptionLabel = new Label(shopFormat.descriptor().getDescription());
         descriptionLabel.getStyleClass().add(DESCRIPTION_LABEL_STYLE_CLASS);
@@ -108,11 +107,11 @@ public class FormatDashboardTile extends AnchorPane {
         return active.getReadOnlyProperty();
     }
 
-    public final boolean isActive() {
+    final boolean isActive() {
         return active.get();
     }
 
-    public final void setActive(boolean active) {
+    final void setActive(boolean active) {
         this.active.set(active);
     }
 }

@@ -88,8 +88,13 @@ public class FormatPluginsPanePresenter implements Initializable {
         this.dashboardPresenter = dashboardPresenter;
     }
 
+    /**
+     * Manages the dragging and dropping of JAR plugins on this view.
+     */
     private final class DragAndDropManager {
+
         void init() {
+            // have to add the same events to the dndLabel in case someone drags over it
             dndLabel.setOnDragOver(event -> dragConsume(event, onDragOverConsumer()));
             dndLabel.setOnDragDropped(event -> dragConsume(event, onDragDroppedConsumer()));
             dndLabel.setOnDragExited(event -> dndLabel.setVisible(false));
@@ -102,23 +107,29 @@ public class FormatPluginsPanePresenter implements Initializable {
         private Consumer<DragEvent> onDragOverConsumer() {
             return dragEvent -> {
                 dndLabel.setVisible(true);
-                dragEvent.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                dragEvent.acceptTransferModes(TransferMode.COPY);
             };
         }
 
         private Consumer<DragEvent> onDragDroppedConsumer() {
             return dragEvent -> {
-                dragEvent.getDragboard().getFiles().forEach
+                dragEvent.getDragboard().getFiles().stream().filter
+                        (file -> matchesJARExtension(file.getName())).forEach
                         (file -> eventStudio.broadcast(new ImportPluginRequest(file)));
                 dndLabel.setVisible(false);
                 dragEvent.setDropCompleted(true);
             };
         }
 
-
         private void dragConsume(DragEvent event, Consumer<DragEvent> consumer) {
-            if (event.getDragboard().hasFiles()
-                    && event.getDragboard().getFiles().stream().allMatch(file -> matchesJARExtension(file.getName()))) {
+            if (event.getDragboard().hasFiles()) {
+                if (!event.getDragboard().getFiles().stream().allMatch(file -> matchesJARExtension(file.getName()))) {
+                    dndLabel.setText("Cannot Add This File (JAR Only)");
+                    dndLabel.setDisable(true);
+                } else {
+                    dndLabel.setText("Drop Plugin");
+                    dndLabel.setDisable(false);
+                }
                 consumer.accept(event);
             }
             event.consume();
@@ -128,5 +139,4 @@ public class FormatPluginsPanePresenter implements Initializable {
             return FilenameUtils.wildcardMatch(fileName, "*.jar", IOCase.INSENSITIVE);
         }
     }
-
 }
