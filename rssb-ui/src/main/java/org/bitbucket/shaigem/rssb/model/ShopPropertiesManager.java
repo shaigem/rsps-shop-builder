@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.util.Pair;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
-import org.bitbucket.shaigem.rssb.ui.shop.ShopPresenter;
+import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.controlsfx.control.PropertySheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

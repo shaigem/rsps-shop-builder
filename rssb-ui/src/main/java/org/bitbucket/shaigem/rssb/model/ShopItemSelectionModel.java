@@ -3,7 +3,7 @@ package org.bitbucket.shaigem.rssb.model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
-import org.bitbucket.shaigem.rssb.ui.shop.item.ShopItemView;
+import org.bitbucket.shaigem.rssb.ui.builder.shop.item.ShopItemView;
 
 /**
  * Created on 2016-03-14.

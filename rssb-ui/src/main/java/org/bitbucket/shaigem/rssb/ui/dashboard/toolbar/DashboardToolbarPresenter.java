@@ -72,7 +72,8 @@ public class DashboardToolbarPresenter implements Initializable {
                 } catch (IOException e) {
                     Alert alert = AlertDialogUtil.createExceptionDialog(e);
                     alert.setHeaderText("Cannot Copy Plugin");
-                    alert.setContentText("Plugin can still be used.");
+                    alert.setContentText("Cannot copy plugin to plugins folder! Plugin can still be used.");
+                    alert.getDialogPane().setPrefWidth(450);
                     alert.show();
                 }
             } else {

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="233.0" prefWidth="283.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.item.popover.ShopItemInfoPopoverPresenter">
+   <children>
+      <ImageView fx:id="backgroundImageView" fitHeight="233.0" fitWidth="283.0" pickOnBounds="true" preserveRatio="true" />
+      <Label alignment="CENTER" layoutX="38.0" layoutY="5.0" prefHeight="21.0" prefWidth="207.0" text="Item Information" textFill="#ff991f">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="itemImageView" layoutX="22.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" />
+      <VBox layoutX="70.0" layoutY="50.0" prefHeight="43.0" prefWidth="180.0">
+         <children>
+            <Label fx:id="idLabel" graphicTextGap="5.0" prefHeight="17.0" prefWidth="187.0" text="Id: _id" textFill="#ff991f">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="nameLabel" prefHeight="17.0" prefWidth="185.0" text="Name: _name" textFill="#ff991f">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="amountLabel" prefHeight="17.0" prefWidth="185.0" text="Amount: _amt" textFill="#ff991f">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <Label alignment="CENTER" layoutX="38.0" layoutY="118.0" prefHeight="21.0" prefWidth="207.0" text="Enter how many would you like to sell:" textFill="#ff991f" />
+      <TextField id="amt-textfield" fx:id="amountTextField" layoutX="67.0" layoutY="167.0" />
+   </children>
+</AnchorPane>

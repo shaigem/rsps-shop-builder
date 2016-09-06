@@ -1,6 +1,6 @@
 package org.bitbucket.shaigem.rssb.event;
 
-import org.bitbucket.shaigem.rssb.ui.shop.ShopPresenter;
+import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 
 /**
  * Created on 02/09/16.
