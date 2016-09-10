@@ -14,7 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
-import org.bitbucket.shaigem.rssb.fx.control.ItemInputDialog;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.item.Item;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
@@ -57,7 +56,7 @@ public final class ShopItemPresenter {
 
     public boolean openEditIndexDialog() {
         Item item = shopItemView.getPresenter().getItem();
-        ItemInputDialog dialog = new ItemInputDialog(item.getId() + "");
+        TextInputDialog dialog = new TextInputDialog(item.getId() + "");
         dialog.setTitle("Change Item");
         dialog.setHeaderText("Editing Item: " + item.getName());
         dialog.setContentText("Please enter the id of the item:");

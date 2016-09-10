@@ -9,12 +9,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.util.Pair;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.RemoveAllShopsEvent;
-import org.bitbucket.shaigem.rssb.fx.controlsfx.CustomPropertyEditorFactory;
 import org.bitbucket.shaigem.rssb.event.ShopCloseEvent;
+import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.model.ShopPropertiesManager;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
-import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.controlsfx.control.PropertySheet;
 import org.controlsfx.property.BeanPropertyUtils;
@@ -67,7 +66,6 @@ public class PropertiesPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         propertySheet.visibleProperty().bind(tabManager.currentShopProperty().isNotNull());
-        propertySheet.setPropertyEditorFactory(new CustomPropertyEditorFactory());
         tabManager.currentShopProperty().addListener(((observable, oldPresenterValue, newPresenterValue) -> {
             if (newPresenterValue != null) {
                 loadProperties(newPresenterValue);

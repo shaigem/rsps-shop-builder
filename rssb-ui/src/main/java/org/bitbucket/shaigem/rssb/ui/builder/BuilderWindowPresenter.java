@@ -224,6 +224,7 @@ public class BuilderWindowPresenter implements Initializable {
     private void setSearchField() {
         SearchView itemSearchView = new SearchView();
         SearchPresenter shopListSearchPresenter = (SearchPresenter) itemSearchView.getPresenter();
+        shopListSearchPresenter.setPromptText("Enter ID or name...");
         shopListSearchPresenter.textProperty().addListener(
                 ((observable, oldValue, newValue) -> itemListPresenter.setSearchPattern(newValue)));
         HBox.setHgrow(itemSearchPane, Priority.ALWAYS);

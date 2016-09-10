@@ -25,7 +25,11 @@ public class SearchPresenter implements Initializable {
 
     public void initialize(URL location, ResourceBundle resources) {
         searchIcon.getChildren().addAll(GlyphsDude.createIcon(FontAwesomeIcon.SEARCH));
-        searchField.setPromptText("Search...");
+        setPromptText("Search...");
+    }
+
+    public void setPromptText(String text) {
+        searchField.setPromptText(text);
     }
 
     public void resetSearch() {
