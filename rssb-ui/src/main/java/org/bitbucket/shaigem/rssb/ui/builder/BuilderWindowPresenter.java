@@ -13,8 +13,11 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.LoadShopsEvent;
+import org.bitbucket.shaigem.rssb.event.RemoveShopRequest;
+import org.bitbucket.shaigem.rssb.model.ActiveFormatManager;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
+import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
 import org.bitbucket.shaigem.rssb.plugin.ShopFormat;
 import org.bitbucket.shaigem.rssb.ui.builder.explorer.ShopExplorerView;
@@ -38,8 +41,6 @@ import java.util.ResourceBundle;
  */
 public class BuilderWindowPresenter implements Initializable {
 
-    private BaseShopFormatPlugin activeFormat;
-
     private ItemListPresenter itemListPresenter;
     private BooleanProperty defaultExpandedItemDisplay;
 
@@ -51,6 +52,9 @@ public class BuilderWindowPresenter implements Initializable {
 
     @Inject
     DefaultEventStudio eventStudio;
+
+    @Inject
+    ActiveFormatManager activeFormatManager;
 
     @FXML
     VBox rootPane;
@@ -64,6 +68,10 @@ public class BuilderWindowPresenter implements Initializable {
 
     @FXML
     StackPane explorerPane;
+    @FXML
+    Button createNewShopButton;
+    @FXML
+    Button deleteSelectedShopButton;
 
     @FXML
     BorderPane shopPane;
@@ -96,14 +104,27 @@ public class BuilderWindowPresenter implements Initializable {
     }
 
     public void onShow(BaseShopFormatPlugin requestedFormatPlugin) {
-        boolean needsChanging = activeFormat != requestedFormatPlugin;
+        boolean needsChanging = activeFormatManager.getFormatPlugin() != requestedFormatPlugin;
         if (needsChanging) {
-            activeFormat = requestedFormatPlugin;
+            activeFormatManager.setFormatPlugin(requestedFormatPlugin);
             updateStageTitle();
             eventStudio.broadcast(new ActiveFormatPluginChangedEvent(
                     requestedFormatPlugin));
         }
         removeBlurFromWindow();
+    }
+
+
+    @FXML
+    public void onNewShopAction() {
+        final Shop newShop = activeFormatManager.getFormat().getDefaultShop().copy();
+        repository.getMasterShopDefinitions().add(newShop);
+    }
+
+
+    @FXML
+    public void onRemoveSelectedShopAction() {
+        eventStudio.broadcast(new RemoveShopRequest());
     }
 
 
@@ -120,7 +141,7 @@ public class BuilderWindowPresenter implements Initializable {
 
     @FXML
     public void onOpenAction() {
-        final ShopFormat shopFormat = activeFormat.getFormat();
+        final ShopFormat shopFormat = activeFormatManager.getFormat();
 
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open Shops");
@@ -149,6 +170,7 @@ public class BuilderWindowPresenter implements Initializable {
 
 
     private void setShopExplorerArea() {
+        //TODO separate the buttons (createNewShopButton and deleteSelectedShopButton) to the shopexplorerfxml
         ShopExplorerView shopExplorerView = new ShopExplorerView();
         explorerPane.getChildren().add(shopExplorerView.getViewWithoutRootContainer());
 
@@ -192,7 +214,7 @@ public class BuilderWindowPresenter implements Initializable {
 
     private void updateStageTitle() {
         getStage().setTitle("Shop Builder [" +
-                activeFormat.getFormat().descriptor().getName() + "]");
+                activeFormatManager.getFormat().descriptor().getName() + "]");
     }
 
     private final BoxBlur boxBlur = new BoxBlur(5, 5, 2);
@@ -220,6 +242,4 @@ public class BuilderWindowPresenter implements Initializable {
     private Stage getStage() {
         return (Stage) rootPane.getScene().getWindow();
     }
-
-
 }

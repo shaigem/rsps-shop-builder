@@ -13,10 +13,10 @@ import javafx.stage.StageStyle;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.CreateNewShopTabRequest;
 import org.bitbucket.shaigem.rssb.event.LoadShopsEvent;
+import org.bitbucket.shaigem.rssb.event.ShopCloseEvent;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.ui.builder.BuilderWindowPresenter;
-import org.bitbucket.shaigem.rssb.event.ShopCloseEvent;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopView;
 import org.sejda.eventstudio.DefaultEventStudio;
@@ -88,6 +88,54 @@ public final class ShopTabManager {
         registerTabCloseEvent(tab, shopPresenter);
     }
 
+    /**
+     * Force close a open shop tab. This does not ask the user to save any changes!
+     *
+     * @param presenter the shop presenter to close
+     */
+    public void forceClose(ShopPresenter presenter) {
+        final Tab tab = presenter.getTab();
+        boolean removed = getTabPane().getTabs().remove(tab);
+        if (removed) {
+            onRemoval(presenter);
+        }
+    }
+
+
+    private void registerTabCloseEvent(Tab tab, ShopPresenter presenter) {
+        tab.setOnCloseRequest((e) -> handleOnTabClose(presenter));
+    }
+
+    /**
+     * Handles the closing of a tab when the user closes it manually.
+     *
+     * @param shopPresenter the shop presenter that is closing
+     */
+    private void handleOnTabClose(ShopPresenter shopPresenter) {
+        if (shopPresenter.hasBeenModified()) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initStyle(StageStyle.UTILITY);
+            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+            alert.setTitle("Unsaved Changes");
+            alert.setHeaderText("Save: " + shopPresenter.getShop());
+            alert.setContentText("You have some unsaved changes. Would you like to save them before closing?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent()) {
+                if (result.get() == ButtonType.YES) {
+                    shopPresenter.save();
+                }
+            }
+        }
+        onRemoval(shopPresenter);
+    }
+
+
+    private void onRemoval(ShopPresenter presenter) {
+        eventStudio.broadcast(new ShopCloseEvent(presenter));
+        presenter.cleanup();
+        openShops.remove(presenter);
+    }
+
     private void closeAll() {
         openShops.clear();
         getTabPane().getTabs().clear();
@@ -101,7 +149,6 @@ public final class ShopTabManager {
     private TabPane getTabPane() {
         return builderWindowPresenter.getShopTabPane();
     }
-
 
     public void setBuilderWindowPresenter(BuilderWindowPresenter presenter) {
         this.builderWindowPresenter = presenter;
@@ -123,29 +170,8 @@ public final class ShopTabManager {
         return openShops;
     }
 
-
-    private void registerTabCloseEvent(Tab tab, ShopPresenter presenter) {
-        tab.setOnCloseRequest((e) -> handleOnTabClose(presenter));
-    }
-
-    private void handleOnTabClose(ShopPresenter shopPresenter) {
-        if (shopPresenter.hasBeenModified()) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.initStyle(StageStyle.UTILITY);
-            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-            alert.setTitle("Unsaved Changes");
-            alert.setHeaderText("Save: " + shopPresenter.getShop());
-            alert.setContentText("You have some unsaved changes. Would you like to save them before closing?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent()) {
-                if (result.get() == ButtonType.YES) {
-                    shopPresenter.save();
-                }
-            }
-        }
-        eventStudio.broadcast(new ShopCloseEvent(shopPresenter));
-        shopPresenter.cleanup();
-        openShops.remove(shopPresenter);
+    public Optional<ShopPresenter> isOpen(Shop shop) {
+        return openShops.stream().filter((shopPresenter -> shopPresenter.getShop() == shop)).findFirst();
     }
 
 
@@ -155,11 +181,6 @@ public final class ShopTabManager {
         shopPresenter.setShop(shop);
         shopPresenter.setDisplayMode(builderWindowPresenter.byDefaultExpandItemDisplay() ?
                 ShopDisplayRadioButton.DisplayMode.EXPANDED : ShopDisplayRadioButton.DisplayMode.ICON);
-    }
-
-
-    private Optional<ShopPresenter> isOpen(Shop shop) {
-        return openShops.stream().filter((shopPresenter -> shopPresenter.getShop() == shop)).findFirst();
     }
 
 

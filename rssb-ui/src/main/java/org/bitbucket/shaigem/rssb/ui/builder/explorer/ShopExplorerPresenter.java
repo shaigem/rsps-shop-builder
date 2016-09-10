@@ -7,8 +7,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.CreateNewShopTabRequest;
+import org.bitbucket.shaigem.rssb.event.RemoveShopRequest;
 import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
+import org.bitbucket.shaigem.rssb.model.ShopTabManager;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
 import org.sejda.eventstudio.DefaultEventStudio;
@@ -26,13 +28,18 @@ public class ShopExplorerPresenter implements Initializable {
     @Inject
     ShopRepository repository;
 
+    @Inject
+    ShopTabManager shopTabManager;
+
     @FXML
     TableView<Shop> shopTableView;
+
 
     private final TableColumn<Shop, String> nameColumn = new TableColumn<>("Name");
 
     @Inject
     DefaultEventStudio eventStudio;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -47,6 +54,16 @@ public class ShopExplorerPresenter implements Initializable {
             }
         }));
         eventStudio.addAnnotatedListeners(this);
+    }
+
+    @EventListener
+    private void onRemoveShopRequest(RemoveShopRequest request) {
+        final Shop shopToRemove = shopTableView.getSelectionModel().getSelectedItem();
+        boolean removed = repository.getMasterShopDefinitions().remove(shopToRemove);
+        if (removed) {
+            shopTabManager.isOpen(shopToRemove).ifPresent(shopPresenter ->
+                    shopTabManager.forceClose(shopPresenter));
+        }
     }
 
 
@@ -64,6 +81,7 @@ public class ShopExplorerPresenter implements Initializable {
         setupCustomPluginColumns(event.getFormatPlugin());
     }
 
+
     private void refreshExplorer() {
         shopTableView.refresh();
         shopTableView.sort();
@@ -78,6 +96,4 @@ public class ShopExplorerPresenter implements Initializable {
     private void setupCustomPluginColumns(BaseShopFormatPlugin baseShopFormatPlugin) {
         baseShopFormatPlugin.getCustomTableColumns().forEach(tableColumn -> shopTableView.getColumns().add((TableColumn<Shop, ?>) tableColumn));
     }
-
-
 }

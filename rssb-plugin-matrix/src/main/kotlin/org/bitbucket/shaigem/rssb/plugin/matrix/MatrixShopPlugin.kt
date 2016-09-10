@@ -25,6 +25,13 @@ class MatrixUnpackedShopPlugin : BaseShopFormatPlugin() {
 
 class MatrixUnpackedShopFormat : ShopFormat<MatrixShop> {
 
+    override val defaultShop: MatrixShop = MatrixShop(
+            key = -1,
+            name = "New Shop",
+            itemArray = emptyList(),
+            currency = 995,
+            canSellTo = false)
+
     override fun descriptor(): ShopFormatDescriptor {
         return ShopFormatDescriptor(
                 name = "Matrix Unpacked",
@@ -74,6 +81,7 @@ class MatrixUnpackedShopFormat : ShopFormat<MatrixShop> {
 
 class MatrixShop(key: Int, name: String, itemArray: List<Item>, currency: Int,
                  canSellTo: Boolean) : Shop(name, itemArray, currency, canSellTo) {
+
     // Must import these:
     // import org.bitbucket.shaigem.rssb.plugin.getValue
     // import org.bitbucket.shaigem.rssb.plugin.setValue

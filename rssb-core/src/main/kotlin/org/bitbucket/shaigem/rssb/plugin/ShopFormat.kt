@@ -9,8 +9,12 @@ import java.util.*
  */
 interface ShopFormat<S : Shop> {
 
+    val defaultShop : S
+
     fun load(selectedFile: File): ArrayList<S>
 
     fun descriptor(): ShopFormatDescriptor
+
+
 
 }
