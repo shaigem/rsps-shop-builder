@@ -80,7 +80,7 @@ class MatrixUnpackedShopFormat : ShopFormat<MatrixShop> {
 }
 
 class MatrixShop(key: Int, name: String, itemArray: List<Item>, currency: Int,
-                 canSellTo: Boolean) : Shop(name, itemArray, currency, canSellTo) {
+                 canSellTo: Boolean) : Shop(name, itemArray, canSellTo) {
 
     // Must import these:
     // import org.bitbucket.shaigem.rssb.plugin.getValue
@@ -88,8 +88,11 @@ class MatrixShop(key: Int, name: String, itemArray: List<Item>, currency: Int,
     private val keyProperty = SimpleIntegerProperty(key)
     var key: Int by keyProperty
 
+    private val currencyProperty = SimpleIntegerProperty(currency)
+    var currency : Int by currencyProperty;
+
     override fun getCustomPropertiesToObserve(): Array<out Observable> {
-        return arrayOf(keyProperty)
+        return arrayOf(keyProperty, currencyProperty)
     }
 
     override fun copy(): Shop {
