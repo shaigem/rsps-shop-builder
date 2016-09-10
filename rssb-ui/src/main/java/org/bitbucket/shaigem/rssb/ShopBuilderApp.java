@@ -21,11 +21,6 @@ public class ShopBuilderApp extends Application {
         loadResources();
         DashboardView dashboardView = new DashboardView();
         Scene scene = new Scene(dashboardView.getView());
-       /* BuilderWindowView mainWindowView = new BuilderWindowView();
-        Scene scene = new Scene(mainWindowView.getView());
-        scene.getStylesheets().addAll
-                (this.getClass().getClassLoader().getResource("css/builder_style.css").toExternalForm());
-       */
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(713);
         primaryStage.setMinHeight(467);

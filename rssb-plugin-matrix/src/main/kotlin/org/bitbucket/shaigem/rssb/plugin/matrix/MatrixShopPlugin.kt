@@ -2,6 +2,8 @@ package org.bitbucket.shaigem.rssb.plugin.matrix
 
 import javafx.beans.Observable
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.collections.ObservableList
+import javafx.stage.FileChooser
 import net.xeoh.plugins.base.annotations.PluginImplementation
 import net.xeoh.plugins.base.annotations.meta.Author
 import org.bitbucket.shaigem.rssb.model.item.Item
@@ -25,6 +27,11 @@ class MatrixUnpackedShopPlugin : BaseShopFormatPlugin() {
 
 class MatrixUnpackedShopFormat : ShopFormat<MatrixShop> {
 
+    override val defaultFileName: String = "unpackedShops.txt"
+
+    override val extensions: List<FileChooser.ExtensionFilter>
+            = arrayListOf(ext("Text Files", "*.txt"))
+
     override val defaultShop: MatrixShop = MatrixShop(
             key = -1,
             name = "New Shop",
@@ -43,14 +50,14 @@ class MatrixUnpackedShopFormat : ShopFormat<MatrixShop> {
 
         fun parseShop(splitStringList: List<String>) {
             if (splitStringList.size != 3) {
-                throw ParseMatrixFormatException(splitStringList.toString())
+                throw ShopLoadException("Invalid line at: " + splitStringList.toString())
             }
 
             val splitShopPropertiesList: List<String> =
                     splitStringList[0].split(" ", limit = 3)
 
             if (splitShopPropertiesList.size != 3) {
-                throw ParseMatrixFormatException(splitStringList.toString())
+                throw ShopLoadException("Invalid line at: " + splitStringList.toString())
             }
 
             val key: Int = splitShopPropertiesList[0].toInt()
@@ -77,6 +84,20 @@ class MatrixUnpackedShopFormat : ShopFormat<MatrixShop> {
 
         return shops
     }
+
+    override fun export(selectedFile: File, shopsToExport: ObservableList<MatrixShop>) {
+        selectedFile.bufferedWriter().use { writer ->
+            writer.write("//shopId money generalstore - name - item quantity item quantity etc.")
+            writer.newLine()
+            shopsToExport.forEach { shop ->
+                // write the properties
+                writer.write("${shop.key} ${shop.currency} ${shop.canSellTo} - ${shop.name} - ")
+                // write the items
+                shop.items.forEach { item -> writer.write("${item.id} ${item.amount} ") }
+                writer.newLine()
+            }
+        }
+    }
 }
 
 class MatrixShop(key: Int, name: String, itemArray: List<Item>, currency: Int,
@@ -89,7 +110,7 @@ class MatrixShop(key: Int, name: String, itemArray: List<Item>, currency: Int,
     var key: Int by keyProperty
 
     private val currencyProperty = SimpleIntegerProperty(currency)
-    var currency : Int by currencyProperty;
+    var currency: Int by currencyProperty;
 
     override fun getCustomPropertiesToObserve(): Array<out Observable> {
         return arrayOf(keyProperty, currencyProperty)
@@ -103,6 +124,3 @@ class MatrixShop(key: Int, name: String, itemArray: List<Item>, currency: Int,
         return "[$key] $name"
     }
 }
-
-
-class ParseMatrixFormatException(line: String) : RuntimeException("Invalid list for shop line: $line")

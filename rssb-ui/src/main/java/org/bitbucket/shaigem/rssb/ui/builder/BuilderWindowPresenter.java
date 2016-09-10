@@ -10,12 +10,14 @@ import javafx.scene.effect.BoxBlur;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.RemoveAllShopsEvent;
 import org.bitbucket.shaigem.rssb.model.ActiveFormatManager;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
+import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
 import org.bitbucket.shaigem.rssb.plugin.ShopFormat;
 import org.bitbucket.shaigem.rssb.ui.builder.explorer.ShopExplorerView;
@@ -31,6 +33,7 @@ import org.sejda.eventstudio.DefaultEventStudio;
 import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -121,17 +124,17 @@ public class BuilderWindowPresenter implements Initializable {
 
     @FXML
     public void onOpenAction() {
-        final ShopFormat shopFormat = activeFormatManager.getFormat();
-
+        final ShopFormat<?> shopFormat = activeFormatManager.getFormat();
         FileChooser chooser = new FileChooser();
+        chooser.setInitialFileName(shopFormat.getDefaultFileName());
+        chooser.getExtensionFilters().addAll(shopFormat.getExtensions());
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*"));
         chooser.setTitle("Open Shops");
         //TODO save last directory and use it here
-
         Optional<File> chosenFile = Optional.ofNullable(chooser.showOpenDialog(getWindow()));
-
         chosenFile.ifPresent((file -> {
             try {
-                repository.populate(shopFormat.load(file));
+                repository.populate((Collection<Shop>) shopFormat.load(file));
                 // must send a RemoveAllShopsEvent!
                 // Population of the repository needs to close all open shops and perform other actions!
                 eventStudio.broadcast(new RemoveAllShopsEvent());
@@ -143,6 +146,48 @@ public class BuilderWindowPresenter implements Initializable {
             }
 
         }));
+    }
+
+    @FXML
+    public void onExportAction() {
+        final ShopFormat<Shop> shopFormat = activeFormatManager.getFormat();
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialFileName(shopFormat.getDefaultFileName());
+        //TODO save last directory and use it here
+        chooser.setTitle("Export All Shops to File");
+        tabManager.getOpenShops().forEach(presenter -> {
+            if (presenter.hasBeenModified()) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.initStyle(StageStyle.UTILITY);
+                alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                alert.setTitle("Unsaved Changes");
+                alert.setHeaderText("Save: " + presenter.getShop());
+                alert.setContentText("You have some unsaved changes. Would you like to save them before exporting?");
+                alert.getDialogPane().setPrefWidth(525);
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent()) {
+                    if (result.get() == ButtonType.YES) {
+                        presenter.save();
+                    }
+                }
+            }
+        });
+        Optional<File> chosenFile = Optional.ofNullable(chooser.showSaveDialog(getWindow()));
+        chosenFile.ifPresent(file -> {
+            try {
+                shopFormat.export(file, repository.getMasterShopDefinitions());
+                Alert alert = AlertDialogUtil.createInformationDialog(Alert.AlertType.INFORMATION, "",
+                        "All shops were exported to: " + file.getPath() + "");
+                alert.setHeaderText("All Shops Were Exported");
+                alert.setContentText("Exported to: " + file.getName() + " successfully!");
+                alert.show();
+            } catch (Throwable throwable) {
+                Alert exceptionAlert = AlertDialogUtil.createExceptionDialog(throwable);
+                exceptionAlert.setHeaderText("Exception Caught");
+                exceptionAlert.setContentText("Exception was caught while exporting shops.");
+                exceptionAlert.showAndWait();
+            }
+        });
     }
 
     @FXML
@@ -184,9 +229,7 @@ public class BuilderWindowPresenter implements Initializable {
                 ((observable, oldValue, newValue) -> itemListPresenter.setSearchPattern(newValue)));
         HBox.setHgrow(itemSearchPane, Priority.ALWAYS);
         itemSearchPane.getChildren().add(itemSearchView.getView());
-
     }
-
 
     private void listenForTabSelection() {
         shopTabPane.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) ->

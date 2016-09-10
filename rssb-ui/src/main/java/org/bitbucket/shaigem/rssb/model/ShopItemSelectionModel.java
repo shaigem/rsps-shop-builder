@@ -53,7 +53,7 @@ public final class ShopItemSelectionModel {
         return selectedShopItems.contains(shopItemView);
     }
 
-    private void clearSelection() {
+    public void clearSelection() {
         selectedShopItems.clear();
     }
 

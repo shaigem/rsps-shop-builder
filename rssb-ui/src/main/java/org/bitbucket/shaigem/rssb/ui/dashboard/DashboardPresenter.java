@@ -62,6 +62,8 @@ public class DashboardPresenter implements Initializable {
             BuilderWindowPresenter presenter = (BuilderWindowPresenter) view.getPresenter();
             Stage stage = new Stage();
             Scene scene = new Scene(view.getView());
+            scene.getStylesheets().addAll
+                    (this.getClass().getClassLoader().getResource("css/builder_style.css").toExternalForm());
             stage.setTitle("Shop Builder");
             stage.setScene(scene);
             stage.setResizable(true);
