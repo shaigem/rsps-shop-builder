@@ -190,12 +190,20 @@ public class ShopPresenter implements Initializable {
      *
      * @param item the {@link Item} to add
      */
-    public void addItem(Item item) {
+    public void addItem(Item item, boolean fromDrop) {
         ShopItemView shopItemView = new ShopItemView();
         shopItemView.getPresenter().setShopPresenter(this);
         shopItemView.getPresenter().setItem(item);
-        getSelectionModel().setSelected(shopItemView);
+        if (fromDrop) {
+            getSelectionModel().addToSelection(shopItemView, true);
+        } else {
+            getSelectionModel().setSelected(shopItemView);
+        }
         shopItemPane.getChildren().add(shopItemView);
+    }
+
+    public void addItem(Item item) {
+        addItem(item, false);
     }
 
     public void addItems(List<Item> itemCollection) {
@@ -483,7 +491,16 @@ public class ShopPresenter implements Initializable {
             boolean success = false;
             if (db.hasString()) {
                 List<Item> dragList = dragItemManager.getItems();
-                dragList.forEach((item -> addItem(new Item(item.getId(), item.getAmount()))));
+                final boolean multipleItems = dragList.size() > 1;
+                if (multipleItems) {
+                    if (getSelectionModel().hasAnySelection()) {
+                        // clears any selection if we are adding multiple items
+                        // Reason is so we can select just the items that are being dragged
+                        getSelectionModel().clearSelection();
+                    }
+                }
+                // if we are adding multiple items, select all of those items ONLY
+                dragList.forEach((item -> addItem(new Item(item.getId(), item.getAmount()), multipleItems)));
                 success = true;
 
             }
