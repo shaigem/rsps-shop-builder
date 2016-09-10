@@ -13,20 +13,18 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.LoadShopsEvent;
-import org.bitbucket.shaigem.rssb.event.RemoveShopRequest;
 import org.bitbucket.shaigem.rssb.model.ActiveFormatManager;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
-import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
 import org.bitbucket.shaigem.rssb.plugin.ShopFormat;
 import org.bitbucket.shaigem.rssb.ui.builder.explorer.ShopExplorerView;
 import org.bitbucket.shaigem.rssb.ui.builder.itemlist.ItemListPresenter;
 import org.bitbucket.shaigem.rssb.ui.builder.itemlist.ItemListView;
 import org.bitbucket.shaigem.rssb.ui.builder.properties.PropertiesView;
+import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.ui.search.SearchPresenter;
 import org.bitbucket.shaigem.rssb.ui.search.SearchView;
-import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.util.AlertDialogUtil;
 import org.sejda.eventstudio.DefaultEventStudio;
 
@@ -58,6 +56,8 @@ public class BuilderWindowPresenter implements Initializable {
 
     @FXML
     VBox rootPane;
+    @FXML
+    SplitPane leftSplitPane;
 
     @FXML
     ToolBar itemToolBar;
@@ -65,13 +65,6 @@ public class BuilderWindowPresenter implements Initializable {
     StackPane itemPane;
     @FXML
     StackPane itemSearchPane;
-
-    @FXML
-    StackPane explorerPane;
-    @FXML
-    Button createNewShopButton;
-    @FXML
-    Button deleteSelectedShopButton;
 
     @FXML
     BorderPane shopPane;
@@ -93,8 +86,8 @@ public class BuilderWindowPresenter implements Initializable {
         tabManager.setBuilderWindowPresenter(this);
         defaultExpandedItemDisplay = new SimpleBooleanProperty();
         defaultExpandedItemDisplay.bind(expandedItemDisplayRadioItem.selectedProperty());
+        setupLeftSplitPaneItems();
         setShopArea();
-        setShopExplorerArea();
         setItemListArea();
         setPropertiesArea();
         setSearchField();
@@ -112,19 +105,6 @@ public class BuilderWindowPresenter implements Initializable {
                     requestedFormatPlugin));
         }
         removeBlurFromWindow();
-    }
-
-
-    @FXML
-    public void onNewShopAction() {
-        final Shop newShop = activeFormatManager.getFormat().getDefaultShop().copy();
-        repository.getMasterShopDefinitions().add(newShop);
-    }
-
-
-    @FXML
-    public void onRemoveSelectedShopAction() {
-        eventStudio.broadcast(new RemoveShopRequest());
     }
 
 
@@ -169,11 +149,13 @@ public class BuilderWindowPresenter implements Initializable {
     }
 
 
-    private void setShopExplorerArea() {
-        //TODO separate the buttons (createNewShopButton and deleteSelectedShopButton) to the shopexplorerfxml
-        ShopExplorerView shopExplorerView = new ShopExplorerView();
-        explorerPane.getChildren().add(shopExplorerView.getViewWithoutRootContainer());
+    private void setupLeftSplitPaneItems() {
+        setShopExplorerArea();
+    }
 
+    private void setShopExplorerArea() {
+        ShopExplorerView shopExplorerView = new ShopExplorerView();
+        leftSplitPane.getItems().add(shopExplorerView.getView());
     }
 
     private void setItemListArea() {

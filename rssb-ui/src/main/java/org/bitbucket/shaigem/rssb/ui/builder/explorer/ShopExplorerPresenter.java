@@ -2,6 +2,7 @@ package org.bitbucket.shaigem.rssb.ui.builder.explorer;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
@@ -9,6 +10,7 @@ import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.CreateNewShopTabRequest;
 import org.bitbucket.shaigem.rssb.event.RemoveShopRequest;
 import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
+import org.bitbucket.shaigem.rssb.model.ActiveFormatManager;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
@@ -27,19 +29,21 @@ public class ShopExplorerPresenter implements Initializable {
 
     @Inject
     ShopRepository repository;
-
     @Inject
     ShopTabManager shopTabManager;
+    @Inject
+    DefaultEventStudio eventStudio;
+    @Inject
+    ActiveFormatManager activeFormatManager;
 
     @FXML
     TableView<Shop> shopTableView;
-
+    @FXML
+    Button createNewShopButton;
+    @FXML
+    Button deleteSelectedShopButton;
 
     private final TableColumn<Shop, String> nameColumn = new TableColumn<>("Name");
-
-    @Inject
-    DefaultEventStudio eventStudio;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -80,6 +84,18 @@ public class ShopExplorerPresenter implements Initializable {
         shopTableView.getColumns().add(nameColumn);
         setupCustomPluginColumns(event.getFormatPlugin());
     }
+
+    @FXML
+    public void onNewShopAction() {
+        final Shop newShop = activeFormatManager.getFormat().getDefaultShop().copy();
+        repository.getMasterShopDefinitions().add(newShop);
+    }
+
+    @FXML
+    public void onRemoveSelectedShopAction() {
+        eventStudio.broadcast(new RemoveShopRequest());
+    }
+
 
 
     private void refreshExplorer() {
