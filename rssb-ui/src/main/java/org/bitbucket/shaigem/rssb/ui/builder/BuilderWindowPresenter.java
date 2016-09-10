@@ -110,7 +110,6 @@ public class BuilderWindowPresenter implements Initializable {
         removeBlurFromWindow();
     }
 
-
     @FXML
     public void onSwitchFormatAction() {
         Stage builderStage = getStage();

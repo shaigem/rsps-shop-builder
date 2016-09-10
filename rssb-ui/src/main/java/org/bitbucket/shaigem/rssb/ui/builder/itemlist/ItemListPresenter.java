@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import org.bitbucket.shaigem.rssb.model.DragItemManager;
@@ -94,6 +95,10 @@ public class ItemListPresenter implements Initializable {
 
     private void registerOnDragDetected() {
         itemListView.setOnDragDetected((t) -> {
+            if (!t.getButton().equals(MouseButton.PRIMARY)) {
+                t.consume();
+                return;
+            }
             ObservableList<Item> selectedItemsList = itemListView.getSelectionModel().getSelectedItems();
             if (selectedItemsList != null) {
                 Dragboard db = itemListView.startDragAndDrop(TransferMode.ANY);
