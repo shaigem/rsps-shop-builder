@@ -18,7 +18,6 @@ public abstract class Shop {
 
     private final StringProperty name;
     private final ObservableList<Item> items;
-    private final IntegerProperty currency;
 
     /**
      * Holds a boolean that determines if items can be sold to this shop or not.
@@ -26,19 +25,17 @@ public abstract class Shop {
      */
     private BooleanProperty canSellTo;
 
-    public Shop(String name, Item[] items, int currency, boolean canSellTo) {
+    public Shop(String name, Item[] items, boolean canSellTo) {
         this.name = new SimpleStringProperty(name);
         this.items = Objects.isNull(items) ? FXCollections.observableArrayList() :
                 FXCollections.observableArrayList(items);
-        this.currency = new SimpleIntegerProperty(currency);
         this.canSellTo = new SimpleBooleanProperty(canSellTo);
     }
 
-    public Shop(String name, List<Item> items, int currency, boolean canSellTo) {
+    public Shop(String name, List<Item> items, boolean canSellTo) {
         this.name = new SimpleStringProperty(name);
         this.items = Objects.isNull(items) ? FXCollections.observableArrayList() :
                 FXCollections.observableArrayList(items);
-        this.currency = new SimpleIntegerProperty(currency);
         this.canSellTo = new SimpleBooleanProperty(canSellTo);
     }
 
@@ -68,14 +65,6 @@ public abstract class Shop {
         this.canSellTo.set(canSellTo);
     }
 
-    public void setCurrency(int currency) {
-        this.currency.set(currency);
-    }
-
-    public int getCurrency() {
-        return currency.get();
-    }
-
     public String getName() {
         return Objects.isNull(name.get()) ? "NO-NAME" : name.get();
     }
@@ -96,17 +85,13 @@ public abstract class Shop {
         return name;
     }
 
-    private IntegerProperty currencyProperty() {
-        return currency;
-    }
-
     /**
      * Default properties to be observed.
      *
      * @return <code>Observable</code> array of shop properties
      */
     private Observable[] getDefaultPropertiesToObserve() {
-        return new javafx.beans.Observable[]{currencyProperty(), canSellToProperty()};
+        return new javafx.beans.Observable[]{canSellToProperty()};
     }
 
     /**
