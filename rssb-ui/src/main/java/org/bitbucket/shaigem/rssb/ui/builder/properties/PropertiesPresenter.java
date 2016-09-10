@@ -8,7 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Pair;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
-import org.bitbucket.shaigem.rssb.event.LoadShopsEvent;
+import org.bitbucket.shaigem.rssb.event.RemoveAllShopsEvent;
 import org.bitbucket.shaigem.rssb.fx.controlsfx.CustomPropertyEditorFactory;
 import org.bitbucket.shaigem.rssb.event.ShopCloseEvent;
 import org.bitbucket.shaigem.rssb.model.ShopPropertiesManager;
@@ -90,7 +90,7 @@ public class PropertiesPresenter implements Initializable {
     }
 
     @EventListener
-    private void onLoadShops(LoadShopsEvent event) {
+    private void onRemoveAllShops(RemoveAllShopsEvent event) {
         propertiesManager.clear();
     }
 

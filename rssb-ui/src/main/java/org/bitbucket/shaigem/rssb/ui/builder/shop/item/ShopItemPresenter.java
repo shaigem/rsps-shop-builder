@@ -260,7 +260,7 @@ public final class ShopItemPresenter {
     }
 
     private void onCopyAction() {
-        shopItemView.getCopyMenuItem().setOnAction((event -> shopPresenter.copyItem(shopItemView)));
+        shopItemView.getDuplicateMenuItem().setOnAction((event -> shopPresenter.copyItem(shopItemView)));
     }
 
     private void onChangeAmountMenuAction() {

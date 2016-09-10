@@ -28,6 +28,10 @@ public class SearchPresenter implements Initializable {
         searchField.setPromptText("Search...");
     }
 
+    public void resetSearch() {
+        searchField.setText("");
+    }
+
     public StringProperty textProperty() {
         return searchField.textProperty();
     }

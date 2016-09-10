@@ -521,7 +521,7 @@ public class ShopPresenter implements Initializable {
 
     private void listenForModifiedPropertyChange() {
         modifiedProperty.addListener(((observable, oldValue, newValue) ->
-                tab.setText(newValue ? shop.getName() + "(*)" : shop.getName())));
+                tab.setText(newValue ? shop.toString() + "(*)" : shop.toString())));
     }
 
     public void markAsModified() {

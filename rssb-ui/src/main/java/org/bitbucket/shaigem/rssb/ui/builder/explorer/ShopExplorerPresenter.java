@@ -1,25 +1,30 @@
 package org.bitbucket.shaigem.rssb.ui.builder.explorer;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.StackPane;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.CreateNewShopTabRequest;
-import org.bitbucket.shaigem.rssb.event.RemoveShopRequest;
+import org.bitbucket.shaigem.rssb.event.RemoveAllShopsEvent;
 import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.model.ActiveFormatManager;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
+import org.bitbucket.shaigem.rssb.ui.search.SearchPresenter;
+import org.bitbucket.shaigem.rssb.ui.search.SearchView;
 import org.sejda.eventstudio.DefaultEventStudio;
 import org.sejda.eventstudio.annotation.EventListener;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -37,39 +42,125 @@ public class ShopExplorerPresenter implements Initializable {
     ActiveFormatManager activeFormatManager;
 
     @FXML
+    StackPane searchPane;
+
+    @FXML
     TableView<Shop> shopTableView;
     @FXML
     Button createNewShopButton;
     @FXML
-    Button deleteSelectedShopButton;
+    SplitMenuButton deleteSelectedShopButton;
+    @FXML
+    MenuItem copyMenuItem;
 
+    private SearchPresenter searchPresenter;
+    private String searchPattern;
+
+
+    private FilteredList<Shop> filteredList;
     private final TableColumn<Shop, String> nameColumn = new TableColumn<>("Name");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        shopTableView.setItems(repository.getMasterShopDefinitions());
+        filteredList = new FilteredList<>(repository.getMasterShopDefinitions(), l -> true);
+        shopTableView.setItems(filteredList);
+        setSearchField();
         setupNameColumn();
+        onTableMousePressed();
+        disableControlsUnlessHasSelection();
+        eventStudio.addAnnotatedListeners(this);
+    }
+
+    @FXML
+    public void onCopyAction() {
+        final Optional<Shop> shopToCopy =
+                Optional.ofNullable(shopTableView.getSelectionModel().getSelectedItem());
+        shopToCopy.ifPresent(shop -> {
+            final Shop copiedShop = shop.copy();
+            copiedShop.setName(shop.getName() + "(c)");
+            repository.getMasterShopDefinitions().add(copiedShop);
+            shopTableView.getSelectionModel().selectLast();
+            shopTableView.scrollTo(shopTableView.getSelectionModel().getSelectedIndex());
+            searchPresenter.resetSearch();
+        });
+    }
+
+    @FXML
+    public void onNewShopAction() {
+        final Shop newShop = activeFormatManager.getFormat().getDefaultShop().copy();
+        repository.getMasterShopDefinitions().add(newShop);
+        eventStudio.broadcast(new CreateNewShopTabRequest(newShop));
+        shopTableView.getSelectionModel().selectLast();
+        shopTableView.scrollTo(shopTableView.getSelectionModel().getSelectedIndex());
+        searchPresenter.resetSearch();
+    }
+
+    @FXML
+    public void onRemoveAllShopsAction() {
+        repository.getMasterShopDefinitions().clear();
+        searchPresenter.resetSearch();
+        eventStudio.broadcast(new RemoveAllShopsEvent());
+    }
+
+    @FXML
+    public void onRemoveSelectedShopAction() {
+        final Optional<Shop> shopToRemove =
+                Optional.ofNullable(shopTableView.getSelectionModel().getSelectedItem());
+        shopToRemove.ifPresent(shop -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.getButtonTypes().setAll(ButtonType.NO, ButtonType.YES);
+            alert.setHeaderText("Delete: " + shop);
+            alert.setContentText("Are you sure you would like to delete this shop? You cannot undo this action.");
+            alert.getDialogPane().setPrefWidth(500);
+            alert.showAndWait().ifPresent(buttonType -> {
+                if (buttonType.equals(ButtonType.YES)) {
+                    boolean removed = repository.getMasterShopDefinitions().remove(shop);
+                    shopTableView.scrollTo(shopTableView.getSelectionModel().getSelectedIndex());
+                    if (removed) {
+                        shopTabManager.isOpen(shop).ifPresent(shopPresenter ->
+                                shopTabManager.forceClose(shopPresenter));
+                    }
+                }
+            });
+        });
+    }
+
+    private void onTableMousePressed() {
         shopTableView.setOnMousePressed((event -> {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
                 if (event.getClickCount() == 2) {
                     final Shop selectedShop = shopTableView.getSelectionModel().getSelectedItem();
+                    // same as shopTabManager.createNewTab(selectedShop);
                     eventStudio.broadcast(new CreateNewShopTabRequest(selectedShop));
                 }
             }
         }));
-        eventStudio.addAnnotatedListeners(this);
+    }
+
+    private void setSearchField() {
+        SearchView searchView = new SearchView();
+        SearchPresenter searchPresenter = (SearchPresenter) searchView.getPresenter();
+        searchPresenter.textProperty().addListener(
+                ((observable, oldValue, newValue) -> setSearchPattern(newValue)));
+        this.searchPresenter = searchPresenter;
+        searchPane.getChildren().add(searchView.getView());
+    }
+
+
+    private void setSearchPattern(String pattern) {
+        this.searchPattern = pattern;
+        searchPatternChange();
+    }
+
+    private void searchPatternChange() {
+        filteredList.setPredicate(item ->
+                searchPattern == null || searchPattern.isEmpty() || searchPattern.length() < 3 || item.getName().toLowerCase().contains(searchPattern.toLowerCase()));
     }
 
     @EventListener
-    private void onRemoveShopRequest(RemoveShopRequest request) {
-        final Shop shopToRemove = shopTableView.getSelectionModel().getSelectedItem();
-        boolean removed = repository.getMasterShopDefinitions().remove(shopToRemove);
-        if (removed) {
-            shopTabManager.isOpen(shopToRemove).ifPresent(shopPresenter ->
-                    shopTabManager.forceClose(shopPresenter));
-        }
+    private void onRemoveAllShops(RemoveAllShopsEvent event) {
+        searchPresenter.resetSearch();
     }
-
 
     @EventListener
     private void onSaveShop(ShopSaveEvent saveShopEvent) {
@@ -85,23 +176,20 @@ public class ShopExplorerPresenter implements Initializable {
         setupCustomPluginColumns(event.getFormatPlugin());
     }
 
-    @FXML
-    public void onNewShopAction() {
-        final Shop newShop = activeFormatManager.getFormat().getDefaultShop().copy();
-        repository.getMasterShopDefinitions().add(newShop);
+    /**
+     * Certain controls (copy, delete, etc.) are disabled unless there are any
+     * items/indices selected in the shop table view.
+     */
+    private void disableControlsUnlessHasSelection() {
+        final BooleanBinding emptyBinding =
+                Bindings.isEmpty(shopTableView.getSelectionModel().getSelectedIndices());
+        deleteSelectedShopButton.disableProperty().bind(emptyBinding);
+        copyMenuItem.disableProperty().bind(emptyBinding);
     }
-
-    @FXML
-    public void onRemoveSelectedShopAction() {
-        eventStudio.broadcast(new RemoveShopRequest());
-    }
-
-
 
     private void refreshExplorer() {
         shopTableView.refresh();
         shopTableView.sort();
-        //TODO scroll to the shop that is currently open
     }
 
     private void setupNameColumn() {

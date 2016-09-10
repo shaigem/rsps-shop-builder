@@ -95,6 +95,10 @@ class MatrixShop(key: Int, name: String, itemArray: List<Item>, currency: Int,
     override fun copy(): Shop {
         return MatrixShop(key, name, items, currency, canSellTo)
     }
+
+    override fun toString(): String {
+        return "[$key] $name"
+    }
 }
 
 

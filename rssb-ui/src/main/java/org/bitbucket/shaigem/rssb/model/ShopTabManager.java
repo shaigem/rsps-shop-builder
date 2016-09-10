@@ -1,5 +1,6 @@
 package org.bitbucket.shaigem.rssb.model;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -12,7 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.StageStyle;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.CreateNewShopTabRequest;
-import org.bitbucket.shaigem.rssb.event.LoadShopsEvent;
+import org.bitbucket.shaigem.rssb.event.RemoveAllShopsEvent;
 import org.bitbucket.shaigem.rssb.event.ShopCloseEvent;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
@@ -58,7 +59,7 @@ public final class ShopTabManager {
     }
 
     @EventListener
-    private void onLoadShops(LoadShopsEvent event) {
+    private void onRemoveAllShops(RemoveAllShopsEvent event) {
         closeAll();
     }
 
@@ -67,8 +68,7 @@ public final class ShopTabManager {
         createNewTab(request.getShop());
     }
 
-
-    public void createNewTab(Shop shop) {
+    private void createNewTab(Shop shop) {
         Optional<ShopPresenter> openTab = isOpen(shop);
         if (openTab.isPresent()) {
             Tab tab = openTab.get().getTab();
@@ -77,7 +77,7 @@ public final class ShopTabManager {
         }
         ShopView shopView = new ShopView();
         ShopPresenter shopPresenter = (ShopPresenter) shopView.getPresenter();
-        Tab tab = new Tab(shop.getName());
+        Tab tab = new Tab(shop.toString());
         StackPane stackPane = new StackPane();
         initializeShop(shopPresenter, tab, shop);
         stackPane.getChildren().add(shopView.getView());
@@ -94,11 +94,13 @@ public final class ShopTabManager {
      * @param presenter the shop presenter to close
      */
     public void forceClose(ShopPresenter presenter) {
-        final Tab tab = presenter.getTab();
-        boolean removed = getTabPane().getTabs().remove(tab);
-        if (removed) {
-            onRemoval(presenter);
-        }
+        Platform.runLater(() -> {
+            final Tab tab = presenter.getTab();
+            boolean removed = getTabPane().getTabs().remove(tab);
+            if (removed) {
+                onRemoval(presenter);
+            }
+        });
     }
 
 

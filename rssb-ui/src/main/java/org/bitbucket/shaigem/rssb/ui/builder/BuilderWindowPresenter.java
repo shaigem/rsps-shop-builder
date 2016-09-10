@@ -12,7 +12,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
-import org.bitbucket.shaigem.rssb.event.LoadShopsEvent;
+import org.bitbucket.shaigem.rssb.event.RemoveAllShopsEvent;
 import org.bitbucket.shaigem.rssb.model.ActiveFormatManager;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
@@ -132,11 +132,13 @@ public class BuilderWindowPresenter implements Initializable {
         chosenFile.ifPresent((file -> {
             try {
                 repository.populate(shopFormat.load(file));
-                eventStudio.broadcast(new LoadShopsEvent());
+                // must send a RemoveAllShopsEvent!
+                // Population of the repository needs to close all open shops and perform other actions!
+                eventStudio.broadcast(new RemoveAllShopsEvent());
             } catch (Throwable throwable) {
                 Alert exceptionAlert = AlertDialogUtil.createExceptionDialog(throwable);
-                exceptionAlert.setHeaderText("Error");
-                exceptionAlert.setContentText("An exception was caught while trying to load the shops!");
+                exceptionAlert.setHeaderText("Exception Caught");
+                exceptionAlert.setContentText("Exception was caught while loading shops.");
                 exceptionAlert.showAndWait();
             }
 

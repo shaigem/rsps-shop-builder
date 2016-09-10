@@ -45,12 +45,12 @@ public class ShopItemView extends Region {
     private final ImageView backgroundImageView = new ImageView();
     private final ImageView itemImageView = new ImageView();
     private final Tooltip tooltip = new Tooltip();
-    private final MenuItem copyMenuItem = new MenuItem("Copy");
+    private final MenuItem duplicateMenuItem = new MenuItem("Duplicate");
     private final MenuItem changeAmount = new MenuItem("Change Amount for Selected Items");
     private final MenuItem deleteMenuItem = new MenuItem("Delete Selected");
 
     private final ContextMenu contextMenu = new ContextMenu(changeAmount,
-            deleteMenuItem, copyMenuItem);
+            deleteMenuItem, duplicateMenuItem);
 
     private ShopDisplayRadioButton.DisplayMode displayMode;
 
@@ -108,8 +108,8 @@ public class ShopItemView extends Region {
         return changeAmount;
     }
 
-    public MenuItem getCopyMenuItem() {
-        return copyMenuItem;
+    public MenuItem getDuplicateMenuItem() {
+        return duplicateMenuItem;
     }
 
     public MenuItem getDeleteMenuItem() {
