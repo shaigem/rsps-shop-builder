@@ -200,7 +200,7 @@ public final class ShopItemPresenter {
                 TilePane parent = shopPresenter.getShopItemPane();
                 Integer index = parent.getChildren().indexOf(shopItemView);
                 content.put(SERIALIZED_DATA_FORMAT, index);
-                snapshotParameters.setFill(Color.TRANSPARENT);
+                snapshotParameters.setFill(new Color(0, 0, 0, 0.5)); // fix transparency for linux
                 db.setDragView(shopItemView.snapshot(snapshotParameters, null));
                 db.setContent(content);
             }
