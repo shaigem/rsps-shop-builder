@@ -1,8 +1,11 @@
 package org.bitbucket.shaigem.rssb.ui.builder.explorer;
 
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -55,19 +58,18 @@ public class ShopExplorerPresenter implements Initializable {
 
     private SearchPresenter searchPresenter;
     private String searchPattern;
-
-
     private FilteredList<Shop> filteredList;
     private final TableColumn<Shop, String> nameColumn = new TableColumn<>("Name");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        filteredList = new FilteredList<>(repository.getMasterShopDefinitions(), l -> true);
-        shopTableView.setItems(filteredList);
+        setupTableItems();
+        shopTableView.setPlaceholder(new Label("No shops loaded"));
         setSearchField();
         setupNameColumn();
         onTableMousePressed();
         disableControlsUnlessHasSelection();
+        createNewShopButton.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.PLUS));
         eventStudio.addAnnotatedListeners(this);
     }
 
@@ -79,6 +81,7 @@ public class ShopExplorerPresenter implements Initializable {
             final Shop copiedShop = shop.copy();
             copiedShop.setName(shop.getName() + "(c)");
             repository.getMasterShopDefinitions().add(copiedShop);
+            eventStudio.broadcast(new CreateNewShopTabRequest(copiedShop));
             shopTableView.getSelectionModel().selectLast();
             shopTableView.scrollTo(shopTableView.getSelectionModel().getSelectedIndex());
             searchPresenter.resetSearch();
@@ -123,6 +126,15 @@ public class ShopExplorerPresenter implements Initializable {
                 }
             });
         });
+    }
+
+    private void setupTableItems() {
+        // filtered list is read-only and so if we want column sorting to work with filtering,
+        // we would have to wrap it into a sorted list
+        filteredList = new FilteredList<>(repository.getMasterShopDefinitions(), l -> true);
+        SortedList<Shop> sortedList = new SortedList<>(filteredList);
+        shopTableView.setItems(sortedList);
+        sortedList.comparatorProperty().bind(shopTableView.comparatorProperty());
     }
 
     private void onTableMousePressed() {
