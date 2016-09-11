@@ -235,7 +235,15 @@ public final class ShopItemPresenter {
                 success = true;
             } else if (db.hasString()) { //items dragged from the item list on top of a shop item
                 List<Item> dragList = shopPresenter.getDragItemManager().getItems();
-                dragList.forEach((item -> shopPresenter.addItem(item)));
+                final boolean multipleItems = dragList.size() > 1;
+                if (multipleItems) {
+                    if (shopPresenter.getSelectionModel().hasAnySelection()) {
+                        // clears any selection if we are adding multiple items
+                        // Reason is so we can select just the items that are being dragged
+                        shopPresenter.getSelectionModel().clearSelection();
+                    }
+                }
+                dragList.forEach((item -> shopPresenter.addItem(item, multipleItems)));
                 shopPresenter.getDragItemManager().onDropComplete();
                 success = true;
             }
