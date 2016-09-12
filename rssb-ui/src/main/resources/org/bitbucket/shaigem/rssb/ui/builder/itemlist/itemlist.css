@@ -1,0 +1,44 @@
+.item-list-root {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+.item-list {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+    -fx-background-insets: 0.0, 0.0 1.0 1.0 0.0;
+    -fx-background-radius: 0.0, 0.0;
+    -fx-border-color: transparent;
+}
+
+/*
+* ListView Scroll Bar
+*/
+.item-list .scroll-bar:vertical .increment-button,
+.item-list .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 2px;
+
+}
+
+.item-list .scroll-bar:horizontal .thumb,
+.item-list .scroll-bar:vertical .thumb {
+    -fx-background-color: #DEDEDE;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+
+.item-list .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.item-list-tool-bar {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 6.0, 0.0, 0.0, 3.0);
+}
+
+/*
+* Search Field
+*/
+.search-field {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 2.0, 0.0, 0.0, 2.0);
+}

@@ -23,20 +23,20 @@ public abstract class Shop {
      * Holds a boolean that determines if items can be sold to this shop or not.
      * Mostly used for general stores.
      */
-    private BooleanProperty canSellTo;
+    private BooleanProperty generalStore;
 
-    public Shop(String name, Item[] items, boolean canSellTo) {
+    public Shop(String name, Item[] items, boolean generalStore) {
         this.name = new SimpleStringProperty(name);
         this.items = Objects.isNull(items) ? FXCollections.observableArrayList() :
                 FXCollections.observableArrayList(items);
-        this.canSellTo = new SimpleBooleanProperty(canSellTo);
+        this.generalStore = new SimpleBooleanProperty(generalStore);
     }
 
-    public Shop(String name, List<Item> items, boolean canSellTo) {
+    public Shop(String name, List<Item> items, boolean generalStore) {
         this.name = new SimpleStringProperty(name);
         this.items = Objects.isNull(items) ? FXCollections.observableArrayList() :
                 FXCollections.observableArrayList(items);
-        this.canSellTo = new SimpleBooleanProperty(canSellTo);
+        this.generalStore = new SimpleBooleanProperty(generalStore);
     }
 
     public abstract Shop copy();
@@ -61,8 +61,8 @@ public abstract class Shop {
         this.name.set(name);
     }
 
-    public void setCanSellTo(boolean canSellTo) {
-        this.canSellTo.set(canSellTo);
+    public void setGeneralStore(boolean generalStore) {
+        this.generalStore.set(generalStore);
     }
 
     public String getName() {
@@ -73,12 +73,12 @@ public abstract class Shop {
         return items;
     }
 
-    public boolean getCanSellTo() {
-        return canSellTo.get();
+    public boolean getGeneralStore() {
+        return generalStore.get();
     }
 
-    public BooleanProperty canSellToProperty() {
-        return canSellTo;
+    public BooleanProperty generalStoreProperty() {
+        return generalStore;
     }
 
     public StringProperty nameProperty() {
@@ -91,7 +91,7 @@ public abstract class Shop {
      * @return <code>Observable</code> array of shop properties
      */
     private Observable[] getDefaultPropertiesToObserve() {
-        return new javafx.beans.Observable[]{canSellToProperty()};
+        return new javafx.beans.Observable[]{generalStoreProperty()};
     }
 
     /**

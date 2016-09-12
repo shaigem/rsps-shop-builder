@@ -1,17 +1,11 @@
-#shop-pane {
-    -fx-background-color: black;
+.shop-root {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 40.0, 0.0, 0.0, 0.0);
+
 }
 
-.tooltip {
-    -fx-background-radius: 20px 20px 20px 20px;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-weight: bolder;
-    -fx-border-radius: 22;
-    -fx-font-size: 11;
-    -fx-pref-height: 30;
-}
-
-/* Shop scroll pane */
+/**
+ * Scroll Pane
+ */
 .shop-scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
@@ -20,6 +14,9 @@
     -fx-background-color: transparent;
 }
 
+/**
+ * Scroll bar
+ */
 .shop-scroll-pane .scroll-bar:horizontal .thumb,
 .shop-scroll-pane .scroll-bar:vertical .thumb {
     -fx-background-color: transparent;
@@ -47,18 +44,11 @@
     -fx-background-color: transparent;
 }
 
-/* Shop textfield designs */
-#amt-textfield, #name-textfield {
-    -fx-background-color: #ff991f, #2f2d2f;
-    -fx-font-weight: bold;
-    -fx-text-fill: #ff991f;
-    -fx-alignment: center;
-    -fx-padding: 1;
-    -fx-accent: #da6b0f;
-}
-
+/*
+* Shop item selection
+*/
 .shop-item-selected {
-    -fx-border-color: #ffd200; /*ff9900*/
+    -fx-border-color: #ffd100; /*ff9900*/
     -fx-border-insets: -1.5, -1.5, -1.5, -1.5;
     -fx-border-width: 1.5;
     -fx-border-style: solid;
@@ -71,10 +61,14 @@
     -fx-border-style: solid;
 }
 
-.poop {
-    -fx-background-color: cornsilk;
-    -fx-padding: 10;
-    -fx-border-color: black;
-    -fx-border-width: 5;
-    -fx-font-size: 16;
+/*
+* Text Fields
+*/
+.name-text-field {
+    -fx-background-color: #ff991f, #2f2d2f;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff991f;
+    -fx-alignment: center;
+    -fx-padding: 1;
+    -fx-accent: #da6b0f;
 }

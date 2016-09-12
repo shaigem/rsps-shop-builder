@@ -1,13 +1,13 @@
 package org.bitbucket.shaigem.rssb.ui.builder;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -21,12 +21,9 @@ import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.plugin.BaseShopFormatPlugin;
 import org.bitbucket.shaigem.rssb.plugin.ShopFormat;
 import org.bitbucket.shaigem.rssb.ui.builder.explorer.ShopExplorerView;
-import org.bitbucket.shaigem.rssb.ui.builder.itemlist.ItemListPresenter;
 import org.bitbucket.shaigem.rssb.ui.builder.itemlist.ItemListView;
 import org.bitbucket.shaigem.rssb.ui.builder.properties.PropertiesView;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
-import org.bitbucket.shaigem.rssb.ui.search.SearchPresenter;
-import org.bitbucket.shaigem.rssb.ui.search.SearchView;
 import org.bitbucket.shaigem.rssb.util.AlertDialogUtil;
 import org.sejda.eventstudio.DefaultEventStudio;
 
@@ -42,7 +39,6 @@ import java.util.ResourceBundle;
  */
 public class BuilderWindowPresenter implements Initializable {
 
-    private ItemListPresenter itemListPresenter;
     private BooleanProperty defaultExpandedItemDisplay;
 
     @Inject
@@ -61,25 +57,18 @@ public class BuilderWindowPresenter implements Initializable {
     VBox rootPane;
     @FXML
     SplitPane leftSplitPane;
+    @FXML
+    SplitPane rightSplitPane;
 
-    @FXML
-    ToolBar itemToolBar;
-    @FXML
-    StackPane itemPane;
-    @FXML
-    StackPane itemSearchPane;
 
     @FXML
     BorderPane shopPane;
-
     @FXML
     TabPane shopTabPane;
 
     @FXML
-    StackPane propertiesPane;
+    Label noShopsOpenLabel;
 
-    @FXML
-    MenuItem selectAllMenuItem;
     @FXML
     MenuItem switchFormatMenuItem;
     @FXML
@@ -89,13 +78,10 @@ public class BuilderWindowPresenter implements Initializable {
         tabManager.setBuilderWindowPresenter(this);
         defaultExpandedItemDisplay = new SimpleBooleanProperty();
         defaultExpandedItemDisplay.bind(expandedItemDisplayRadioItem.selectedProperty());
+        noShopsOpenLabel.visibleProperty().bind(tabManager.currentShopProperty().isNull());
         setupLeftSplitPaneItems();
-        setShopArea();
-        setItemListArea();
-        setPropertiesArea();
-        setSearchField();
+        setupRightSplitPaneItems();
         listenForTabSelection();
-        selectAllMenuItem.disableProperty().bind(Bindings.isNull(tabManager.currentShopProperty()));
         eventStudio.addAnnotatedListeners(this);
     }
 
@@ -189,14 +175,15 @@ public class BuilderWindowPresenter implements Initializable {
         });
     }
 
-    @FXML
-    public void onSelectAllMenuAction() {
-        tabManager.getCurrentViewingShop().selectAllItems();
+    private void setupLeftSplitPaneItems() {
+        setShopExplorerArea();
     }
 
 
-    private void setupLeftSplitPaneItems() {
-        setShopExplorerArea();
+    private void setupRightSplitPaneItems() {
+        setItemListArea();
+        setPropertiesArea();
+
     }
 
     private void setShopExplorerArea() {
@@ -206,30 +193,14 @@ public class BuilderWindowPresenter implements Initializable {
 
     private void setItemListArea() {
         ItemListView itemListView = new ItemListView();
-        itemListPresenter = (ItemListPresenter) itemListView.getPresenter();
-        itemPane.getChildren().add(itemListView.getViewWithoutRootContainer());
+        rightSplitPane.getItems().add(itemListView.getView());
     }
 
     private void setPropertiesArea() {
         PropertiesView propertiesView = new PropertiesView();
-        propertiesPane.getChildren().add(propertiesView.getViewWithoutRootContainer());
+        rightSplitPane.getItems().add(propertiesView.getView());
     }
 
-    private void setShopArea() {
-        // shopView = new ShopView();
-        //shopPresenter = (ShopPresenter) shopView.getPresenter();
-        //   shopPane.setCenter(shopPresenter.getNoShopLabel()); TODO show a label when there is no shops open
-    }
-
-    private void setSearchField() {
-        SearchView itemSearchView = new SearchView();
-        SearchPresenter shopListSearchPresenter = (SearchPresenter) itemSearchView.getPresenter();
-        shopListSearchPresenter.setPromptText("Enter ID or name...");
-        shopListSearchPresenter.textProperty().addListener(
-                ((observable, oldValue, newValue) -> itemListPresenter.setSearchPattern(newValue)));
-        HBox.setHgrow(itemSearchPane, Priority.ALWAYS);
-        itemSearchPane.getChildren().add(itemSearchView.getView());
-    }
 
     private void listenForTabSelection() {
         shopTabPane.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) ->

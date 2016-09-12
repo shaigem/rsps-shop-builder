@@ -1,0 +1,58 @@
+.explorer-root {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+
+/*
+* Tool-bar
+*/
+.tool-bar {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 6.0, 0.0, 0.0, 3.0);
+}
+
+/*
+* Table View (Shops)
+*/
+.table-view {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+    -fx-background-insets: 0.0, 0.4;
+    -fx-background-radius: 3.0;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+    -fx-background-insets: 0.0, 0.0 1.0 1.0 0.0;
+    -fx-background-radius: 0.0, 0.0;
+    -fx-border-color: derive(-bg-color, -20%);
+    -fx-font-weight: bolder;
+}
+
+/*
+* Table View Scroll Bar
+*/
+.table-view .scroll-bar:vertical .increment-button,
+.table-view .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 2px;
+
+}
+
+.table-view .scroll-bar:horizontal .thumb,
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #DEDEDE;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+
+.table-view .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+/*
+* Search Field
+*/
+.search-field {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 6.0, 0.0, 0.0, 3.0);
+}

@@ -1,0 +1,4 @@
+.shop-tool-bar {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+    -fx-spacing: 10;
+}

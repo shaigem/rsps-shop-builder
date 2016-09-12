@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import org.controlsfx.control.PropertySheet?>
 
-<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="232.0" prefWidth="161.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.properties.PropertiesPresenter">
-
-    <PropertySheet fx:id="propertySheet" mode="NAME" modeSwitcherVisible="false" prefHeight="232.0" prefWidth="161.0" searchBoxVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-
-</AnchorPane>
+<VBox minHeight="0.0" minWidth="0.0" prefHeight="279.0" prefWidth="190.0" spacing="10.0" styleClass="properties-root" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.properties.PropertiesPresenter">
+     <children>
+         <ToolBar prefHeight="35.0" prefWidth="93.0">
+             <items>
+                 <Label prefHeight="17.0" prefWidth="104.0" text="Shop Properties" />
+             </items>
+         </ToolBar>
+         <StackPane fx:id="propertiesPane" VBox.vgrow="ALWAYS">
+         <children>
+         
+                <PropertySheet fx:id="propertySheet" mode="NAME" modeSwitcherVisible="false" prefHeight="232.0" prefWidth="161.0" searchBoxVisible="false" styleClass="rssb-property-sheet" />
+            <Label fx:id="noShopsSelectedLabel" styleClass="no-shop-label" text="No shop selected" />
+         </children>
+      </StackPane>
+     </children>
+ </VBox>

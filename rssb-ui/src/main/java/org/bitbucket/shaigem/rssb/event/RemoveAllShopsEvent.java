@@ -1,7 +1,7 @@
 package org.bitbucket.shaigem.rssb.event;
 
 /**
- * Event that notifies when shops have been loaded by the user.
+ * Event that notifies when shops have been removed.
  */
 public class RemoveAllShopsEvent {
 

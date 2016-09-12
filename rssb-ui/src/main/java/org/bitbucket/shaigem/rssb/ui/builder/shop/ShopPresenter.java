@@ -15,18 +15,15 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
+import org.bitbucket.shaigem.rssb.fx.ShopTab;
 import org.bitbucket.shaigem.rssb.fx.control.RuneScapeButton;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.DragItemManager;
@@ -54,13 +51,11 @@ public class ShopPresenter implements Initializable {
 
     private Shop shop;
 
-    private Text noShopLabel;
-
     private TextField nameTextField;
 
     private ShopItemSelectionModel selectionModel = new ShopItemSelectionModel();
 
-    private Tab tab;
+    private ShopTab tab;
 
     private BooleanProperty modifiedProperty;
 
@@ -128,7 +123,6 @@ public class ShopPresenter implements Initializable {
         generalStoreImageView.visibleProperty().bind(generalStoreImageVisibility);
         setupActionsPane();
         setupSelectedItemInformationArea();
-        setupNoShopLabel();
         setupResourceImages();
         setupNameTextField();
         setupItemDisplayButtons();
@@ -170,11 +164,11 @@ public class ShopPresenter implements Initializable {
         listenForShopItemsChanges();
     }
 
-    public void setTab(Tab tab) {
+    public void setTab(ShopTab tab) {
         this.tab = tab;
     }
 
-    public Tab getTab() {
+    public ShopTab getTab() {
         return tab;
     }
 
@@ -205,18 +199,35 @@ public class ShopPresenter implements Initializable {
         addItem(item, false);
     }
 
-    public void addItems(List<Item> itemCollection) {
+    public void addItems(List<Item> itemCollection, boolean fromItemList) {
+        final boolean multipleItems = itemCollection.size() > 1;
+        if (multipleItems && fromItemList) {
+            if (getSelectionModel().hasAnySelection()) {
+                // clears any selection if we are adding multiple items
+                // Reason is so we can select just the items that are being added
+                getSelectionModel().clearSelection();
+            }
+        }
         for (Item item : itemCollection) {
             ShopItemView shopItemView = new ShopItemView();
             shopItemView.getPresenter().setShopPresenter(this);
             shopItemView.getPresenter().setItem(new Item(item.getId(), item.getAmount()));
             shopItemPane.getChildren().add(shopItemView);
+            if (fromItemList && multipleItems) {
+                getSelectionModel().addToSelection(shopItemView, true);
+            }
         }
 
-        if (!shopItemPane.getChildren().isEmpty())
-            getSelectionModel().setSelected((ShopItemView)
-                    shopItemPane.getChildren().get(shopItemPane.getChildren().size() - 1));
+        if (!multipleItems) {
+            // select the last item
+            if (!shopItemPane.getChildren().isEmpty())
+                getSelectionModel().setSelected((ShopItemView)
+                        shopItemPane.getChildren().get(shopItemPane.getChildren().size() - 1));
+        }
+    }
 
+    public void addItems(List<Item> itemCollection) {
+        addItems(itemCollection, false);
     }
 
 
@@ -304,14 +315,10 @@ public class ShopPresenter implements Initializable {
         shopNameLabel.setText(name);
     }
 
-    public Text getNoShopLabel() {
-        return noShopLabel;
-    }
-
     private void shopDidChange() {
         clear();
         setShopNameLabel(shop.getName());
-        generalStoreImageVisibility.bind(shop.canSellToProperty());
+        generalStoreImageVisibility.bind(shop.generalStoreProperty());
         addItems(shop.getItems());
         if (!shopItemPane.getChildren().isEmpty()) {
             ShopItemView firstShopItem = (ShopItemView) shopItemPane.getChildren().get(0);
@@ -335,7 +342,7 @@ public class ShopPresenter implements Initializable {
     private void setupSelectedItemInformationArea() {
         selectionModel.getSelectedShopItems().addListener((SetChangeListener<? super ShopItemView>) change
                 -> updateSelectionInformation());
-        RuneScapeButton editIndexButton = new RuneScapeButton("Change Item");
+        RuneScapeButton editIndexButton = new RuneScapeButton("Change...");
         editIndexButton.setOnAction(event -> {
             if (selectionModel.hasAnySelection() && !selectionModel.hasMultipleSelected()) {
                 selectionModel.getSelectedShopItems().forEach((shopItemView ->
@@ -348,10 +355,11 @@ public class ShopPresenter implements Initializable {
 
 
     private void setupActionsPane() {
-        RuneScapeButton addButton = new RuneScapeButton("Add By Id");
+      /*  RuneScapeButton addButton = new RuneScapeButton("Add By Id");
         addButton.setOnAction((e) -> openAddItemByIndexDialog());
 
-        RuneScapeButton deleteButton = new RuneScapeButton("Delete");
+        RuneScapeButton deleteButton = new RuneScapeButton("Delete Item");
+        deleteButton.disableProperty().bind(Bindings.isEmpty(selectionModel.getSelectedShopItems()));
         deleteButton.setOnAction((event -> deleteItem(selectionModel.getSelectedShopItems())));
         RuneScapeButton deleteAllButton = new RuneScapeButton("Delete All");
         deleteAllButton.setOnAction((event1 -> clear()));
@@ -359,11 +367,12 @@ public class ShopPresenter implements Initializable {
         RuneScapeButton saveButton = new RuneScapeButton("Save");
         saveButton.setFont(Font.font("Tahoma", FontWeight.SEMI_BOLD, 12));
         saveButton.setOnAction((event -> save()));
-        actionsPane.getChildren().addAll(addButton, deleteButton, deleteAllButton);
+        actionsPane.getChildren().addAll(addButton, deleteAllButton);
         bottomMiddlePane.setCenter(saveButton);
+        */
     }
 
-    private void openAddItemByIndexDialog() {
+    public void openAddItemByIndexDialog() {
         TextInputDialog dialog = new TextInputDialog("11694");
         dialog.setTitle("Add by Item Index Input");
         dialog.setHeaderText("Add by Item Index");
@@ -428,19 +437,11 @@ public class ShopPresenter implements Initializable {
 
     private void setupNameTextField() {
         nameTextField = new TextField();
-        nameTextField.setId("name-textfield");
+        nameTextField.getStyleClass().add("name-text-field");
         nameTextField.setPrefWidth(shopNameLabel.getPrefWidth());
         nameTextField.setPrefHeight(shopNameLabel.getPrefHeight());
         nameTextField.setAlignment(Pos.CENTER);
         nameTextField.setFont(Font.font(15));
-    }
-
-
-    private void setupNoShopLabel() {
-        noShopLabel = new Text("No Shop Open");
-        noShopLabel.setFont(Font.font("Arial", FontWeight.BOLD, 48));
-        noShopLabel.setFill(Paint.valueOf("white"));
-        noShopLabel.setEffect(new Reflection());
     }
 
     private void setupResourceImages() {

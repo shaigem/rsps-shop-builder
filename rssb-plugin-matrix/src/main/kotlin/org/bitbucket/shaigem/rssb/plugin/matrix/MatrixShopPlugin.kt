@@ -91,7 +91,7 @@ class MatrixUnpackedShopFormat : ShopFormat<MatrixShop> {
             writer.newLine()
             shopsToExport.forEach { shop ->
                 // write the properties
-                writer.write("${shop.key} ${shop.currency} ${shop.canSellTo} - ${shop.name} - ")
+                writer.write("${shop.key} ${shop.currency} ${shop.generalStore} - ${shop.name} - ")
                 // write the items
                 shop.items.forEach { item -> writer.write("${item.id} ${item.amount} ") }
                 writer.newLine()
@@ -117,7 +117,7 @@ class MatrixShop(key: Int, name: String, itemArray: List<Item>, currency: Int,
     }
 
     override fun copy(): Shop {
-        return MatrixShop(key, name, items, currency, canSellTo)
+        return MatrixShop(key, name, items, currency, generalStore)
     }
 
     override fun toString(): String {

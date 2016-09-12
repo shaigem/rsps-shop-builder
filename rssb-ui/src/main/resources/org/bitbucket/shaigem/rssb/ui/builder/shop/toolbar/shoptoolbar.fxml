@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+
+<ToolBar prefHeight="40.0" prefWidth="595.0" styleClass="shop-tool-bar" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.toolbar.ShopToolBarPresenter">
+  <items>
+      <Button fx:id="saveButton" mnemonicParsing="false" onAction="#onSaveAction" styleClass="rssb-button" text="Save Changes">
+         <tooltip>
+            <Tooltip text="Save any changes to the shop" />
+         </tooltip>
+      </Button>
+      <Button fx:id="addByIdButton" mnemonicParsing="false" onAction="#onAddByIdAction" styleClass="rssb-button" text="Add by Id">
+         <tooltip>
+            <Tooltip text="Allows you to add a item by its id" />
+         </tooltip>
+      </Button>
+    <Button fx:id="selectAllButton" mnemonicParsing="false" onAction="#onSelectAllAction" styleClass="rssb-button" text="Select All">
+         <tooltip>
+            <Tooltip text="Select all of the shop items" />
+         </tooltip></Button>
+      <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#onDeleteAction" styleClass="rssb-button" text="Delete Item">
+         <tooltip>
+            <Tooltip text="Delete the selected item" />
+         </tooltip>
+      </Button>
+      <Button fx:id="deleteAllButton" mnemonicParsing="false" onAction="#onDeleteAllAction" styleClass="rssb-button" text="Delete All">
+         <tooltip>
+            <Tooltip text="Delete all of the shop items (No confirmation)" />
+         </tooltip></Button>
+  </items>
+</ToolBar>

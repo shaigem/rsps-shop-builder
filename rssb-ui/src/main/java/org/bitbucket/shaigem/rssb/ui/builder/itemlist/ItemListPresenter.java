@@ -14,11 +14,15 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import org.bitbucket.shaigem.rssb.model.DragItemManager;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
 import org.bitbucket.shaigem.rssb.model.item.Item;
 import org.bitbucket.shaigem.rssb.store.ItemNameStore;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
+import org.bitbucket.shaigem.rssb.ui.search.SearchPresenter;
+import org.bitbucket.shaigem.rssb.ui.search.SearchView;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -46,6 +50,12 @@ public class ItemListPresenter implements Initializable {
     @FXML
     MenuItem addSelectedMenuItem;
 
+    @FXML
+    ToolBar itemToolBar;
+    @FXML
+    StackPane itemPane;
+    @FXML
+    StackPane itemSearchPane;
 
     public void initialize(URL location, ResourceBundle resources) {
         itemList = FXCollections.observableArrayList();
@@ -53,6 +63,7 @@ public class ItemListPresenter implements Initializable {
         filteredList = new FilteredList<>(itemList, l -> true);
         itemListView.setItems(filteredList);
         itemListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        setSearchField();
         setupItemListCellFactory();
         listenForDoubleClick();
         registerDragAndDropEvents();
@@ -65,7 +76,7 @@ public class ItemListPresenter implements Initializable {
         ShopPresenter currentViewing = tabManager.getCurrentViewingShop();
         if (currentViewing != null) {
             ObservableList<Item> selectedItemsList = itemListView.getSelectionModel().getSelectedItems();
-            currentViewing.addItems(selectedItemsList);
+            currentViewing.addItems(selectedItemsList, true);
         }
     }
 
@@ -73,6 +84,17 @@ public class ItemListPresenter implements Initializable {
     public void setSearchPattern(String pattern) {
         this.searchPattern = pattern;
         searchPatternChange();
+    }
+
+
+    private void setSearchField() {
+        SearchView itemSearchView = new SearchView();
+        SearchPresenter shopListSearchPresenter = (SearchPresenter) itemSearchView.getPresenter();
+        shopListSearchPresenter.setPromptText("Search Items");
+        shopListSearchPresenter.textProperty().addListener(
+                ((observable, oldValue, newValue) -> setSearchPattern(newValue)));
+        HBox.setHgrow(itemSearchPane, Priority.ALWAYS);
+        itemSearchPane.getChildren().add(itemSearchView.getView());
     }
 
     private void searchPatternChange() {
@@ -135,14 +157,13 @@ class ItemListCell extends ListCell<Item> {
         super.updateItem(item, empty);
 
         if (!empty || item != null) {
-            //TODO item list needs a better design
             HBox root = new HBox();
             HBox area = new HBox();
 
             area.setSpacing(5);
             ImageView imageView = new ImageView(item.getImage());
-            imageView.setFitHeight(16);
-            imageView.setFitWidth(16);
+            imageView.setFitHeight(32);
+            imageView.setFitWidth(32);
             Label infoLabel = new Label("[" + item.getId() + "] " + item.getName());
 
             area.getChildren().addAll(imageView, infoLabel);

@@ -1,7 +1,7 @@
 package org.bitbucket.shaigem.rssb.ui.builder.explorer;
 
 import de.jensd.fx.glyphs.GlyphsDude;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.transformation.FilteredList;
@@ -52,9 +52,15 @@ public class ShopExplorerPresenter implements Initializable {
     @FXML
     Button createNewShopButton;
     @FXML
-    SplitMenuButton deleteSelectedShopButton;
+    Button deleteSelectedShopButton;
     @FXML
-    MenuItem copyMenuItem;
+    Button removeAllShopsButton;
+    @FXML
+    MenuItem duplicateMenuItem;
+    @FXML
+    MenuItem openMenuItem;
+    @FXML
+    MenuItem removeMenuItem;
 
     private SearchPresenter searchPresenter;
     private String searchPattern;
@@ -69,12 +75,21 @@ public class ShopExplorerPresenter implements Initializable {
         setupNameColumn();
         onTableMousePressed();
         disableControlsUnlessHasSelection();
-        createNewShopButton.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.PLUS));
+        createNewShopButton.setGraphic(GlyphsDude.createIcon(MaterialDesignIcon.PLUS, "1.4em"));
+        deleteSelectedShopButton.setGraphic(GlyphsDude.createIcon(MaterialDesignIcon.DELETE, "1.4em"));
+        removeAllShopsButton.setGraphic(GlyphsDude.createIcon(MaterialDesignIcon.PLAYLIST_REMOVE, "1.4em"));
         eventStudio.addAnnotatedListeners(this);
     }
 
     @FXML
-    public void onCopyAction() {
+    public void onOpenAction() {
+        final Optional<Shop> shopToOpen =
+                Optional.ofNullable(shopTableView.getSelectionModel().getSelectedItem());
+        shopToOpen.ifPresent(shop -> eventStudio.broadcast(new CreateNewShopTabRequest(shop)));
+    }
+
+    @FXML
+    public void onDuplicateAction() {
         final Optional<Shop> shopToCopy =
                 Optional.ofNullable(shopTableView.getSelectionModel().getSelectedItem());
         shopToCopy.ifPresent(shop -> {
@@ -141,9 +156,7 @@ public class ShopExplorerPresenter implements Initializable {
         shopTableView.setOnMousePressed((event -> {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
                 if (event.getClickCount() == 2) {
-                    final Shop selectedShop = shopTableView.getSelectionModel().getSelectedItem();
-                    // same as shopTabManager.createNewTab(selectedShop);
-                    eventStudio.broadcast(new CreateNewShopTabRequest(selectedShop));
+                   onOpenAction();
                 }
             }
         }));
@@ -152,6 +165,7 @@ public class ShopExplorerPresenter implements Initializable {
     private void setSearchField() {
         SearchView searchView = new SearchView();
         SearchPresenter searchPresenter = (SearchPresenter) searchView.getPresenter();
+        searchPresenter.setPromptText("Search Shops");
         searchPresenter.textProperty().addListener(
                 ((observable, oldValue, newValue) -> setSearchPattern(newValue)));
         this.searchPresenter = searchPresenter;
@@ -196,7 +210,9 @@ public class ShopExplorerPresenter implements Initializable {
         final BooleanBinding emptyBinding =
                 Bindings.isEmpty(shopTableView.getSelectionModel().getSelectedIndices());
         deleteSelectedShopButton.disableProperty().bind(emptyBinding);
-        copyMenuItem.disableProperty().bind(emptyBinding);
+        duplicateMenuItem.disableProperty().bind(emptyBinding);
+        openMenuItem.disableProperty().bind(emptyBinding);
+        removeMenuItem.disableProperty().bind(emptyBinding);
     }
 
     private void refreshExplorer() {

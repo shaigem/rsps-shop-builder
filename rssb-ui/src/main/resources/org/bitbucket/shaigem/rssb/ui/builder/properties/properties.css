@@ -1,0 +1,29 @@
+.properties-root {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+/*
+* Property sheet
+*/
+.rssb-property-sheet .scroll-pane .property-pane {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+
+.rssb-property-sheet .scroll-pane {
+    -fx-fit-to-height: true;
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+/*
+* Tool-bar
+*/
+.tool-bar {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 6.0, 0.0, 0.0, 3.0);
+}
+
+.no-shop-label {
+    -fx-alignment: center;
+    -fx-padding: 25.0;
+}

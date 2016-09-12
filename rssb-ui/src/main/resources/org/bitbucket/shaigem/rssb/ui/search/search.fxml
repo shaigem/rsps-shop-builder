@@ -5,13 +5,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<HBox fx:id="searchTopElement" alignment="CENTER" prefWidth="-1.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.search.SearchPresenter">
+<HBox fx:id="searchTopElement" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefWidth="-1.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.search.SearchPresenter">
     <children>
         <TextField fx:id="searchField" maxWidth="1.7976931348623157E308" minHeight="-1.0" minWidth="80.0" prefWidth="-1.0" promptText="" HBox.hgrow="ALWAYS" />
-        <StackPane fx:id="searchIcon">
+        <StackPane fx:id="searchIcon" styleClass="search-icon" HBox.hgrow="NEVER">
             <HBox.margin>
                 <Insets />
             </HBox.margin>
         </StackPane>
     </children>
+   <padding>
+      <Insets left="10.0" />
+   </padding>
 </HBox>

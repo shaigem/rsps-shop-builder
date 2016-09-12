@@ -5,7 +5,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 import javafx.util.Pair;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.RemoveAllShopsEvent;
@@ -54,9 +55,12 @@ public class PropertiesPresenter implements Initializable {
 
 
     @FXML
-    AnchorPane rootPane;
+    StackPane propertiesPane;
     @FXML
     PropertySheet propertySheet;
+
+    @FXML
+    Label noShopsSelectedLabel;
 
     @Inject
     ShopTabManager tabManager;
@@ -66,6 +70,7 @@ public class PropertiesPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         propertySheet.visibleProperty().bind(tabManager.currentShopProperty().isNotNull());
+        noShopsSelectedLabel.visibleProperty().bind(tabManager.currentShopProperty().isNull());
         tabManager.currentShopProperty().addListener(((observable, oldPresenterValue, newPresenterValue) -> {
             if (newPresenterValue != null) {
                 loadProperties(newPresenterValue);

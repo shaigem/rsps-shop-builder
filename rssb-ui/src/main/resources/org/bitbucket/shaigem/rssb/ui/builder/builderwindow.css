@@ -1,0 +1,211 @@
+@font-face {
+    src: url('Roboto-Medium.ttf');
+}
+
+@font-face {
+    src: url('Roboto-Regular.ttf');
+}
+
+.builder-root {
+    -bg-color: #EEEEEE;
+    -border-color: derive(-bg-color, -10%);
+    -flat-bg-color: #EEEEEE;
+    -focus-border-color: rgba(0.0, 0.0, 0.0, 0.2);
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+.builder-menu-bar {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 4.0, 0.0, 0.0, 3.0);
+}
+
+.tooltip {
+    -fx-opacity: 0.9;
+    -fx-background-radius: 0px;
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+    -fx-background-color: #616161;
+    -fx-font-family: "Roboto Medium";
+}
+
+/*
+* Context menu and menu items
+*/
+.context-menu {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+.menu-bar > .container > .menu-button:hover,
+.menu-bar > .container > .menu-button:focused,
+.menu-bar > .container > .menu-button:showing,
+.menu:hover {
+    -fx-background-color: #E5E5E5;
+
+}
+
+.menu .label {
+    -fx-font-size: 15px;
+    -fx-font-family: "Roboto";
+
+}
+
+.menu-bar > .container > .menu-button:hover > .label,
+.menu-bar > .container > .menu-button:focused > .label,
+.menu-bar > .container > .menu-button:showing > .label,
+.menu:hover .label {
+    -fx-text-fill: black;
+}
+
+.menu:disabled .label {
+    -fx-opacity: 1.0;
+}
+
+.menu-item:focused,
+.menu-item:hover {
+    -fx-background-color: #EEEEEE;
+}
+
+.menu-item:focused > .label,
+.menu-item:hover > .label {
+    -fx-text-fill: black;
+}
+
+.menu-item > .label {
+    -fx-font-size: 15px;
+    -fx-font-family: "Roboto";
+
+}
+
+.menu-item:disabled > .label {
+    -fx-opacity: 1.0;
+}
+
+/*
+* Buttons
+*/
+
+.rssb-button, .rssb-button:focused {
+    -fx-background-color: white;
+    -fx-background-insets: 0.0;
+    -fx-background-radius: 3.0;
+}
+
+.rssb-button:focused {
+    /*-fx-background-color: -focus-border-color, white;
+    -fx-background-insets: 0.0, 0.5;
+    -fx-background-radius: 3.0; */
+}
+
+.rssb-button:hover {
+    -fx-background-color: -border-color, -flat-bg-color;
+    -fx-background-insets: 0.0, 0.3;
+    -fx-background-radius: 3.0;
+    -fx-translate-y: -1.0;
+    -fx-effect: dropshadow(gaussian, rgba(0.0, 0.0, 0.0, 0.2), 6.0, 0.0, 0.0, 4.0);
+}
+
+.rssb-button:armed {
+    -fx-background-color: derive(-flat-bg-color, -18.0%);
+    -fx-background-insets: 0.0;
+    -fx-translate-y: -2.0;
+    -fx-effect: dropshadow(gaussian, rgba(0.0, 0.0, 0.0, 0.2), 10.0, 0.0, 0.0, 10.0);;
+    -fx-opacity: 0.7;
+}
+
+/*
+* Split Pane
+*/
+
+.split-pane:horizontal > .split-pane-divider {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+.split-pane:vertical > .split-pane-divider {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+/*
+* Shop Area
+*/
+
+.shop-border-pane {
+}
+
+.no-shops-open-label {
+    -fx-font-size: 3.0em;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 25.0;
+    -fx-text-fill: black;
+    -fx-border-radius: 7px;
+    -fx-border-style: dashed;
+    -fx-border-width: 3px;
+    -fx-border-color: derive(gray, -10%);
+}
+
+/*
+* Shop Tab Pane
+*/
+
+.tab-pane {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 6.0, 0.0, 0.0, 3.0);
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.tab-pane .headers-region {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.tab-header-area {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.tab-header-background {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}
+
+.tab {
+    -fx-background-color: white;
+    -fx-padding: 5px 10px 5px 10px;
+    -fx-background-radius: 0px;
+    -fx-focus-color: transparent;
+    -fx-font-size: 14px;
+}
+
+.tab:top {
+    -fx-background-insets: 0;
+}
+
+.tab:hover {
+    -fx-background-color: -border-color, -flat-bg-color;
+    -fx-background-insets: 0.0, 0.3;
+    -fx-background-radius: 3.0;
+}
+
+.tab:selected {
+    -fx-border-color: #009688;
+    -fx-border-width: 3px, 0, 0, 0;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-background-insets: 0.0;
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: black;
+    -fx-font-size: 1.1em;
+}
+
+.tab-pane .tab:selected .tab-close-button {
+    -fx-background-color: black;
+
+}
+
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-border-color: transparent;
+}
+
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button {
+    -fx-background-color: -border-color, -fx-control-inner-background;
+}

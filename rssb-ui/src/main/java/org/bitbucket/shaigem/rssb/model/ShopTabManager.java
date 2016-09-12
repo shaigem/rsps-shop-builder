@@ -5,21 +5,22 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.StageStyle;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.CreateNewShopTabRequest;
 import org.bitbucket.shaigem.rssb.event.RemoveAllShopsEvent;
 import org.bitbucket.shaigem.rssb.event.ShopCloseEvent;
+import org.bitbucket.shaigem.rssb.event.shop.item.*;
+import org.bitbucket.shaigem.rssb.fx.ShopTab;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.ui.builder.BuilderWindowPresenter;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopView;
+import org.bitbucket.shaigem.rssb.ui.builder.shop.toolbar.ShopToolBarView;
 import org.sejda.eventstudio.DefaultEventStudio;
 import org.sejda.eventstudio.annotation.EventListener;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created on 2016-03-13.
@@ -54,7 +56,37 @@ public final class ShopTabManager {
     }
 
     @EventListener
-    private void onActiveFormatPluginChangedEvent(ActiveFormatPluginChangedEvent event) {
+    private void onDeleteSelectedShopItemsRequest(DeleteSelectedShopItemsRequest request) {
+        getCurrentViewingShop().deleteItem(getCurrentViewingShop().getSelectionModel().getSelectedShopItems());
+    }
+
+    @EventListener
+    private void onSaveShopRequest(SaveShopRequest request) {
+        getCurrentViewingShop().save();
+    }
+
+    @EventListener
+    private void onDeleteAllShopItemsRequest(DeleteAllShopItemsRequest request) {
+        getCurrentViewingShop().clear();
+    }
+
+    @EventListener
+    private void onAddItemByIdRequest(AddItemByIdRequest request) {
+        getCurrentViewingShop().openAddItemByIndexDialog();
+    }
+
+    @EventListener
+    private void onCreateNewShopTabRequest(CreateNewShopTabRequest request) {
+        createNewTab(request.getShop());
+    }
+
+    @EventListener
+    private void onSelectAllShopItemsRequest(SelectAllShopItemsRequest request) {
+        getCurrentViewingShop().selectAllItems();
+    }
+
+    @EventListener
+    private void onActiveFormatPluginChanged(ActiveFormatPluginChangedEvent event) {
         closeAll();
     }
 
@@ -63,25 +95,26 @@ public final class ShopTabManager {
         closeAll();
     }
 
-    @EventListener
-    private void onCreateNewShopTabRequest(CreateNewShopTabRequest request) {
-        createNewTab(request.getShop());
-    }
 
     private void createNewTab(Shop shop) {
         Optional<ShopPresenter> openTab = isOpen(shop);
         if (openTab.isPresent()) {
-            Tab tab = openTab.get().getTab();
+            ShopTab tab = openTab.get().getTab();
             getTabPane().getSelectionModel().select(tab);
             return;
         }
         ShopView shopView = new ShopView();
         ShopPresenter shopPresenter = (ShopPresenter) shopView.getPresenter();
-        Tab tab = new Tab(shop.toString());
+        ShopTab tab = new ShopTab(shop.toString());
+        tab.setContextMenu(createTabContextMenu(tab));
+        BorderPane borderPane = new BorderPane();
         StackPane stackPane = new StackPane();
         initializeShop(shopPresenter, tab, shop);
-        stackPane.getChildren().add(shopView.getView());
-        tab.setContent(stackPane);
+        stackPane.getChildren().addAll(shopView.getView());
+        borderPane.setCenter(stackPane);
+        ShopToolBarView toolBarView = new ShopToolBarView();
+        borderPane.setTop(toolBarView.getView());
+        tab.setContent(borderPane);
         openShops.add(shopPresenter);
         getTabPane().getTabs().add(tab);
         getTabPane().getSelectionModel().selectLast();
@@ -103,6 +136,15 @@ public final class ShopTabManager {
         });
     }
 
+    private ContextMenu createTabContextMenu(ShopTab tab) {
+        final ContextMenu contextMenu = new ContextMenu();
+        MenuItem closeItem = new MenuItem("Close");
+        closeItem.setOnAction(event -> tab.requestClose());
+        MenuItem closeAllItem = new MenuItem("Close All");
+        closeAllItem.setOnAction(event -> closeAll(true));
+        contextMenu.getItems().addAll(closeItem, closeAllItem);
+        return contextMenu;
+    }
 
     private void registerTabCloseEvent(Tab tab, ShopPresenter presenter) {
         tab.setOnCloseRequest((e) -> handleOnTabClose(presenter));
@@ -138,9 +180,19 @@ public final class ShopTabManager {
         openShops.remove(presenter);
     }
 
-    private void closeAll() {
-        openShops.clear();
+    private void closeAll(boolean checkShopForChanges) {
+        if (checkShopForChanges) {
+            getTabPane().getTabs().stream().map(tab -> (ShopTab) tab).collect
+                    (Collectors.toList()).listIterator().forEachRemaining(ShopTab::requestClose);
+            openShops.clear();
+            return;
+        }
         getTabPane().getTabs().clear();
+        openShops.clear();
+    }
+
+    private void closeAll() {
+        closeAll(false);
     }
 
 
@@ -177,7 +229,7 @@ public final class ShopTabManager {
     }
 
 
-    private void initializeShop(ShopPresenter shopPresenter, Tab tab, Shop shop) {
+    private void initializeShop(ShopPresenter shopPresenter, ShopTab tab, Shop shop) {
         shopPresenter.setMainWindowPresenter(builderWindowPresenter);
         shopPresenter.setTab(tab);
         shopPresenter.setShop(shop);

@@ -1,0 +1,8 @@
+.amount-text-field {
+    -fx-background-color: #ff991f, #2f2d2f;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff991f;
+    -fx-alignment: center;
+    -fx-padding: 1;
+    -fx-accent: #da6b0f;
+}

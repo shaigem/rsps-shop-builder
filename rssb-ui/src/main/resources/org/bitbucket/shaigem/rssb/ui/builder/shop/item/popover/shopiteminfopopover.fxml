@@ -33,7 +33,7 @@
             </Label>
          </children>
       </VBox>
-      <Label alignment="CENTER" layoutX="38.0" layoutY="118.0" prefHeight="21.0" prefWidth="207.0" text="Enter how many would you like to sell:" textFill="#ff991f" />
-      <TextField id="amt-textfield" fx:id="amountTextField" layoutX="67.0" layoutY="167.0" />
+      <Label alignment="CENTER" layoutX="38.0" layoutY="118.0" prefHeight="21.0" prefWidth="207.0" text="Enter the stock amount:" textFill="#ff991f" />
+      <TextField styleClass="amount-text-field" fx:id="amountTextField" layoutX="67.0" layoutY="167.0" />
    </children>
 </AnchorPane>
