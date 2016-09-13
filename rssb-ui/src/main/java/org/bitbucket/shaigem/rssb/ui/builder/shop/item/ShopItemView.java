@@ -66,7 +66,7 @@ public class ShopItemView extends Region {
     }
 
 
-    public void showInfoPopOver() {
+    void showInfoPopOver() {
         if (Objects.isNull(popOver)) {
             popOver = constructInfoPopOver();
             shopItemInfoPopoverPresenter.refreshNodes();
@@ -83,7 +83,7 @@ public class ShopItemView extends Region {
         return amountLabel;
     }
 
-    public void updateAmountLabel(int amount) {
+    void updateAmountLabel(int amount) {
         amountLabel.setText(ItemAmountUtil.getFormattedAmount(amount));
         amountLabel.setTextFill(ItemAmountUtil.getPaintForAmount(amount));
     }

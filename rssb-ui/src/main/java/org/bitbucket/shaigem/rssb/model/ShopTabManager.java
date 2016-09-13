@@ -20,6 +20,7 @@ import org.bitbucket.shaigem.rssb.model.shop.Shop;
 import org.bitbucket.shaigem.rssb.ui.builder.BuilderWindowPresenter;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopView;
+import org.bitbucket.shaigem.rssb.ui.builder.shop.toolbar.ShopToolBarPresenter;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.toolbar.ShopToolBarView;
 import org.sejda.eventstudio.DefaultEventStudio;
 import org.sejda.eventstudio.annotation.EventListener;
@@ -97,22 +98,24 @@ public final class ShopTabManager {
 
 
     private void createNewTab(Shop shop) {
-        Optional<ShopPresenter> openTab = isOpen(shop);
+        final Optional<ShopPresenter> openTab = isOpen(shop);
         if (openTab.isPresent()) {
             ShopTab tab = openTab.get().getTab();
             getTabPane().getSelectionModel().select(tab);
             return;
         }
-        ShopView shopView = new ShopView();
-        ShopPresenter shopPresenter = (ShopPresenter) shopView.getPresenter();
-        ShopTab tab = new ShopTab(shop.toString());
+        final ShopView shopView = new ShopView();
+        final ShopPresenter shopPresenter = (ShopPresenter) shopView.getPresenter();
+        final ShopTab tab = new ShopTab(shop.toString());
         tab.setContextMenu(createTabContextMenu(tab));
-        BorderPane borderPane = new BorderPane();
-        StackPane stackPane = new StackPane();
+        final BorderPane borderPane = new BorderPane();
+        final StackPane stackPane = new StackPane();
         initializeShop(shopPresenter, tab, shop);
         stackPane.getChildren().addAll(shopView.getView());
         borderPane.setCenter(stackPane);
-        ShopToolBarView toolBarView = new ShopToolBarView();
+        final ShopToolBarView toolBarView = new ShopToolBarView();
+        final ShopToolBarPresenter presenter = (ShopToolBarPresenter) toolBarView.getPresenter();
+        presenter.setShopPresenter(shopPresenter);
         borderPane.setTop(toolBarView.getView());
         tab.setContent(borderPane);
         openShops.add(shopPresenter);
@@ -228,7 +231,6 @@ public final class ShopTabManager {
         return openShops.stream().filter((shopPresenter -> shopPresenter.getShop() == shop)).findFirst();
     }
 
-
     private void initializeShop(ShopPresenter shopPresenter, ShopTab tab, Shop shop) {
         shopPresenter.setMainWindowPresenter(builderWindowPresenter);
         shopPresenter.setTab(tab);
@@ -236,6 +238,4 @@ public final class ShopTabManager {
         shopPresenter.setDisplayMode(builderWindowPresenter.byDefaultExpandItemDisplay() ?
                 ShopDisplayRadioButton.DisplayMode.EXPANDED : ShopDisplayRadioButton.DisplayMode.ICON);
     }
-
-
 }

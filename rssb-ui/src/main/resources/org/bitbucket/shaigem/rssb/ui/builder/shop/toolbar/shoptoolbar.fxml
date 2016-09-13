@@ -4,7 +4,7 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
 
-<ToolBar prefHeight="40.0" prefWidth="595.0" styleClass="shop-tool-bar" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.toolbar.ShopToolBarPresenter">
+<ToolBar prefHeight="40.0" prefWidth="595.0" styleClass="shop-tool-bar" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.toolbar.ShopToolBarPresenter">
   <items>
       <Button fx:id="saveButton" mnemonicParsing="false" onAction="#onSaveAction" styleClass="rssb-button" text="Save Changes">
          <tooltip>
@@ -22,7 +22,7 @@
          </tooltip></Button>
       <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#onDeleteAction" styleClass="rssb-button" text="Delete Item">
          <tooltip>
-            <Tooltip text="Delete the selected item" />
+            <Tooltip text="Delete any selected items" />
          </tooltip>
       </Button>
       <Button fx:id="deleteAllButton" mnemonicParsing="false" onAction="#onDeleteAllAction" styleClass="rssb-button" text="Delete All">

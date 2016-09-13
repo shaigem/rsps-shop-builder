@@ -190,7 +190,6 @@ public class PropertiesPresenter implements Initializable {
         getEditingShopList().addListener(propertyChangeListener);
     }
 
-
     private void setShop(Shop shop) {
         if (singletonShop.isEmpty()) {
             singletonShop.add(0, shop);

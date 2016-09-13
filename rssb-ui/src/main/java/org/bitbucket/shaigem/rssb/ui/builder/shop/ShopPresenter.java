@@ -57,7 +57,7 @@ public class ShopPresenter implements Initializable {
 
     private ShopTab tab;
 
-    private BooleanProperty modifiedProperty;
+    private BooleanProperty modified;
 
     private BuilderWindowPresenter mainWindowPresenter;
 
@@ -118,7 +118,7 @@ public class ShopPresenter implements Initializable {
 
     public void initialize(URL location, ResourceBundle resources) {
         displayModeProperty = new SimpleObjectProperty<>();
-        modifiedProperty = new SimpleBooleanProperty();
+        modified = new SimpleBooleanProperty();
         generalStoreImageVisibility = new SimpleBooleanProperty();
         generalStoreImageView.visibleProperty().bind(generalStoreImageVisibility);
         setupActionsPane();
@@ -328,7 +328,6 @@ public class ShopPresenter implements Initializable {
         // ShopItemView lastItem = (ShopItemView) shopItemPane.getChildren().get
         //        (shopItemPane.getChildren().size() - 1);
         //  selectionModel.setSelected(lastItem);
-
     }
 
     private void scrollWhenHeightIncreases() {
@@ -537,7 +536,7 @@ public class ShopPresenter implements Initializable {
     }
 
     private void listenForModifiedPropertyChange() {
-        modifiedProperty.addListener(((observable, oldValue, newValue) ->
+        modified.addListener(((observable, oldValue, newValue) ->
                 tab.setText(newValue ? shop.toString() + "(*)" : shop.toString())));
     }
 
@@ -550,11 +549,15 @@ public class ShopPresenter implements Initializable {
     }
 
     private void setModified(boolean modified) {
-        modifiedProperty.setValue(modified);
+        this.modified.setValue(modified);
     }
 
     public boolean hasBeenModified() {
-        return modifiedProperty.get();
+        return modified.get();
+    }
+
+    public BooleanProperty modifiedProperty() {
+        return modified;
     }
 
     public void setDisplayMode(ShopDisplayRadioButton.DisplayMode mode) {
