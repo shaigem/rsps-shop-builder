@@ -122,7 +122,7 @@ public class ItemListPresenter implements Initializable {
                 return;
             }
             ObservableList<Item> selectedItemsList = itemListView.getSelectionModel().getSelectedItems();
-            if (selectedItemsList != null) {
+            if (selectedItemsList.size() > 0) {
                 Dragboard db = itemListView.startDragAndDrop(TransferMode.ANY);
                 ClipboardContent content = new ClipboardContent();
                 content.putString("");
