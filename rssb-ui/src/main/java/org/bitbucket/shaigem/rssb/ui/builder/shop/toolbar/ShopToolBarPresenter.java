@@ -9,11 +9,8 @@ import javafx.beans.binding.StringBinding;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import org.bitbucket.shaigem.rssb.event.shop.item.*;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
-import org.sejda.eventstudio.DefaultEventStudio;
 
-import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -36,10 +33,6 @@ public class ShopToolBarPresenter implements Initializable {
     Button deleteButton;
     @FXML
     Button deleteAllButton;
-
-    @Inject
-    DefaultEventStudio eventStudio;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Set all graphics
@@ -52,29 +45,28 @@ public class ShopToolBarPresenter implements Initializable {
 
     @FXML
     public void onSaveAction() {
-        eventStudio.broadcast(new SaveShopRequest());
+        shopPresenter.save();
     }
 
     @FXML
     public void onAddByIdAction() {
-        eventStudio.broadcast(new AddItemByIdRequest());
+        shopPresenter.openAddItemByIndexDialog();
     }
 
     @FXML
     public void onSelectAllAction() {
-        eventStudio.broadcast(new SelectAllShopItemsRequest());
+        shopPresenter.selectAllItems();
     }
 
     @FXML
     public void onDeleteAction() {
-        eventStudio.broadcast(new DeleteSelectedShopItemsRequest());
+        shopPresenter.deleteItem(shopPresenter.getSelectionModel().getSelectedShopItems());
     }
 
     @FXML
     public void onDeleteAllAction() {
-        eventStudio.broadcast(new DeleteAllShopItemsRequest());
+        shopPresenter.deleteAllItems();
     }
-
 
     public void setShopPresenter(ShopPresenter shopPresenter) {
         this.shopPresenter = shopPresenter;

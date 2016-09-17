@@ -27,6 +27,12 @@ public class Item {
         this(id, 1);
     }
 
+
+    public Item(int id, Image image) {
+        this(id, 1);
+        imageObjectProperty.set(image);
+    }
+
     public IntegerProperty idProperty()
 
     {
@@ -60,6 +66,14 @@ public class Item {
         return nameProperty.get();
     }
 
+    /**
+     * Lazily loads the image from the store.
+     * <p>The difference between this method and <code>getImageFromFile</code>
+     * is that the image will be retrieved from the file
+     * and cached in the store for reuse purposes.</p>
+     *
+     * @return the item's image.
+     */
     public Image getImage() {
         if (imageObjectProperty.get() == null) {
             imageObjectProperty.set(ItemImageStore.getImageForId(getId()));
@@ -67,8 +81,20 @@ public class Item {
         return imageObjectProperty.get();
     }
 
-    public ObjectProperty<Image> imageProperty() {
-        return imageObjectProperty;
+    /**
+     * Lazily load the image from a file. This should <B>ONLY</B> be used for the item list images.
+     *
+     * @return the item's image
+     */
+    public Image getImageFromFile() {
+        if (imageObjectProperty.get() == null) {
+            imageObjectProperty.set(ItemImageStore.retrieveImageFromFile(getId()));
+        }
+        return imageObjectProperty.get();
     }
+
+    //public ObjectProperty<Image> imageProperty() {
+    //  return imageObjectProperty;
+    // }
 
 }

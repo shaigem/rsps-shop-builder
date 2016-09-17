@@ -13,7 +13,6 @@ import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
 import org.bitbucket.shaigem.rssb.event.CreateNewShopTabRequest;
 import org.bitbucket.shaigem.rssb.event.RemoveAllShopsEvent;
 import org.bitbucket.shaigem.rssb.event.ShopCloseEvent;
-import org.bitbucket.shaigem.rssb.event.shop.item.*;
 import org.bitbucket.shaigem.rssb.fx.ShopTab;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.model.shop.Shop;
@@ -56,37 +55,10 @@ public final class ShopTabManager {
         eventStudio.addAnnotatedListeners(this);
     }
 
-    @EventListener
-    private void onDeleteSelectedShopItemsRequest(DeleteSelectedShopItemsRequest request) {
-        getCurrentViewingShop().deleteItem(getCurrentViewingShop().getSelectionModel().getSelectedShopItems());
-    }
-
-    @EventListener
-    private void onSaveShopRequest(SaveShopRequest request) {
-        getCurrentViewingShop().save();
-    }
-
-    @EventListener
-    private void onDeleteAllShopItemsRequest(DeleteAllShopItemsRequest request) {
-        getCurrentViewingShop().clear();
-    }
-
-    @EventListener
-    private void onAddItemByIdRequest(AddItemByIdRequest request) {
-        // fixed crashing bug
-        // the dialog MUST run on the FX Thread!
-        Platform.runLater(() ->
-                getCurrentViewingShop().openAddItemByIndexDialog());
-    }
 
     @EventListener
     private void onCreateNewShopTabRequest(CreateNewShopTabRequest request) {
         createNewTab(request.getShop());
-    }
-
-    @EventListener
-    private void onSelectAllShopItemsRequest(SelectAllShopItemsRequest request) {
-        getCurrentViewingShop().selectAllItems();
     }
 
     @EventListener

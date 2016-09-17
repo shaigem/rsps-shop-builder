@@ -296,7 +296,7 @@ public class ShopPresenter implements Initializable {
     /**
      * Clears all of the items from the shop view.
      */
-    public void clear() {
+    public void deleteAllItems() {
         shopItemPane.getChildren().clear();
     }
 
@@ -316,7 +316,7 @@ public class ShopPresenter implements Initializable {
     }
 
     private void shopDidChange() {
-        clear();
+        deleteAllItems();
         setShopNameLabel(shop.getName());
         generalStoreImageVisibility.bind(shop.generalStoreProperty());
         addItems(shop.getItems());
@@ -372,14 +372,14 @@ public class ShopPresenter implements Initializable {
     }
 
     public void openAddItemByIndexDialog() {
-        TextInputDialog dialog = new TextInputDialog("11694");
+        TextInputDialog dialog = new TextInputDialog("16694");
         dialog.setTitle("Add by Item Index Input");
         dialog.setHeaderText("Add by Item Index");
         dialog.setContentText("Please enter the id of the item:");
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
+        result.ifPresent(value -> {
             try {
-                int id = Integer.parseInt(result.get());
+                int id = Integer.parseInt(value);
                 addItem(new Item(id));
             } catch (NumberFormatException exc) {
                 ButtonType tryAgainButton = new ButtonType("Try Again", ButtonBar.ButtonData.OK_DONE);
@@ -389,18 +389,16 @@ public class ShopPresenter implements Initializable {
                 alert.setTitle("Error With Input");
                 alert.getButtonTypes().setAll(tryAgainButton, closeButton);
                 alert.setHeaderText("Invalid Input");
-                alert.setContentText("A exception occurred while trying to parse your input. Remember," +
+                alert.setContentText("Cannot parse input. Remember," +
                         " the input must be a number!");
                 Optional<ButtonType> response = alert.showAndWait();
-                if (response.isPresent()) {
-                    ButtonType buttonType = response.get();
+                response.ifPresent(buttonType -> {
                     if (buttonType == tryAgainButton) {
                         openAddItemByIndexDialog();
                     }
-                }
+                });
             }
-        }
-
+        });
     }
 
     private void setupItemDisplayButtons() {

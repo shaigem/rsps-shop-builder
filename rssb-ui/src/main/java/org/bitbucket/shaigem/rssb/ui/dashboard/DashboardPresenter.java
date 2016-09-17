@@ -38,7 +38,7 @@ public class DashboardPresenter implements Initializable {
         setFormatPluginsPane(); // must be first or else it messes the shadow in setToolBar!
         setToolBar();
         RSSBPluginManager.INSTANCE.addListenerToPluginSet(change -> {
-            if (change.wasAdded()) {
+            if (change.wasAdded()) { // if a plugin was added
                 eventStudio.broadcast(new RefreshDashboardEvent(change.getElementAdded()));
             }
         });

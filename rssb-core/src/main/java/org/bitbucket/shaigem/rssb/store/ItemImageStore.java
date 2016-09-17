@@ -1,7 +1,6 @@
 package org.bitbucket.shaigem.rssb.store;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TConfig;
 import de.schlichtherle.truezip.file.TFileInputStream;
@@ -17,14 +16,21 @@ import java.util.concurrent.TimeUnit;
  */
 public final class ItemImageStore {
 
+    private static final String STORE_PATH = "./data/store.abyss/";
+
     private static final Image DEFAULT = new Image(
             ItemImageStore.class.getClassLoader().getResourceAsStream("images/question.png"));
 
-    //TODO we might not even have to cache the images at all
-    private static final Cache<Integer, Image> imageCache =
-            CacheBuilder.newBuilder().maximumSize(3500).expireAfterAccess
-                    (2, TimeUnit.MINUTES).
-                    build();
+    /**
+     * A cache that holds the most commonly used item's image.
+     */
+    private static final com.github.benmanes.caffeine.cache.LoadingCache<Integer, Image>
+            commonItemImageCache =
+            Caffeine.newBuilder().
+                    maximumSize(512).expireAfterAccess(5, TimeUnit.MINUTES).softValues().
+                    removalListener((key, value, cause) ->
+                            System.out.println("Removed: " + key + " : " + value + " " + cause)).
+                    build(k -> retrieveImageFromFile((Integer) k));
 
 
     public static void setupStoreArchiveDetecter() {
@@ -35,25 +41,41 @@ public final class ItemImageStore {
                 ));
     }
 
+    /**
+     * Gets the image for the item's id from the cache.
+     *
+     * @param id the item's identifier
+     * @return the item's image
+     */
     public static Image getImageForId(int id) {
-        if (imageCache.getIfPresent(id) == null) {
-            return retrieveImageFromStore(id);
-        }
-        return imageCache.getIfPresent(id);
+        return retrieveImageFromCache(id);
     }
 
-
-    private static Image retrieveImageFromStore(int id) {
-        try {
-            try (TFileInputStream tFileInputStream =
-                         new TFileInputStream("./data/store.abyss/" + id + ".png")) {
-                Image image = new Image(tFileInputStream);
-                imageCache.put(id, image);
-                return image;
-            }
+    /**
+     * Retrieves the image from the zip file.
+     *
+     * @param id the item's identifier
+     * @return the item's image
+     */
+    public static Image retrieveImageFromFile(int id) {
+        try (TFileInputStream tFileInputStream =
+                     new TFileInputStream(STORE_PATH + id + ".png")) {
+            return new Image(tFileInputStream);
         } catch (IOException e) {
             return DEFAULT;
-
         }
+    }
+
+    /**
+     * Tries to retrieve the requested item's image from the cache.
+     * If the requested item's image is not already cached then
+     * it will be retrieved and cached.
+     *
+     * @param id the item's identifier
+     * @return the item's image
+     */
+    private static Image retrieveImageFromCache(int id) {
+        System.out.println("Get From Cache: " + id);
+        return commonItemImageCache.get(id);
     }
 }

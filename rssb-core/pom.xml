@@ -16,6 +16,11 @@
     </properties>
 
     <dependencies>
+        <dependency>    
+            <groupId>com.github.ben-manes.caffeine</groupId>    
+            <artifactId>caffeine</artifactId>   
+            <version>2.3.3</version>
+        </dependency>
         <dependency>
             <groupId>net.xeon.jspf</groupId>
             <artifactId>jspf.core</artifactId>

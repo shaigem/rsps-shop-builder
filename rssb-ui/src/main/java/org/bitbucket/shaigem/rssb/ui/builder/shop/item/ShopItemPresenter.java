@@ -150,7 +150,6 @@ public final class ShopItemPresenter {
 
     }
 
-
     private void listenForItemAmountChange(Item item) {
         item.amountProperty().addListener(((observable1, oldValue1, newValue1) -> {
             shopItemView.updateAmountLabel(Objects.isNull(newValue1) ? 0 : newValue1.intValue());

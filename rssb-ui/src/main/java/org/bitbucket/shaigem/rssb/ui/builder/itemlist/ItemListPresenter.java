@@ -81,7 +81,7 @@ public class ItemListPresenter implements Initializable {
     }
 
 
-    public void setSearchPattern(String pattern) {
+    private void setSearchPattern(String pattern) {
         this.searchPattern = pattern;
         searchPatternChange();
     }
@@ -147,32 +147,31 @@ public class ItemListPresenter implements Initializable {
     private void setupItemListCellFactory() {
         itemListView.setCellFactory((c) -> new ItemListCell());
     }
-}
 
-class ItemListCell extends ListCell<Item> {
+    private class ItemListCell extends ListCell<Item> {
+        private ImageView imageView;
 
 
-    @Override
-    protected void updateItem(Item item, boolean empty) {
-        super.updateItem(item, empty);
-
-        if (!empty || item != null) {
-            HBox root = new HBox();
-            HBox area = new HBox();
-
-            area.setSpacing(5);
-            ImageView imageView = new ImageView(item.getImage());
-            imageView.setFitHeight(32);
-            imageView.setFitWidth(32);
-            Label infoLabel = new Label("[" + item.getId() + "] " + item.getName());
-
-            area.getChildren().addAll(imageView, infoLabel);
-            root.getChildren().add(area);
-            setGraphic(root);
-
-        } else {
-            setGraphic(null);
+        @Override
+        protected void updateItem(Item item, boolean empty) {
+            super.updateItem(item, empty);
+            if (!empty && item != null) {
+                setText("[" + item.getId() + "] " + item.getName());
+                // getImageFromFile() not getImage()
+                // These items are not cached in the most commonly used items!
+                final Image itemImage = item.getImageFromFile();
+                if (imageView == null) {
+                    imageView = new ImageView(itemImage);
+                } else {
+                    imageView.setImage(itemImage);
+                }
+                if (getGraphic() == null)
+                    setGraphic(imageView);
+            } else {
+                setText(null);
+                setGraphic(null);
+            }
         }
-
     }
 }
+
