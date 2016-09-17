@@ -73,7 +73,10 @@ public final class ShopTabManager {
 
     @EventListener
     private void onAddItemByIdRequest(AddItemByIdRequest request) {
-        getCurrentViewingShop().openAddItemByIndexDialog();
+        // fixed crashing bug
+        // the dialog MUST run on the FX Thread!
+        Platform.runLater(() ->
+                getCurrentViewingShop().openAddItemByIndexDialog());
     }
 
     @EventListener
