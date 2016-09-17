@@ -372,7 +372,7 @@ public class ShopPresenter implements Initializable {
     }
 
     public void openAddItemByIndexDialog() {
-        TextInputDialog dialog = new TextInputDialog("16694");
+        TextInputDialog dialog = new TextInputDialog("11694");
         dialog.setTitle("Add by Item Index Input");
         dialog.setHeaderText("Add by Item Index");
         dialog.setContentText("Please enter the id of the item:");
