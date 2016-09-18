@@ -110,6 +110,8 @@ public class ShopPresenter implements Initializable {
     @FXML
     Label selectedItemNameLabel;
     @FXML
+    Label selectedItemIdLabel;
+    @FXML
     TilePane selectedItemInfoTilePane;
 
     @Inject
@@ -281,16 +283,20 @@ public class ShopPresenter implements Initializable {
     public void updateSelectionInformation() {
         if (selectionModel.hasMultipleSelected()) {
             selectedItemNameLabel.setText("Multiple Items");
+            selectedItemIdLabel.setVisible(false);
             selectedItemImageView.setImage(null);
         } else {
             if (selectionModel.hasAnySelection()) {
                 selectionModel.getSelectedShopItems().forEach((itemView -> {
                     Item item = itemView.getPresenter().getItem();
                     selectedItemNameLabel.setText(item.getName());
+                    selectedItemIdLabel.setVisible(true);
+                    selectedItemIdLabel.setText("ID: " + item.getId());
                     selectedItemImageView.setImage(item.getImage());
                 }));
             } else {
                 selectedItemNameLabel.setText("No Selection");
+                selectedItemIdLabel.setVisible(false);
                 selectedItemImageView.setImage(null);
             }
         }

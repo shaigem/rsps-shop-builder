@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="504.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="504.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter">
     <children>
         <StackPane fx:id="stackPane" layoutX="152.0" layoutY="88.0" prefHeight="326.0" prefWidth="504.0" styleClass="shop-root" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -53,8 +53,9 @@
                         <Insets bottom="5.0" left="5.0" />
                      </padding></TilePane>
                   <Label fx:id="selectedItemNameLabel" layoutX="67.0" layoutY="229.0" prefHeight="15.0" prefWidth="138.0" text="No Selection" textFill="#f7edb7" />
+                  <Label fx:id="selectedItemIdLabel" layoutX="67.0" layoutY="249.0" prefHeight="15.0" prefWidth="138.0" text="No Selection" textFill="#f7edb7" visible="false" />
                   <ImageView fx:id="selectedItemImageView" fitHeight="32.0" fitWidth="32.0" layoutX="22.0" layoutY="228.0" pickOnBounds="true" preserveRatio="true" />
-                  <TilePane fx:id="selectedItemInfoTilePane" alignment="CENTER" layoutX="9.0" layoutY="262.0" prefHeight="38.0" prefWidth="195.0" />
+                  <TilePane fx:id="selectedItemInfoTilePane" alignment="CENTER" layoutX="9.0" layoutY="268.0" prefHeight="38.0" prefWidth="195.0" />
                   <BorderPane fx:id="bottomMiddlePane" layoutX="205.0" layoutY="228.0" prefHeight="88.0" prefWidth="112.0" />
                     </children>
                 </AnchorPane>
