@@ -80,6 +80,10 @@
     -fx-opacity: 1.0;
 }
 
+.radio-menu-item:focused:checked > .left-container > .radio {
+    -fx-background-color: gray;
+}
+
 /*
 * Buttons
 */
@@ -138,7 +142,7 @@
     -fx-padding: 25.0;
     -fx-text-fill: black;
     -fx-border-radius: 7px;
-    -fx-border-style: dashed;
+    -fx-border-style: solid;
     -fx-border-width: 3px;
     -fx-border-color: derive(gray, -10%);
 }
