@@ -1,3 +1,9 @@
+.dashboard-center {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+
 .format-container-dnd-label {
     -fx-font-size: 2.0em;
     -fx-font-weight: bold;
