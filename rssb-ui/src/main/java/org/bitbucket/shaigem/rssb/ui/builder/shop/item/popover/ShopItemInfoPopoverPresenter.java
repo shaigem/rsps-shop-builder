@@ -8,7 +8,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import org.bitbucket.shaigem.rssb.fx.control.RuneScapeButton;
 import org.bitbucket.shaigem.rssb.model.item.Item;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.item.ShopItemView;
 import org.bitbucket.shaigem.rssb.util.ItemAmountUtil;
@@ -36,7 +35,6 @@ public class ShopItemInfoPopoverPresenter implements Initializable {
 
     private ShopItemView attachedItemView;
 
-
     @FXML
     AnchorPane rootPane;
 
@@ -55,22 +53,12 @@ public class ShopItemInfoPopoverPresenter implements Initializable {
     @FXML
     TextField amountTextField;
 
-    private final RuneScapeButton editIndexButton = new RuneScapeButton("Edit");
-
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // We could set the background images through css, this is just a cheap way of doing it.
         backgroundImageView.setImage((new Image(getClass().getClassLoader().getResourceAsStream
                 ("images/info.png"))));
         registerValidator();
-        idLabel.setGraphic(editIndexButton);
-        editIndexButton.setOnAction((event -> {
-            boolean result = attachedItemView.getPresenter().openEditIndexDialog();
-            if (result) {
-                refreshNodes();
-            }
-        }));
         listenForAmountTextFieldChange();
     }
 
@@ -92,7 +80,6 @@ public class ShopItemInfoPopoverPresenter implements Initializable {
         }
         amountTextField.selectAll();
         Platform.runLater(() -> amountTextField.requestFocus());
-
     }
 
     public TextField getAmountTextField() {
@@ -137,11 +124,6 @@ public class ShopItemInfoPopoverPresenter implements Initializable {
         amountTextField.setText(amount + "");
 
     }
-
-    public ShopItemView getAttachedItemView() {
-        return attachedItemView;
-    }
-
     public void setAttachedItemView(ShopItemView attachedItemView) {
         this.attachedItemView = attachedItemView;
     }

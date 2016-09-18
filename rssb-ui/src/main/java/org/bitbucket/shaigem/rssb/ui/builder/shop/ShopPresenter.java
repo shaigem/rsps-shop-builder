@@ -350,7 +350,8 @@ public class ShopPresenter implements Initializable {
     private void setupSelectedItemInformationArea() {
         selectionModel.getSelectedShopItems().addListener((SetChangeListener<? super ShopItemView>) change
                 -> updateSelectionInformation());
-        RuneScapeButton editIndexButton = new RuneScapeButton("Change...");
+        RuneScapeButton editIndexButton = new RuneScapeButton("Change Item...");
+        editIndexButton.setTooltip(new Tooltip("Change the selected item to another item"));
         editIndexButton.setOnAction(event -> {
             if (selectionModel.hasAnySelection() && !selectionModel.hasMultipleSelected()) {
                 selectionModel.getSelectedShopItems().forEach((shopItemView ->

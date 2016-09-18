@@ -75,7 +75,6 @@ public final class ItemImageStore {
      * @return the item's image
      */
     private static Image retrieveImageFromCache(int id) {
-        System.out.println("Get From Cache: " + id);
         return commonItemImageCache.get(id);
     }
 }

@@ -6,3 +6,19 @@
     -fx-padding: 1;
     -fx-accent: #da6b0f;
 }
+
+.info-header {
+    -fx-font-size: 15px;
+    -fx-font-family: "Roboto Medium";
+}
+.info-stock-amount-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Roboto";
+}
+
+.info-default-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Roboto";
+}

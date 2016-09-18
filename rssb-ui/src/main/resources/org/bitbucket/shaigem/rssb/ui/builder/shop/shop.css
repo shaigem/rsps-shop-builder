@@ -1,6 +1,9 @@
 .shop-root {
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 40.0, 0.0, 0.0, 0.0);
+}
 
+.shop-item-display-mode-label {
+    -fx-font-family: "Roboto";
 }
 
 /**

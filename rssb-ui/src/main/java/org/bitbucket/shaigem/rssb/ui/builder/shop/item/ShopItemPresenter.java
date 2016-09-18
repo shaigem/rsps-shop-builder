@@ -49,7 +49,6 @@ public final class ShopItemPresenter {
         onClickAction();
         onDoubleClickAction();
         onDeleteAction();
-        onCopyAction();
         handleItemSwapping();
     }
 
@@ -57,7 +56,7 @@ public final class ShopItemPresenter {
         Item item = shopItemView.getPresenter().getItem();
 
         MaterialDesignInputDialog inputDialog = new MaterialDesignInputDialog(item.getId() + "");
-inputDialog.setTitle("Change Item");
+        inputDialog.setTitle("Change Item");
         inputDialog.setHeaderText("Editing item: " + item.getName());
         inputDialog.setPromptText("Enter the ID of the item");
 
@@ -264,10 +263,6 @@ inputDialog.setTitle("Change Item");
                 return ItemAmountUtil.getUnformattedAmount(result.get());
         }
         return -1;
-    }
-
-    private void onCopyAction() {
-        shopItemView.getDuplicateMenuItem().setOnAction((event -> shopPresenter.copyItem(shopItemView)));
     }
 
     private void onChangeAmountMenuAction() {

@@ -1,0 +1,41 @@
+/*
+* Labels
+*/
+.shop-item-name-label {
+    -fx-translate-x: 50;
+    -fx-translate-y: 8;
+    -fx-pref-width: 99;
+    -fx-pref-height: 40;
+    -fx-wrap-text: true;
+    -fx-alignment: top-left;
+    -fx-text-fill: #f7edb7;
+    -fx-font-size: 13px;
+    -fx-font-family: "Roboto";
+}
+
+.shop-item-index-label {
+    -fx-translate-x: 56;
+    -fx-translate-y: 33;
+    -fx-pref-width: 90;
+    -fx-pref-height: 20;
+    -fx-alignment: center-right;
+    -fx-text-fill: #e5b051;
+    -fx-font-size: 12px;
+    -fx-font-family: "Roboto";
+}
+
+.shop-item-amount-label {
+    -fx-translate-x: 4;
+    -fx-translate-y: 2;
+    -fx-text-fill: yellow;
+    -fx-font-size: 12px;
+    -fx-font-family: "Roboto";
+}
+
+/*
+* Image View
+*/
+.shop-item-image-view {
+    -fx-translate-x: 9;
+    -fx-translate-y: 11;
+}

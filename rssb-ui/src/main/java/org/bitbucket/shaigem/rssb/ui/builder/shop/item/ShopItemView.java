@@ -1,6 +1,5 @@
 package org.bitbucket.shaigem.rssb.ui.builder.shop.item;
 
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -12,9 +11,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.item.popover.ShopItemInfoPopoverPresenter;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.item.popover.ShopItemInfoPopoverView;
@@ -45,22 +41,23 @@ public class ShopItemView extends Region {
     private final ImageView backgroundImageView = new ImageView();
     private final ImageView itemImageView = new ImageView();
     private final Tooltip tooltip = new Tooltip();
-    private final MenuItem duplicateMenuItem = new MenuItem("Duplicate");
     private final MenuItem changeAmount = new MenuItem("Change Amount for Selected Items");
     private final MenuItem deleteMenuItem = new MenuItem("Delete Selected");
 
     private final ContextMenu contextMenu = new ContextMenu(changeAmount,
-            deleteMenuItem, duplicateMenuItem);
+            deleteMenuItem);
 
     private ShopDisplayRadioButton.DisplayMode displayMode;
-
 
     public ShopItemView() {
         super();
         getStyleClass().addAll("shop-item-view");
+        amountLabel.getStyleClass().add("shop-item-amount-label");
+        nameLabel.getStyleClass().add("shop-item-name-label");
+        indexLabel.getStyleClass().add("shop-item-index-label");
+        itemImageView.getStyleClass().add("shop-item-image-view");
         shopItemPresenter = new ShopItemPresenter(this);
         setupNodes();
-//        updateDisplayMode(ShopDisplayRadioButton.DisplayMode.ICON);
         handleMouseOverEffects();
         handleShowContextMenu();
     }
@@ -93,7 +90,7 @@ public class ShopItemView extends Region {
     }
 
     public void updateIdLabel(int id) {
-        indexLabel.setText("Id: " + id);
+        indexLabel.setText("ID: " + id);
     }
 
     public void setTooltipText(String text) {
@@ -106,10 +103,6 @@ public class ShopItemView extends Region {
 
     public MenuItem getChangeAmountMenuItem() {
         return changeAmount;
-    }
-
-    public MenuItem getDuplicateMenuItem() {
-        return duplicateMenuItem;
     }
 
     public MenuItem getDeleteMenuItem() {
@@ -155,12 +148,6 @@ public class ShopItemView extends Region {
 
     private void setupIconNodes(boolean initial) {
         if (initial) {
-            amountLabel.setLayoutX(4);
-            amountLabel.setLayoutY(2);
-            amountLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
-            amountLabel.setTextFill(ItemAmountUtil.getPaintForAmount(-1));
-            itemImageView.setLayoutX(9);
-            itemImageView.setLayoutY(11);
             return;
         }
         backgroundImageView.setImage(ITEM_BACKGROUND_ICON);
@@ -169,21 +156,8 @@ public class ShopItemView extends Region {
 
     private void setupExpandedNodes(boolean initial) {
         if (initial) {
-            nameLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
-            nameLabel.setTextFill(Paint.valueOf("#f7edb7"));
-            nameLabel.setAlignment(Pos.CENTER_RIGHT);
-            nameLabel.setPrefSize(90, 20);
-            nameLabel.setLayoutX(52);
-            nameLabel.setLayoutY(8);
-            indexLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
-            indexLabel.setTextFill(Paint.valueOf("#e5b051"));
-            indexLabel.setPrefSize(90, 20);
-            indexLabel.setAlignment(Pos.CENTER_RIGHT);
-            indexLabel.setLayoutX(56);
-            indexLabel.setLayoutY(33);
             return;
         }
-
         backgroundImageView.setImage(ITEM_BACKGROUND_EXPANDED);
         if (shopItemPresenter.getItem() != null) {
             updateNameLabel(shopItemPresenter.getItem().getName());
@@ -212,7 +186,6 @@ public class ShopItemView extends Region {
         return popOver;
     }
 
-
     private void handleMouseOverEffects() {
         final Glow glow = new Glow();
         glow.setInput(new DropShadow(10.0, Color
@@ -232,5 +205,10 @@ public class ShopItemView extends Region {
                 contextMenu.hide();
             }
         }));
+    }
+
+    @Override
+    public String getUserAgentStylesheet() {
+        return ShopItemView.class.getResource("shopitem.css").toExternalForm();
     }
 }

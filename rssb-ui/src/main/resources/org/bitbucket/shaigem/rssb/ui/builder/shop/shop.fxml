@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="504.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="504.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter">
     <children>
         <StackPane fx:id="stackPane" layoutX="152.0" layoutY="88.0" prefHeight="326.0" prefWidth="504.0" styleClass="shop-root" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -43,7 +43,7 @@
                   <ImageView fx:id="generalStoreImageView" fitHeight="23.0" fitWidth="87.0" layoutX="239.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" visible="false">
                   </ImageView>
                   <HBox fx:id="itemDisplayStyleHBox" layoutX="456.0" layoutY="34.0" prefHeight="18.0" prefWidth="37.0" />
-                  <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="328.0" layoutY="34.0" prefHeight="17.0" prefWidth="121.0" text="Item Display Mode:" textAlignment="CENTER" textFill="#f7edb7">
+                  <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="328.0" layoutY="34.0" prefHeight="17.0" prefWidth="121.0" styleClass="shop-item-display-mode-label" text="Item Display Mode:" textAlignment="CENTER" textFill="#f7edb7">
                      <font>
                         <Font name="Tahoma" size="13.0" />
                      </font>

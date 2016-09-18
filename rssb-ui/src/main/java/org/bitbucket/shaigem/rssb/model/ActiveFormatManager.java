@@ -10,7 +10,6 @@ public class ActiveFormatManager {
 
     private BaseShopFormatPlugin formatPlugin;
 
-
     public void setFormatPlugin(BaseShopFormatPlugin formatPlugin) {
         this.formatPlugin = formatPlugin;
     }
