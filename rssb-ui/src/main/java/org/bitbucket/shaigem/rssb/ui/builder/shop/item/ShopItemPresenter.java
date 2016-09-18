@@ -9,12 +9,11 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
+import org.bitbucket.shaigem.rssb.fx.control.dialog.MaterialDesignInputDialog;
 import org.bitbucket.shaigem.rssb.model.item.Item;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.util.AlertDialogUtil;
@@ -56,12 +55,13 @@ public final class ShopItemPresenter {
 
     public boolean openEditIndexDialog() {
         Item item = shopItemView.getPresenter().getItem();
-        TextInputDialog dialog = new TextInputDialog(item.getId() + "");
-        dialog.setTitle("Change Item");
-        dialog.setHeaderText("Editing Item: " + item.getName());
-        dialog.setContentText("Please enter the id of the item:");
-        dialog.setGraphic(new ImageView(item.getImage())); //can't reuse images view here
-        Optional<String> result = dialog.showAndWait();
+
+        MaterialDesignInputDialog inputDialog = new MaterialDesignInputDialog(item.getId() + "");
+inputDialog.setTitle("Change Item");
+        inputDialog.setHeaderText("Editing item: " + item.getName());
+        inputDialog.setPromptText("Enter the ID of the item");
+
+        Optional<String> result = inputDialog.showAndWaitWithInput();
         if (result.isPresent()) {
             try {
                 int id = Integer.parseInt(result.get());
@@ -253,11 +253,12 @@ public final class ShopItemPresenter {
     }
 
     private int openChangeAmountDialog() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Change Amount");
-        dialog.setHeaderText("Change Amount for Multiple Items");
-        dialog.setContentText("Please enter the new amount:");
-        Optional<String> result = dialog.showAndWait();
+        MaterialDesignInputDialog inputDialog = new MaterialDesignInputDialog();
+        inputDialog.setTitle("Change Amount");
+        inputDialog.setHeaderText("Change amount for multiple items");
+        inputDialog.getContentPane().getInputTextField().setPromptText
+                ("Enter amount (10, 10k, 100k, 1m, etc.)");
+        Optional<String> result = inputDialog.showAndWaitWithInput();
         if (result.isPresent()) {
             if (!result.get().isEmpty())
                 return ItemAmountUtil.getUnformattedAmount(result.get());

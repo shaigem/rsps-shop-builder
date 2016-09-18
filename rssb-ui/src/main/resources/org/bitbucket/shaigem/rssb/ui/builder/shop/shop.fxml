@@ -14,7 +14,7 @@
 
 <AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="504.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter">
     <children>
-        <StackPane layoutX="152.0" layoutY="88.0" prefHeight="326.0" prefWidth="504.0" styleClass="shop-root" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <StackPane fx:id="stackPane" layoutX="152.0" layoutY="88.0" prefHeight="326.0" prefWidth="504.0" styleClass="shop-root" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <ImageView fx:id="shopImageView" fitHeight="326.0" fitWidth="504.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
                 </ImageView>

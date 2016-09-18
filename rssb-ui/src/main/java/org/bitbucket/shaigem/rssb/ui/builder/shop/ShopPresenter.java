@@ -26,6 +26,7 @@ import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.fx.ShopTab;
 import org.bitbucket.shaigem.rssb.fx.control.RuneScapeButton;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
+import org.bitbucket.shaigem.rssb.fx.control.dialog.MaterialDesignInputDialog;
 import org.bitbucket.shaigem.rssb.model.DragItemManager;
 import org.bitbucket.shaigem.rssb.model.ShopItemSelectionModel;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
@@ -88,6 +89,8 @@ public class ShopPresenter implements Initializable {
     @FXML
     ImageView generalStoreImageView;
 
+    @FXML
+    StackPane stackPane;
     @FXML
     TilePane shopItemPane;
 
@@ -371,13 +374,13 @@ public class ShopPresenter implements Initializable {
         */
     }
 
+
     public void openAddItemByIndexDialog() {
-        TextInputDialog dialog = new TextInputDialog("11694");
-        dialog.setTitle("Add by Item Index Input");
-        dialog.setHeaderText("Add by Item Index");
-        dialog.setContentText("Please enter the id of the item:");
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(value -> {
+        MaterialDesignInputDialog inputDialog = new MaterialDesignInputDialog("0");
+        inputDialog.setTitle("Input Dialog");
+        inputDialog.setHeaderText("Add by Item ID");
+        inputDialog.setPromptText("Enter Id");
+        inputDialog.showAndWaitWithInput().ifPresent(value -> {
             try {
                 int id = Integer.parseInt(value);
                 addItem(new Item(id));
@@ -389,8 +392,7 @@ public class ShopPresenter implements Initializable {
                 alert.setTitle("Error With Input");
                 alert.getButtonTypes().setAll(tryAgainButton, closeButton);
                 alert.setHeaderText("Invalid Input");
-                alert.setContentText("Cannot parse input. Remember," +
-                        " the input must be a number!");
+                alert.setContentText("Cannot parse input. The input must be a number!");
                 Optional<ButtonType> response = alert.showAndWait();
                 response.ifPresent(buttonType -> {
                     if (buttonType == tryAgainButton) {
