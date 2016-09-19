@@ -126,7 +126,7 @@ public class ItemListPresenter implements Initializable {
                 Dragboard db = itemListView.startDragAndDrop(TransferMode.ANY);
                 ClipboardContent content = new ClipboardContent();
                 content.putString("");
-                Image firstItemImage = selectedItemsList.get(0).getImage();
+                Image firstItemImage = selectedItemsList.get(0).getImageOrFetch();
                 db.setDragView(firstItemImage);
                 db.setContent(content);
                 dragItemManager.addAll(selectedItemsList);
@@ -138,7 +138,6 @@ public class ItemListPresenter implements Initializable {
         itemListView.setOnDragDone((e) -> {
             if (e.getTransferMode() == null) // if transfer failed
                 dragItemManager.onDragFailure();
-
             e.consume();
         });
 

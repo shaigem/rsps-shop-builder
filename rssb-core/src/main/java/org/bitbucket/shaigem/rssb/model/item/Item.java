@@ -5,6 +5,8 @@ import javafx.scene.image.Image;
 import org.bitbucket.shaigem.rssb.store.ItemImageStore;
 import org.bitbucket.shaigem.rssb.store.ItemNameStore;
 
+import java.util.Objects;
+
 
 /**
  * Created on 2015-08-11.
@@ -26,7 +28,6 @@ public class Item {
     public Item(int id) {
         this(id, 1);
     }
-
 
     public Item(int id, Image image) {
         this(id, 1);
@@ -74,11 +75,19 @@ public class Item {
      *
      * @return the item's image.
      */
-    public Image getImage() {
+    public Image getImageOrFetch() {
         if (imageObjectProperty.get() == null) {
-            imageObjectProperty.set(ItemImageStore.getImageForId(getId()));
+            setImage(ItemImageStore.getImageForId(getId()));
         }
         return imageObjectProperty.get();
+    }
+
+    public Image getImage() {
+        return imageObjectProperty.get();
+    }
+
+    public void setImage(Image image) {
+        imageObjectProperty.set(image);
     }
 
     /**
@@ -93,8 +102,43 @@ public class Item {
         return imageObjectProperty.get();
     }
 
+
     //public ObjectProperty<Image> imageProperty() {
     //  return imageObjectProperty;
     // }
 
+    public Item copy() {
+        Item item = new Item(this.getId(), this.getAmount());
+        if (this.getImage() != null) {
+            // if the image exists and was fetched already from file
+            // then we can set the image to the copy and cache the image for later use
+            // if the image does not exist there is no need to fetch the image from zip now as it is a waste
+            // the image will get fetched when it is actually needed
+            item.setImage(ItemImageStore.getAndCacheImageForId(this.getId(), this.getImage()));
+        }
+        return item;
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getId(), this.getName(), this.getAmount());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        final Item other = (Item) obj;
+        return Objects.equals(this.getId(), other.getId())
+                && Objects.equals(this.getName(), other.getName())
+                && Objects.equals(this.getAmount(), other.getAmount());
+    }
 }

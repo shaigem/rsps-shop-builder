@@ -138,7 +138,7 @@ public final class ShopItemPresenter {
     private void listenForItemChange() {
         itemObjectProperty.addListener(((observable, oldValue, newItemValue) -> {
             if (Objects.nonNull(newItemValue)) {
-                shopItemView.getItemImageView().setImage(newItemValue.getImage());
+                shopItemView.getItemImageView().setImage(newItemValue.getImageOrFetch());
                 shopItemView.updateAmountLabel(newItemValue.getAmount());
                 shopItemView.updateNameLabel(newItemValue.getName());
                 shopItemView.updateIdLabel(newItemValue.getId());

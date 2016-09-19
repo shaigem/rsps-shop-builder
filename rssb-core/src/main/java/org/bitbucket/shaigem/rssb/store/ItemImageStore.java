@@ -43,6 +43,7 @@ public final class ItemImageStore {
 
     /**
      * Gets the image for the item's id from the cache.
+     * If it does not exist, then fetch it from the zip file and cache it in the store.
      *
      * @param id the item's identifier
      * @return the item's image
@@ -52,7 +53,19 @@ public final class ItemImageStore {
     }
 
     /**
-     * Retrieves the image from the zip file.
+     * Gets the image for the supplied item id from the cache.
+     * If the image is not already cached, then cache the image that is provided instead.
+     *
+     * @param id    the item's identifier
+     * @param image the item's image
+     * @return the cached image or the <code>image</code> that is already provided
+     */
+    public static Image getAndCacheImageForId(int id, Image image) {
+        return commonItemImageCache.get(id, k -> image);
+    }
+
+    /**
+     * Retrieves the image from the zip file. This does not cache the image!
      *
      * @param id the item's identifier
      * @return the item's image
@@ -60,6 +73,7 @@ public final class ItemImageStore {
     public static Image retrieveImageFromFile(int id) {
         try (TFileInputStream tFileInputStream =
                      new TFileInputStream(STORE_PATH + id + ".png")) {
+            System.out.println("Retrieved from zip: " + id);
             return new Image(tFileInputStream);
         } catch (IOException e) {
             return DEFAULT;
@@ -75,6 +89,8 @@ public final class ItemImageStore {
      * @return the item's image
      */
     private static Image retrieveImageFromCache(int id) {
+        System.out.println("Cache hit: " + id);
         return commonItemImageCache.get(id);
     }
+
 }

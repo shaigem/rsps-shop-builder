@@ -188,11 +188,11 @@ public class ShopPresenter implements Initializable {
      *
      * @param item the {@link Item} to add
      */
-    public void addItem(Item item, boolean fromDrop) {
+    public void addItem(Item item, boolean fromItemListDrop) {
         ShopItemView shopItemView = new ShopItemView();
         shopItemView.getPresenter().setShopPresenter(this);
         shopItemView.getPresenter().setItem(item);
-        if (fromDrop) {
+        if (fromItemListDrop) {
             getSelectionModel().addToSelection(shopItemView, true);
         } else {
             getSelectionModel().setSelected(shopItemView);
@@ -214,15 +214,8 @@ public class ShopPresenter implements Initializable {
             }
         }
         for (Item item : itemCollection) {
-            ShopItemView shopItemView = new ShopItemView();
-            shopItemView.getPresenter().setShopPresenter(this);
-            shopItemView.getPresenter().setItem(new Item(item.getId(), item.getAmount()));
-            shopItemPane.getChildren().add(shopItemView);
-            if (fromItemList && multipleItems) {
-                getSelectionModel().addToSelection(shopItemView, true);
-            }
+            addItem(item.copy(), fromItemList && multipleItems);
         }
-
         if (!multipleItems) {
             // select the last item
             if (!shopItemPane.getChildren().isEmpty())
@@ -292,7 +285,7 @@ public class ShopPresenter implements Initializable {
                     selectedItemNameLabel.setText(item.getName());
                     selectedItemIdLabel.setVisible(true);
                     selectedItemIdLabel.setText("ID: " + item.getId());
-                    selectedItemImageView.setImage(item.getImage());
+                    selectedItemImageView.setImage(item.getImageOrFetch());
                 }));
             } else {
                 selectedItemNameLabel.setText("No Selection");
@@ -506,7 +499,7 @@ public class ShopPresenter implements Initializable {
                     }
                 }
                 // if we are adding multiple items, select all of those items ONLY
-                dragList.forEach((item -> addItem(new Item(item.getId(), item.getAmount()), multipleItems)));
+                dragList.forEach((item -> addItem(item.copy(), multipleItems)));
                 success = true;
 
             }

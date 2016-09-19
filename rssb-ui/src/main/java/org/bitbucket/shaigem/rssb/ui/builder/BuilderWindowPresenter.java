@@ -60,7 +60,6 @@ public class BuilderWindowPresenter implements Initializable {
     @FXML
     SplitPane rightSplitPane;
 
-
     @FXML
     BorderPane shopPane;
     @FXML
