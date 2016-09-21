@@ -201,7 +201,7 @@ public class ShopPresenter implements Initializable {
     public void addItem(Item item, boolean resetSelection) {
         ShopItemView shopItemView = new ShopItemView();
         shopItemView.getPresenter().setShopPresenter(this);
-        shopItemView.getPresenter().setItem(item);
+        shopItemView.getPresenter().setItem(item.copy()); // create a copy
         if (resetSelection) { // sets only the newly added item as selected
             selectionModel.setSelected(shopItemView);
         } else {
@@ -210,19 +210,15 @@ public class ShopPresenter implements Initializable {
         shopItemPane.getChildren().add(shopItemView);
     }
 
-    public void addItem(Item item) {
-        addItem(item, false);
-    }
 
     /**
      * Adds all items to the shop view from the provided collection.
      *
      * @param itemCollection the collection to add items from
-     * @param selectAllAdded if true select all of the newly added items else select the last added item
      */
-    public void addItems(Collection<Item> itemCollection, boolean selectAllAdded) {
+    public void addItems(Collection<Item> itemCollection) {
         final boolean multipleItems = itemCollection.size() > 1;
-        if (multipleItems && selectAllAdded) {
+        if (multipleItems) {
             if (getSelectionModel().hasAnySelection()) {
                 // clears any selection if we are adding multiple items
                 // Reason is so we can select just the items that are being added
@@ -230,7 +226,7 @@ public class ShopPresenter implements Initializable {
             }
         }
         for (Item item : itemCollection) {
-            addItem(item.copy(), !(selectAllAdded && multipleItems));
+            addItem(item, !(multipleItems));
         }
         if (!multipleItems) {
             // select the last item
@@ -238,10 +234,6 @@ public class ShopPresenter implements Initializable {
                 getSelectionModel().setSelected((ShopItemView)
                         shopItemPane.getChildren().get(shopItemPane.getChildren().size() - 1));
         }
-    }
-
-    public void addItems(Collection<Item> itemCollection) {
-        addItems(itemCollection, false);
     }
 
     /**
@@ -361,7 +353,7 @@ public class ShopPresenter implements Initializable {
     @FXML
     void onPasteAction() {
         final ObservableSet<Item> itemContent = ShopItemClipboardManager.getInstance().getItems();
-        addItems(itemContent, itemContent.size() > 1);
+        addItems(itemContent);
     }
 
     @FXML
@@ -386,7 +378,7 @@ public class ShopPresenter implements Initializable {
 
     private void bindDisablePropertyForMenuItems() {
         BooleanBinding selectionListIsEmpty = Bindings.isEmpty(selectionModel.getSelectedShopItems());
-        // disable menu item when there are no selected items
+        // disable menu items when there are no selected items
         changeAmountMenuItem.disableProperty().bind(selectionListIsEmpty);
         deleteMenuItem.disableProperty().bind(selectionListIsEmpty);
         copyMenuItem.disableProperty().bind(selectionListIsEmpty);
@@ -445,7 +437,7 @@ public class ShopPresenter implements Initializable {
         inputDialog.showAndWaitWithInput().ifPresent(value -> {
             try {
                 int id = Integer.parseInt(value);
-                addItem(new Item(id));
+                addItem(new Item(id), true);
             } catch (NumberFormatException exc) {
                 ButtonType tryAgainButton = new ButtonType("Try Again", ButtonBar.ButtonData.OK_DONE);
                 ButtonType closeButton = new ButtonType("Close", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -561,7 +553,7 @@ public class ShopPresenter implements Initializable {
                     }
                 }
                 // if we are adding multiple items, select all of those items ONLY
-                dragList.forEach((item -> addItem(item.copy(), !multipleItems)));
+                dragList.forEach((item -> addItem(item, !multipleItems)));
                 success = true;
 
             }

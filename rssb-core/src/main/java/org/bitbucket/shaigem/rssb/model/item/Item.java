@@ -13,15 +13,15 @@ import java.util.Objects;
  */
 public class Item {
 
-    private IntegerProperty idProperty;
-    private IntegerProperty amountProperty;
-    private StringProperty nameProperty;
+    private IntegerProperty id;
+    private IntegerProperty amount;
+    private StringProperty name;
     private ObjectProperty<Image> imageObjectProperty;
 
     public Item(int id, int amount) {
-        this.idProperty = new SimpleIntegerProperty(id);
-        this.amountProperty = new SimpleIntegerProperty(amount);
-        this.nameProperty = new SimpleStringProperty(ItemNameStore.getItemName(id));
+        this.id = new SimpleIntegerProperty(id);
+        this.amount = new SimpleIntegerProperty(amount);
+        this.name = new SimpleStringProperty();
         this.imageObjectProperty = new SimpleObjectProperty<>();
     }
 
@@ -37,35 +37,39 @@ public class Item {
     public IntegerProperty idProperty()
 
     {
-        return idProperty;
+        return id;
     }
 
     public IntegerProperty amountProperty() {
-        return amountProperty;
+        return amount;
     }
 
     public StringProperty nameProperty() {
-        return nameProperty;
+        return name;
     }
 
     public int getId() {
-        return idProperty.get();
+        return id.get();
     }
 
     public int getAmount() {
-        return amountProperty.get();
+        return amount.get();
     }
 
     public void setAmount(int amt) {
         if (amt < 0) {
             return;
         }
-        amountProperty().set(amt);
+        amount.set(amt);
     }
 
     public String getName() {
-        return nameProperty.get();
+        if (name.get() == null) {
+            name.set(ItemNameStore.getItemName(getId()));
+        }
+        return name.get();
     }
+
 
     /**
      * Lazily loads the image from the store.
@@ -104,6 +108,7 @@ public class Item {
 
     public Item copy() {
         Item item = new Item(this.getId(), this.getAmount());
+        item.name.set(this.getName());
         if (this.getImageNoFetch() != null) {
             // if the image exists and was fetched already from file
             // then we can set the image to the copy and cache the image for later use

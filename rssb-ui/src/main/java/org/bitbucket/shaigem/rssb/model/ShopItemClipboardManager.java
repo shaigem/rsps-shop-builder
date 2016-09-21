@@ -26,7 +26,7 @@ public final class ShopItemClipboardManager {
         if (!itemHashSet.isEmpty()) {
             itemHashSet.clear();
         }
-        collection.forEach(itemHashSet::add);
+        collection.forEach(item -> itemHashSet.add(item.copy()));
     }
 
     /**

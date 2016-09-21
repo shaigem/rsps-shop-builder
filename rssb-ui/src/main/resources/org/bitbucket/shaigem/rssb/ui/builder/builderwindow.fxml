@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1240.0" styleClass="builder-root" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.BuilderWindowPresenter">
+<VBox fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1240.0" styleClass="builder-root" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.BuilderWindowPresenter">
     <children>
         <MenuBar prefHeight="25.0" prefWidth="1240.0" styleClass="builder-menu-bar">
             <menus>
@@ -22,7 +22,7 @@
                         <MenuItem mnemonicParsing="false" onAction="#onExportAction" text="Export As..." />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="View">
+                <Menu mnemonicParsing="false" text="Default">
                     <items>
                         <RadioMenuItem fx:id="expandedItemDisplayRadioItem" mnemonicParsing="false" text="Expanded Item Display" />
                     </items>

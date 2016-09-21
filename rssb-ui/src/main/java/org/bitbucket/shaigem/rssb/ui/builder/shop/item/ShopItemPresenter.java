@@ -238,7 +238,7 @@ public final class ShopItemPresenter {
                         shopPresenter.getSelectionModel().clearSelection();
                     }
                 }
-                dragList.forEach((item -> shopPresenter.addItem(item.copy(), !multipleItems)));
+                dragList.forEach((item -> shopPresenter.addItem(item, !multipleItems)));
                 shopPresenter.getDragItemManager().onDropComplete();
                 success = true;
             }

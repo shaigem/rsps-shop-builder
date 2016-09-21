@@ -77,7 +77,7 @@ public class ItemListPresenter implements Initializable {
         ShopPresenter currentViewing = tabManager.getCurrentViewingShop();
         if (currentViewing != null) {
             ObservableList<Item> selectedItemsList = itemListView.getSelectionModel().getSelectedItems();
-            currentViewing.addItems(selectedItemsList, true);
+            currentViewing.addItems(selectedItemsList);
         }
     }
 
