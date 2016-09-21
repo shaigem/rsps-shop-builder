@@ -33,6 +33,7 @@ public class ShopToolBarPresenter implements Initializable {
     Button deleteButton;
     @FXML
     Button deleteAllButton;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Set all graphics
@@ -60,7 +61,7 @@ public class ShopToolBarPresenter implements Initializable {
 
     @FXML
     public void onDeleteAction() {
-        shopPresenter.deleteItem(shopPresenter.getSelectionModel().getSelectedShopItems());
+        shopPresenter.deleteSelectedItems();
     }
 
     @FXML

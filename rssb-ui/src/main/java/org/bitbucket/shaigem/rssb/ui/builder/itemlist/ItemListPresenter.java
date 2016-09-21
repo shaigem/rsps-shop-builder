@@ -26,6 +26,7 @@ import org.bitbucket.shaigem.rssb.ui.search.SearchView;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -126,8 +127,8 @@ public class ItemListPresenter implements Initializable {
                 Dragboard db = itemListView.startDragAndDrop(TransferMode.ANY);
                 ClipboardContent content = new ClipboardContent();
                 content.putString("");
-                Image firstItemImage = selectedItemsList.get(0).getImageOrFetch();
-                db.setDragView(firstItemImage);
+                Optional<Item> firstItem = selectedItemsList.stream().findFirst();
+                firstItem.ifPresent(item -> db.setDragView(item.getImage()));
                 db.setContent(content);
                 dragItemManager.addAll(selectedItemsList);
 
@@ -157,7 +158,8 @@ public class ItemListPresenter implements Initializable {
             if (!empty && item != null) {
                 setText("[" + item.getId() + "] " + item.getName());
                 // getImageFromFile() not getImage()
-                // These items are not cached in the most commonly used items!
+                // Items from the item list are not cached in the global store in this case
+                // These are only cached when they are actually used (added to shop)
                 final Image itemImage = item.getImageFromFile();
                 if (imageView == null) {
                     imageView = new ImageView(itemImage);

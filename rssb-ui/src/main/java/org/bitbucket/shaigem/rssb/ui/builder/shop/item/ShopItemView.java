@@ -1,9 +1,7 @@
 package org.bitbucket.shaigem.rssb.ui.builder.shop.item;
 
 import javafx.scene.Parent;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
@@ -41,11 +39,6 @@ public class ShopItemView extends Region {
     private final ImageView backgroundImageView = new ImageView();
     private final ImageView itemImageView = new ImageView();
     private final Tooltip tooltip = new Tooltip();
-    private final MenuItem changeAmount = new MenuItem("Change Amount for Selected Items");
-    private final MenuItem deleteMenuItem = new MenuItem("Delete Selected");
-
-    private final ContextMenu contextMenu = new ContextMenu(changeAmount,
-            deleteMenuItem);
 
     private ShopDisplayRadioButton.DisplayMode displayMode;
 
@@ -99,14 +92,6 @@ public class ShopItemView extends Region {
 
     public ImageView getItemImageView() {
         return itemImageView;
-    }
-
-    public MenuItem getChangeAmountMenuItem() {
-        return changeAmount;
-    }
-
-    public MenuItem getDeleteMenuItem() {
-        return deleteMenuItem;
     }
 
     public ShopItemPresenter getPresenter() {
@@ -197,12 +182,9 @@ public class ShopItemView extends Region {
     private void handleShowContextMenu() {
         setOnMousePressed((event -> {
             if (event.isSecondaryButtonDown()) {
-                contextMenu.show(this, event.getScreenX(), event.getScreenY());
                 if(Objects.nonNull(popOver)) {
                     popOver.hide();
                 }
-            } else {
-                contextMenu.hide();
             }
         }));
     }

@@ -2,14 +2,12 @@ package org.bitbucket.shaigem.rssb.ui.builder.shop;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.collections.SetChangeListener;
+import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -28,6 +26,7 @@ import org.bitbucket.shaigem.rssb.fx.control.RuneScapeButton;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.fx.control.dialog.MaterialDesignInputDialog;
 import org.bitbucket.shaigem.rssb.model.DragItemManager;
+import org.bitbucket.shaigem.rssb.model.ShopItemClipboardManager;
 import org.bitbucket.shaigem.rssb.model.ShopItemSelectionModel;
 import org.bitbucket.shaigem.rssb.model.ShopRepository;
 import org.bitbucket.shaigem.rssb.model.item.Item;
@@ -43,6 +42,7 @@ import org.sejda.eventstudio.DefaultEventStudio;
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created on 2015-08-11.
@@ -113,6 +113,14 @@ public class ShopPresenter implements Initializable {
     Label selectedItemIdLabel;
     @FXML
     TilePane selectedItemInfoTilePane;
+    @FXML
+    MenuItem changeAmountMenuItem;
+    @FXML
+    MenuItem deleteMenuItem;
+    @FXML
+    MenuItem copyMenuItem;
+    @FXML
+    MenuItem pasteMenuItem;
 
     @Inject
     DefaultEventStudio eventStudio;
@@ -126,6 +134,7 @@ public class ShopPresenter implements Initializable {
         modified = new SimpleBooleanProperty();
         generalStoreImageVisibility = new SimpleBooleanProperty();
         generalStoreImageView.visibleProperty().bind(generalStoreImageVisibility);
+        bindDisablePropertyForMenuItems();
         setupActionsPane();
         setupSelectedItemInformationArea();
         setupResourceImages();
@@ -186,16 +195,17 @@ public class ShopPresenter implements Initializable {
     /**
      * Add a item to be displayed in the shop.
      *
-     * @param item the {@link Item} to add
+     * @param item           the {@link Item} to add
+     * @param resetSelection if selection should be reset
      */
-    public void addItem(Item item, boolean fromItemListDrop) {
+    public void addItem(Item item, boolean resetSelection) {
         ShopItemView shopItemView = new ShopItemView();
         shopItemView.getPresenter().setShopPresenter(this);
         shopItemView.getPresenter().setItem(item);
-        if (fromItemListDrop) {
-            getSelectionModel().addToSelection(shopItemView, true);
+        if (resetSelection) { // sets only the newly added item as selected
+            selectionModel.setSelected(shopItemView);
         } else {
-            getSelectionModel().setSelected(shopItemView);
+            selectionModel.addToSelection(shopItemView, true);
         }
         shopItemPane.getChildren().add(shopItemView);
     }
@@ -204,9 +214,15 @@ public class ShopPresenter implements Initializable {
         addItem(item, false);
     }
 
-    public void addItems(List<Item> itemCollection, boolean fromItemList) {
+    /**
+     * Adds all items to the shop view from the provided collection.
+     *
+     * @param itemCollection the collection to add items from
+     * @param selectAllAdded if true select all of the newly added items else select the last added item
+     */
+    public void addItems(Collection<Item> itemCollection, boolean selectAllAdded) {
         final boolean multipleItems = itemCollection.size() > 1;
-        if (multipleItems && fromItemList) {
+        if (multipleItems && selectAllAdded) {
             if (getSelectionModel().hasAnySelection()) {
                 // clears any selection if we are adding multiple items
                 // Reason is so we can select just the items that are being added
@@ -214,7 +230,7 @@ public class ShopPresenter implements Initializable {
             }
         }
         for (Item item : itemCollection) {
-            addItem(item.copy(), fromItemList && multipleItems);
+            addItem(item.copy(), !(selectAllAdded && multipleItems));
         }
         if (!multipleItems) {
             // select the last item
@@ -224,39 +240,42 @@ public class ShopPresenter implements Initializable {
         }
     }
 
-    public void addItems(List<Item> itemCollection) {
+    public void addItems(Collection<Item> itemCollection) {
         addItems(itemCollection, false);
     }
 
-
-    public void copyItem(ShopItemView shopItemView) {
-        final Item item = new Item(shopItemView.getPresenter().getItem().getId(),
-                ItemAmountUtil.getUnformattedAmount(shopItemView.getAmountLabel().getText()));
-        addItem(item);
-    }
-
     /**
-     * Deletes the item that is displayed in the shop.
-     *
-     * @param collection the {@link Collection} to delete/remove from.
+     * Deletes all selected shop items.
      */
-    public void deleteItem(Collection<ShopItemView> collection) {
-        ShopItemView lastDeletedItem = null;
-        if (!collection.isEmpty())
-            lastDeletedItem = (ShopItemView) collection.toArray()[collection.size() - 1];
-        int lastDeletedIndex = shopItemPane.getChildren().indexOf(lastDeletedItem);
+    public void deleteSelectedItems() {
+        final ObservableSet<ShopItemView> selectedItems =
+                selectionModel.getSelectedShopItems();
 
-        shopItemPane.getChildren().removeAll(collection);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Item");
+        alert.setContentText(String.format("Are you sure you want to delete %s?",
+                selectedItems.size() > 1 ? "these items" : "this item"));
+        alert.showAndWait().ifPresent(buttonType -> {
+            if (buttonType.equals(ButtonType.OK)) {
+                ShopItemView lastDeletedItem = null;
+                if (!selectedItems.isEmpty())
+                    lastDeletedItem = (ShopItemView) selectedItems.toArray()[selectedItems.size() - 1];
+                int lastDeletedIndex = shopItemPane.getChildren().indexOf(lastDeletedItem);
 
-        int indexToSelect = lastDeletedIndex;
-        if (lastDeletedIndex > shopItemPane.getChildren().size() - 1) {
-            indexToSelect = shopItemPane.getChildren().size() - 1;
-        }
+                shopItemPane.getChildren().removeAll(selectedItems);
 
-        if (indexToSelect != -1) {
-            selectionModel.setSelected((ShopItemView) shopItemPane.getChildren().get(indexToSelect));
-        }
+                int indexToSelect = lastDeletedIndex;
+                if (lastDeletedIndex > shopItemPane.getChildren().size() - 1) {
+                    indexToSelect = shopItemPane.getChildren().size() - 1;
+                }
+
+                if (indexToSelect != -1) {
+                    selectionModel.setSelected((ShopItemView) shopItemPane.getChildren().get(indexToSelect));
+                }
+            }
+        });
     }
+
 
     public void save() {
         // mainWindowPresenter.getExplorerPresenter().checkForDuplicateKeys(shop);
@@ -285,7 +304,7 @@ public class ShopPresenter implements Initializable {
                     selectedItemNameLabel.setText(item.getName());
                     selectedItemIdLabel.setVisible(true);
                     selectedItemIdLabel.setText("ID: " + item.getId());
-                    selectedItemImageView.setImage(item.getImageOrFetch());
+                    selectedItemImageView.setImage(item.getImage());
                 }));
             } else {
                 selectedItemNameLabel.setText("No Selection");
@@ -330,6 +349,49 @@ public class ShopPresenter implements Initializable {
         // ShopItemView lastItem = (ShopItemView) shopItemPane.getChildren().get
         //        (shopItemPane.getChildren().size() - 1);
         //  selectionModel.setSelected(lastItem);
+    }
+
+    @FXML
+    void onCopyAction() {
+        ShopItemClipboardManager.getInstance().setItems
+                (selectionModel.getSelectedShopItems().stream().map(shopItemView ->
+                        shopItemView.getPresenter().getItem()).collect(Collectors.toList()));
+    }
+
+    @FXML
+    void onPasteAction() {
+        final ObservableSet<Item> itemContent = ShopItemClipboardManager.getInstance().getItems();
+        addItems(itemContent, itemContent.size() > 1);
+    }
+
+    @FXML
+    void onDeleteAction() {
+        deleteSelectedItems();
+    }
+
+    @FXML
+    void onChangeAmountAction() {
+        MaterialDesignInputDialog inputDialog = new MaterialDesignInputDialog();
+        inputDialog.setTitle("Change Amount");
+        inputDialog.setHeaderText("Change amount for multiple items");
+        inputDialog.getContentPane().getInputTextField().setPromptText
+                ("Enter amount (10, 10k, 100k, 1m, etc.)");
+        Optional<String> result = inputDialog.showAndWaitWithInput();
+        result.ifPresent(value -> {
+            int realAmount = ItemAmountUtil.getUnformattedAmount(value);
+            selectionModel.getSelectedShopItems().forEach(shopItemView ->
+                    shopItemView.getPresenter().getItem().setAmount(realAmount));
+        });
+    }
+
+    private void bindDisablePropertyForMenuItems() {
+        BooleanBinding selectionListIsEmpty = Bindings.isEmpty(selectionModel.getSelectedShopItems());
+        // disable menu item when there are no selected items
+        changeAmountMenuItem.disableProperty().bind(selectionListIsEmpty);
+        deleteMenuItem.disableProperty().bind(selectionListIsEmpty);
+        copyMenuItem.disableProperty().bind(selectionListIsEmpty);
+        // disable menu items when there are no copied items in the item clipboard
+        pasteMenuItem.disableProperty().bind(Bindings.isEmpty(ShopItemClipboardManager.getInstance().getItems()));
     }
 
     private void scrollWhenHeightIncreases() {
@@ -499,7 +561,7 @@ public class ShopPresenter implements Initializable {
                     }
                 }
                 // if we are adding multiple items, select all of those items ONLY
-                dragList.forEach((item -> addItem(item.copy(), multipleItems)));
+                dragList.forEach((item -> addItem(item.copy(), !multipleItems)));
                 success = true;
 
             }

@@ -75,50 +75,58 @@ public class Item {
      *
      * @return the item's image.
      */
-    public Image getImageOrFetch() {
+    public Image getImage() {
         if (imageObjectProperty.get() == null) {
             setImage(ItemImageStore.getImageForId(getId()));
         }
         return imageObjectProperty.get();
     }
 
-    public Image getImage() {
-        return imageObjectProperty.get();
-    }
 
     public void setImage(Image image) {
         imageObjectProperty.set(image);
     }
 
     /**
-     * Lazily load the image from a file. This should <B>ONLY</B> be used for the item list images.
+     * Lazily load the image from a file.
+     * <p>
+     * Note that images loaded by this method are not cached globally in the store and
+     * can result to unnecessary reads from the zip file.</p>
      *
      * @return the item's image
      */
     public Image getImageFromFile() {
         if (imageObjectProperty.get() == null) {
-            imageObjectProperty.set(ItemImageStore.retrieveImageFromFile(getId()));
+            imageObjectProperty.set(ItemImageStore.getImageFromZipFile(getId()));
         }
         return imageObjectProperty.get();
     }
 
-
-    //public ObjectProperty<Image> imageProperty() {
-    //  return imageObjectProperty;
-    // }
-
     public Item copy() {
         Item item = new Item(this.getId(), this.getAmount());
-        if (this.getImage() != null) {
+        if (this.getImageNoFetch() != null) {
             // if the image exists and was fetched already from file
             // then we can set the image to the copy and cache the image for later use
             // if the image does not exist there is no need to fetch the image from zip now as it is a waste
             // the image will get fetched when it is actually needed
-            item.setImage(ItemImageStore.getAndCacheImageForId(this.getId(), this.getImage()));
+            item.setImage(ItemImageStore.cacheIfAbsent(this.getId(), this.getImageNoFetch()));
         }
         return item;
     }
 
+    /**
+     * Gets the image. If the image does not exist then this does not load it.
+     *
+     * @return the image
+     */
+    private Image getImageNoFetch() {
+        return imageObjectProperty.get();
+    }
+
+    @Override
+    public String toString() {
+        return getId() + " - " + getName();
+    }
 
     @Override
     public int hashCode() {

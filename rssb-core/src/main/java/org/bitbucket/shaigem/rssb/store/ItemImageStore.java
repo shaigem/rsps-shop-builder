@@ -30,7 +30,7 @@ public final class ItemImageStore {
                     maximumSize(512).expireAfterAccess(5, TimeUnit.MINUTES).softValues().
                     removalListener((key, value, cause) ->
                             System.out.println("Removed: " + key + " : " + value + " " + cause)).
-                    build(k -> retrieveImageFromFile((Integer) k));
+                    build(k -> getImageFromZipFile((Integer) k));
 
 
     public static void setupStoreArchiveDetecter() {
@@ -53,14 +53,14 @@ public final class ItemImageStore {
     }
 
     /**
-     * Gets the image for the supplied item id from the cache.
-     * If the image is not already cached, then cache the image that is provided instead.
+     * If the specified item id is not present in the cache,
+     * then cache it with the provided image and returns with the given image else returns the cached image.
      *
      * @param id    the item's identifier
      * @param image the item's image
      * @return the cached image or the <code>image</code> that is already provided
      */
-    public static Image getAndCacheImageForId(int id, Image image) {
+    public static Image cacheIfAbsent(int id, Image image) {
         return commonItemImageCache.get(id, k -> image);
     }
 
@@ -70,7 +70,7 @@ public final class ItemImageStore {
      * @param id the item's identifier
      * @return the item's image
      */
-    public static Image retrieveImageFromFile(int id) {
+    public static Image getImageFromZipFile(int id) {
         try (TFileInputStream tFileInputStream =
                      new TFileInputStream(STORE_PATH + id + ".png")) {
             System.out.println("Retrieved from zip: " + id);

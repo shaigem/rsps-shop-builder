@@ -17,7 +17,6 @@ import org.bitbucket.shaigem.rssb.fx.control.dialog.MaterialDesignInputDialog;
 import org.bitbucket.shaigem.rssb.model.item.Item;
 import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.util.AlertDialogUtil;
-import org.bitbucket.shaigem.rssb.util.ItemAmountUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,10 +44,8 @@ public final class ShopItemPresenter {
         finishedInitializing.bind(Bindings.isNotNull(itemObjectProperty));
         listenForFinishInitializing();
         listenForItemChange();
-        onChangeAmountMenuAction();
         onClickAction();
         onDoubleClickAction();
-        onDeleteAction();
         handleItemSwapping();
     }
 
@@ -138,7 +135,7 @@ public final class ShopItemPresenter {
     private void listenForItemChange() {
         itemObjectProperty.addListener(((observable, oldValue, newItemValue) -> {
             if (Objects.nonNull(newItemValue)) {
-                shopItemView.getItemImageView().setImage(newItemValue.getImageOrFetch());
+                shopItemView.getItemImageView().setImage(newItemValue.getImage());
                 shopItemView.updateAmountLabel(newItemValue.getAmount());
                 shopItemView.updateNameLabel(newItemValue.getName());
                 shopItemView.updateIdLabel(newItemValue.getId());
@@ -241,7 +238,7 @@ public final class ShopItemPresenter {
                         shopPresenter.getSelectionModel().clearSelection();
                     }
                 }
-                dragList.forEach((item -> shopPresenter.addItem(item, multipleItems)));
+                dragList.forEach((item -> shopPresenter.addItem(item.copy(), !multipleItems)));
                 shopPresenter.getDragItemManager().onDropComplete();
                 success = true;
             }
@@ -251,31 +248,6 @@ public final class ShopItemPresenter {
 
     }
 
-    private int openChangeAmountDialog() {
-        MaterialDesignInputDialog inputDialog = new MaterialDesignInputDialog();
-        inputDialog.setTitle("Change Amount");
-        inputDialog.setHeaderText("Change amount for multiple items");
-        inputDialog.getContentPane().getInputTextField().setPromptText
-                ("Enter amount (10, 10k, 100k, 1m, etc.)");
-        Optional<String> result = inputDialog.showAndWaitWithInput();
-        if (result.isPresent()) {
-            if (!result.get().isEmpty())
-                return ItemAmountUtil.getUnformattedAmount(result.get());
-        }
-        return -1;
-    }
-
-    private void onChangeAmountMenuAction() {
-        shopItemView.getChangeAmountMenuItem().setOnAction((event -> {
-            int result = openChangeAmountDialog();
-            if (result > -1) {
-                shopPresenter.getSelectionModel().getSelectedShopItems().forEach((shopItem) -> {
-                    Item itm = shopItem.getPresenter().getItem();
-                    itm.setAmount(result);
-                });
-            }
-        }));
-    }
 
     private void onDoubleClickAction() {
         shopItemView.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
@@ -283,10 +255,5 @@ public final class ShopItemPresenter {
                 shopItemView.showInfoPopOver();
             }
         });
-    }
-
-    private void onDeleteAction() {
-        shopItemView.getDeleteMenuItem().setOnAction((event ->
-                shopPresenter.deleteItem(shopPresenter.getSelectionModel().getSelectedShopItems())));
     }
 }

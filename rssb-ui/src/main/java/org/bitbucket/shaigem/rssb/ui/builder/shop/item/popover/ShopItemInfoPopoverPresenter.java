@@ -68,7 +68,7 @@ public class ShopItemInfoPopoverPresenter implements Initializable {
         setNameLabelText(item.getName());
         setAmountLabelText(item.getAmount());
         setAmountText(item.getAmount());
-        itemImageView.setImage(item.getImageOrFetch());
+        itemImageView.setImage(item.getImage());
     }
 
     public void refreshAmountText() {
