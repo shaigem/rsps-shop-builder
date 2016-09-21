@@ -97,8 +97,8 @@ public class ShopExplorerPresenter implements Initializable {
             copiedShop.setName(shop.getName() + "(c)");
             repository.getMasterShopDefinitions().add(copiedShop);
             eventStudio.broadcast(new CreateNewShopTabRequest(copiedShop));
-            shopTableView.getSelectionModel().selectLast();
-            shopTableView.scrollTo(shopTableView.getSelectionModel().getSelectedIndex());
+            shopTableView.getSelectionModel().select(copiedShop);
+            shopTableView.scrollTo(copiedShop);
             searchPresenter.resetSearch();
         });
     }
@@ -108,16 +108,25 @@ public class ShopExplorerPresenter implements Initializable {
         final Shop newShop = activeFormatManager.getFormat().getDefaultShop().copy();
         repository.getMasterShopDefinitions().add(newShop);
         eventStudio.broadcast(new CreateNewShopTabRequest(newShop));
-        shopTableView.getSelectionModel().selectLast();
-        shopTableView.scrollTo(shopTableView.getSelectionModel().getSelectedIndex());
+        shopTableView.getSelectionModel().select(newShop);
+        shopTableView.scrollTo(newShop);
         searchPresenter.resetSearch();
     }
 
     @FXML
     public void onRemoveAllShopsAction() {
-        repository.getMasterShopDefinitions().clear();
-        searchPresenter.resetSearch();
-        eventStudio.broadcast(new RemoveAllShopsEvent());
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.getButtonTypes().setAll(ButtonType.NO, ButtonType.YES);
+        alert.setTitle("Remove All Shops");
+        alert.setContentText("Are you sure you want to delete all shops?");
+        alert.showAndWait().ifPresent(buttonType -> {
+            if(buttonType.equals(ButtonType.YES)) {
+                repository.getMasterShopDefinitions().clear();
+                searchPresenter.resetSearch();
+                eventStudio.broadcast(new RemoveAllShopsEvent());
+            }
+
+        });
     }
 
     @FXML
@@ -156,7 +165,7 @@ public class ShopExplorerPresenter implements Initializable {
         shopTableView.setOnMousePressed((event -> {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
                 if (event.getClickCount() == 2) {
-                   onOpenAction();
+                    onOpenAction();
                 }
             }
         }));
@@ -192,6 +201,9 @@ public class ShopExplorerPresenter implements Initializable {
     private void onSaveShop(ShopSaveEvent saveShopEvent) {
         if (saveShopEvent.onSuccess()) {
             refreshExplorer();
+            final Shop savedShop = saveShopEvent.getSavedShopPresenter().getShop();
+            shopTableView.scrollTo(savedShop);
+            shopTableView.getSelectionModel().select(savedShop);
         }
     }
 
