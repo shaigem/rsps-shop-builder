@@ -57,12 +57,17 @@
                             <contextMenu>
                                 <ContextMenu>
                                     <items>
-                                        <MenuItem fx:id="copyMenuItem" mnemonicParsing="false" text="Copy" onAction="#onCopyAction"/>
-                                        <MenuItem fx:id="pasteMenuItem" mnemonicParsing="false" text="Paste" onAction="#onPasteAction"/>
+                                        <MenuItem fx:id="copyMenuItem" mnemonicParsing="false"
+                                                  text="Copy                                        CTRL+C"
+                                                  onAction="#onCopyAction"/>
+                                        <MenuItem fx:id="pasteMenuItem" mnemonicParsing="false"
+                                                  text="Paste                                       CTRL+V"
+                                                  onAction="#onPasteAction"/>
                                         <MenuItem fx:id="deleteMenuItem" mnemonicParsing="false"
                                                   onAction="#onDeleteAction" text="Delete..."/>
                                         <MenuItem fx:id="changeAmountMenuItem" mnemonicParsing="false"
-                                                  onAction="#onChangeAmountAction" text="Change Amount..."/>
+                                                  onAction="#onChangeAmountAction"
+                                                  text="Change Amount...   CTRL+SHIFT+C"/>
                                     </items>
                                 </ContextMenu>
                             </contextMenu>

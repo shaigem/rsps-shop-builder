@@ -90,8 +90,8 @@ public final class ShopTabManager {
         stackPane.getChildren().addAll(shopView.getView());
         borderPane.setCenter(stackPane);
         final ShopToolBarView toolBarView = new ShopToolBarView();
-        final ShopToolBarPresenter presenter = (ShopToolBarPresenter) toolBarView.getPresenter();
-        presenter.setShopPresenter(shopPresenter);
+        final ShopToolBarPresenter toolBarPresenter = (ShopToolBarPresenter) toolBarView.getPresenter();
+        toolBarPresenter.setShopPresenter(shopPresenter);
         borderPane.setTop(toolBarView.getView());
         tab.setContent(borderPane);
         openShops.add(shopPresenter);
@@ -199,8 +199,8 @@ public final class ShopTabManager {
         this.builderWindowPresenter = presenter;
     }
 
-    public ShopPresenter getCurrentViewingShop() {
-        return currentShopProperty.get();
+    public Optional<ShopPresenter> getCurrentViewingShop() {
+        return Optional.ofNullable(currentShopProperty.get());
     }
 
     public ObjectProperty<ShopPresenter> currentShopProperty() {

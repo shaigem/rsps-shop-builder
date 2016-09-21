@@ -29,6 +29,10 @@ public final class ShopItemClipboardManager {
         collection.forEach(item -> itemHashSet.add(item.copy()));
     }
 
+    public final boolean hasItems() {
+        return !itemHashSet.isEmpty();
+    }
+
     /**
      * Gets the copied items that are ready for pasting.
      *

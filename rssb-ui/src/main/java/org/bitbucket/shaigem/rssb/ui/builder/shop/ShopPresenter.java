@@ -15,9 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
@@ -165,12 +163,14 @@ public class ShopPresenter implements Initializable {
     }
 
     public void selectAllItems() {
+        if (shopItemPane.getChildren().isEmpty()) {
+            return;
+        }
         shopItemPane.getChildren().forEach((node -> {
             ShopItemView itemView = (ShopItemView) node;
             selectionModel.addToSelection(itemView, false);
         }));
     }
-
 
     public void setShop(Shop shop) {
         this.shop = shop;
@@ -243,12 +243,17 @@ public class ShopPresenter implements Initializable {
         final ObservableSet<ShopItemView> selectedItems =
                 selectionModel.getSelectedShopItems();
 
+        if (selectedItems.isEmpty()) {
+            return;
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.getButtonTypes().setAll(ButtonType.CANCEL, ButtonType.YES);
         alert.setTitle("Delete Item");
         alert.setContentText(String.format("Are you sure you want to delete %s?",
                 selectedItems.size() > 1 ? "these items" : "this item"));
         alert.showAndWait().ifPresent(buttonType -> {
-            if (buttonType.equals(ButtonType.OK)) {
+            if (buttonType.equals(ButtonType.YES)) {
                 ShopItemView lastDeletedItem = null;
                 if (!selectedItems.isEmpty())
                     lastDeletedItem = (ShopItemView) selectedItems.toArray()[selectedItems.size() - 1];
@@ -309,7 +314,19 @@ public class ShopPresenter implements Initializable {
     /**
      * Clears all of the items from the shop view.
      */
-    public void deleteAllItems() {
+    public void deleteAllItems(boolean confirmation) {
+        if (confirmation) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.getButtonTypes().setAll(ButtonType.CANCEL, ButtonType.YES);
+            alert.setTitle("Delete All Items");
+            alert.setContentText(("Are you sure you want to delete all items?"));
+            alert.showAndWait().ifPresent(buttonType -> {
+                if (buttonType.equals(ButtonType.YES)) {
+                    shopItemPane.getChildren().clear();
+                }
+            });
+            return;
+        }
         shopItemPane.getChildren().clear();
     }
 
@@ -319,6 +336,7 @@ public class ShopPresenter implements Initializable {
      * @param visible if true then the general store marker images will show.
      *                Otherwise, it will be hidden from the shop.
      */
+
     public void setGeneralStoreVisibility(boolean visible) {
         generalStoreImageView.setVisible(visible);
 
@@ -329,7 +347,7 @@ public class ShopPresenter implements Initializable {
     }
 
     private void shopDidChange() {
-        deleteAllItems();
+        deleteAllItems(false);
         setShopNameLabel(shop.getName());
         generalStoreImageVisibility.bind(shop.generalStoreProperty());
         addItems(shop.getItems());
@@ -344,16 +362,22 @@ public class ShopPresenter implements Initializable {
     }
 
     @FXML
-    void onCopyAction() {
-        ShopItemClipboardManager.getInstance().setItems
-                (selectionModel.getSelectedShopItems().stream().map(shopItemView ->
-                        shopItemView.getPresenter().getItem()).collect(Collectors.toList()));
+    public void onCopyAction() {
+        final boolean canCopy = selectionModel.hasAnySelection();
+        if (canCopy) {
+            ShopItemClipboardManager.getInstance().setItems
+                    (selectionModel.getSelectedShopItems().stream().map(shopItemView ->
+                            shopItemView.getPresenter().getItem()).collect(Collectors.toList()));
+        }
     }
 
     @FXML
-    void onPasteAction() {
-        final ObservableSet<Item> itemContent = ShopItemClipboardManager.getInstance().getItems();
-        addItems(itemContent);
+    public void onPasteAction() {
+        final boolean canPaste = ShopItemClipboardManager.getInstance().hasItems();
+        if (canPaste) {
+            final ObservableSet<Item> itemContent = ShopItemClipboardManager.getInstance().getItems();
+            addItems(itemContent);
+        }
     }
 
     @FXML
@@ -362,7 +386,10 @@ public class ShopPresenter implements Initializable {
     }
 
     @FXML
-    void onChangeAmountAction() {
+    public void onChangeAmountAction() {
+        if (!selectionModel.hasAnySelection()) {
+            return;
+        }
         MaterialDesignInputDialog inputDialog = new MaterialDesignInputDialog();
         inputDialog.setTitle("Change Amount");
         inputDialog.setHeaderText("Change amount for multiple items");
@@ -370,6 +397,9 @@ public class ShopPresenter implements Initializable {
                 ("Enter amount (10, 10k, 100k, 1m, etc.)");
         Optional<String> result = inputDialog.showAndWaitWithInput();
         result.ifPresent(value -> {
+            if (value.isEmpty()) {
+                return;
+            }
             int realAmount = ItemAmountUtil.getUnformattedAmount(value);
             selectionModel.getSelectedShopItems().forEach(shopItemView ->
                     shopItemView.getPresenter().getItem().setAmount(realAmount));

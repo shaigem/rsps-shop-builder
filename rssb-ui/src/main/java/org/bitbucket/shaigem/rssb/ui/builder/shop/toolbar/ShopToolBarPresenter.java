@@ -66,7 +66,7 @@ public class ShopToolBarPresenter implements Initializable {
 
     @FXML
     public void onDeleteAllAction() {
-        shopPresenter.deleteAllItems();
+        shopPresenter.deleteAllItems(true);
     }
 
     public void setShopPresenter(ShopPresenter shopPresenter) {

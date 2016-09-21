@@ -20,7 +20,6 @@ import org.bitbucket.shaigem.rssb.model.DragItemManager;
 import org.bitbucket.shaigem.rssb.model.ShopTabManager;
 import org.bitbucket.shaigem.rssb.model.item.Item;
 import org.bitbucket.shaigem.rssb.store.ItemNameStore;
-import org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter;
 import org.bitbucket.shaigem.rssb.ui.search.SearchPresenter;
 import org.bitbucket.shaigem.rssb.ui.search.SearchView;
 
@@ -74,11 +73,10 @@ public class ItemListPresenter implements Initializable {
 
     @FXML
     public void onAddSelectedAction() {
-        ShopPresenter currentViewing = tabManager.getCurrentViewingShop();
-        if (currentViewing != null) {
+        tabManager.getCurrentViewingShop().ifPresent(currentViewing -> {
             ObservableList<Item> selectedItemsList = itemListView.getSelectionModel().getSelectedItems();
             currentViewing.addItems(selectedItemsList);
-        }
+        });
     }
 
 

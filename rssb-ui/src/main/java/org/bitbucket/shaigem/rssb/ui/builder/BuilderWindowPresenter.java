@@ -2,11 +2,16 @@ package org.bitbucket.shaigem.rssb.ui.builder;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -33,6 +38,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 /**
  * @author Abyss
@@ -61,6 +67,8 @@ public class BuilderWindowPresenter implements Initializable {
     SplitPane rightSplitPane;
 
     @FXML
+    StackPane shopStackPane;
+    @FXML
     BorderPane shopPane;
     @FXML
     TabPane shopTabPane;
@@ -70,6 +78,7 @@ public class BuilderWindowPresenter implements Initializable {
 
     @FXML
     MenuItem switchFormatMenuItem;
+
     @FXML
     RadioMenuItem expandedItemDisplayRadioItem;
 
@@ -84,6 +93,48 @@ public class BuilderWindowPresenter implements Initializable {
         eventStudio.addAnnotatedListeners(this);
     }
 
+
+    private void initializeAccelerators() {
+        ObservableMap<KeyCombination, Runnable> accelerators =
+                rootPane.getScene().getAccelerators();
+
+        accelerators.put(
+                new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN), () ->
+                        acceptIfViewingShopIsPresent(ShopPresenter::onCopyAction));
+
+        accelerators.put(
+                new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN), () ->
+                        acceptIfViewingShopIsPresent(ShopPresenter::onPasteAction));
+
+        accelerators.put(
+                new KeyCodeCombination(KeyCode.A, KeyCombination.SHORTCUT_DOWN), () ->
+                        acceptIfViewingShopIsPresent(ShopPresenter::selectAllItems));
+
+        accelerators.put(
+                new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN), () ->
+                        acceptIfViewingShopIsPresent(ShopPresenter::save));
+
+        accelerators.put(
+                new KeyCodeCombination(KeyCode.DELETE), () ->
+                        acceptIfViewingShopIsPresent(ShopPresenter::deleteSelectedItems));
+
+        accelerators.put(
+                new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN,
+                        KeyCombination.SHIFT_DOWN), () ->
+                        acceptIfViewingShopIsPresent(ShopPresenter::onChangeAmountAction));
+    }
+
+
+    private void acceptIfViewingShopIsPresent(Consumer<ShopPresenter> consumer) {
+        final Optional<ShopPresenter> currentShop =
+                tabManager.getCurrentViewingShop();
+
+        if (currentShop.isPresent()) {
+            consumer.accept(currentShop.get());
+        }
+    }
+
+
     public void onShow(BaseShopFormatPlugin requestedFormatPlugin) {
         boolean needsChanging = activeFormatManager.getFormatPlugin() != requestedFormatPlugin;
         if (needsChanging) {
@@ -93,10 +144,14 @@ public class BuilderWindowPresenter implements Initializable {
                     requestedFormatPlugin));
         }
         removeBlurFromWindow();
+        if (rootPane.getScene().getAccelerators().isEmpty()) {
+            initializeAccelerators();
+
+        }
     }
 
     @FXML
-    public void onSwitchFormatAction() {
+    void onSwitchFormatAction() {
         Stage builderStage = getStage();
         Stage owner = (Stage) builderStage.getOwner();
         blurWindow();
@@ -107,7 +162,7 @@ public class BuilderWindowPresenter implements Initializable {
     }
 
     @FXML
-    public void onOpenAction() {
+    void onOpenAction() {
         final ShopFormat<?> shopFormat = activeFormatManager.getFormat();
         FileChooser chooser = new FileChooser();
         chooser.setInitialFileName(shopFormat.getDefaultFileName());
@@ -133,7 +188,7 @@ public class BuilderWindowPresenter implements Initializable {
     }
 
     @FXML
-    public void onExportAction() {
+    void onExportAction() {
         final ShopFormat<Shop> shopFormat = activeFormatManager.getFormat();
         FileChooser chooser = new FileChooser();
         chooser.setInitialFileName(shopFormat.getDefaultFileName());

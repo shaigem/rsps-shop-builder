@@ -40,7 +40,7 @@
         <SplitPane dividerPositions="0.16720516962843296, 0.8069466882067852" VBox.vgrow="ALWAYS">
             <items>
                 <SplitPane fx:id="leftSplitPane" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" />
-                <StackPane>
+                <StackPane fx:id="shopStackPane">
                     <children>
                         <BorderPane fx:id="shopPane" prefHeight="405.0" prefWidth="281.0" styleClass="shop-border-pane">
                             <center>

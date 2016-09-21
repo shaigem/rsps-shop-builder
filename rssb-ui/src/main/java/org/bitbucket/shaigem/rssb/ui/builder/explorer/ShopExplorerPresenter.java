@@ -9,6 +9,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import org.bitbucket.shaigem.rssb.event.ActiveFormatPluginChangedEvent;
@@ -78,6 +79,12 @@ public class ShopExplorerPresenter implements Initializable {
         createNewShopButton.setGraphic(GlyphsDude.createIcon(MaterialDesignIcon.PLUS, "1.4em"));
         deleteSelectedShopButton.setGraphic(GlyphsDude.createIcon(MaterialDesignIcon.DELETE, "1.4em"));
         removeAllShopsButton.setGraphic(GlyphsDude.createIcon(MaterialDesignIcon.PLAYLIST_REMOVE, "1.4em"));
+        shopTableView.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.DELETE)) {
+                onRemoveSelectedShopAction();
+                event.consume();
+            }
+        });
         eventStudio.addAnnotatedListeners(this);
     }
 
@@ -120,7 +127,7 @@ public class ShopExplorerPresenter implements Initializable {
         alert.setTitle("Remove All Shops");
         alert.setContentText("Are you sure you want to delete all shops?");
         alert.showAndWait().ifPresent(buttonType -> {
-            if(buttonType.equals(ButtonType.YES)) {
+            if (buttonType.equals(ButtonType.YES)) {
                 repository.getMasterShopDefinitions().clear();
                 searchPresenter.resetSearch();
                 eventStudio.broadcast(new RemoveAllShopsEvent());
