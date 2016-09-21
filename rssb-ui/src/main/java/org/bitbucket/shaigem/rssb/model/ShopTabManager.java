@@ -1,6 +1,7 @@
 package org.bitbucket.shaigem.rssb.model;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -118,9 +119,13 @@ public final class ShopTabManager {
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem closeItem = new MenuItem("Close");
         closeItem.setOnAction(event -> tab.requestClose());
+        MenuItem closeOthersItem = new MenuItem("Close Others");
+        closeOthersItem.setOnAction(event -> closeAllButThis(tab));
+        closeOthersItem.disableProperty().bind(Bindings.size
+                (getTabPane().getTabs()).isEqualTo(1));
         MenuItem closeAllItem = new MenuItem("Close All");
         closeAllItem.setOnAction(event -> closeAll(true));
-        contextMenu.getItems().addAll(closeItem, closeAllItem);
+        contextMenu.getItems().addAll(closeItem, closeOthersItem, closeAllItem);
         return contextMenu;
     }
 
@@ -160,13 +165,17 @@ public final class ShopTabManager {
 
     private void closeAll(boolean checkShopForChanges) {
         if (checkShopForChanges) {
-            getTabPane().getTabs().stream().map(tab -> (ShopTab) tab).collect
-                    (Collectors.toList()).listIterator().forEachRemaining(ShopTab::requestClose);
+            getShopTabs().listIterator().forEachRemaining(ShopTab::requestClose);
             openShops.clear();
             return;
         }
         getTabPane().getTabs().clear();
         openShops.clear();
+    }
+
+    private void closeAllButThis(ShopTab tab) {
+        getShopTabs().stream().filter(openTab -> openTab != tab).collect(Collectors.toList()).listIterator().
+                forEachRemaining(ShopTab::requestClose);
     }
 
     private void closeAll() {
@@ -176,6 +185,10 @@ public final class ShopTabManager {
 
     public Optional<ShopPresenter> getPresenterForTab(Tab tab) {
         return openShops.stream().filter((presenter -> presenter.getTab() == tab)).findFirst();
+    }
+
+    private List<ShopTab> getShopTabs() {
+        return getTabPane().getTabs().stream().map(tab -> (ShopTab) tab).collect(Collectors.toList());
     }
 
     private TabPane getTabPane() {
