@@ -139,7 +139,6 @@ public class ShopPresenter implements Initializable {
         setupNameTextField();
         setupItemDisplayButtons();
         registerDropEvents();
-        listenForModifiedPropertyChange();
         //scrollWhenHeightIncreases();
         handleNameChangeEvents();
     }
@@ -619,14 +618,14 @@ public class ShopPresenter implements Initializable {
         }));
     }
 
-    private void listenForModifiedPropertyChange() {
-
-    }
 
     private void refreshTabText() {
         // Without Platform.runLater, shops that override the toString() would have issues in updating the tab title
-        Platform.runLater(() ->
-                tab.setText(hasBeenModified() ? shop.toString() + "(*)" : shop.toString()));
+        Platform.runLater(() -> {
+            if (tab != null && shop != null) {
+                tab.setText(hasBeenModified() ? shop.toString() + "(*)" : shop.toString());
+            }
+        });
     }
 
     public void markAsModified() {
