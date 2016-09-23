@@ -620,20 +620,26 @@ public class ShopPresenter implements Initializable {
     }
 
     private void listenForModifiedPropertyChange() {
-        modified.addListener(((observable, oldValue, newValue) ->
-                tab.setText(newValue ? shop.toString() + "(*)" : shop.toString())));
+
+    }
+
+    private void refreshTabText() {
+        // Without Platform.runLater, shops that override the toString() would have issues in updating the tab title
+        Platform.runLater(() ->
+                tab.setText(hasBeenModified() ? shop.toString() + "(*)" : shop.toString()));
     }
 
     public void markAsModified() {
         setModified(true);
     }
 
-    public void markAsNotModified() {
+    private void markAsNotModified() {
         setModified(false);
     }
 
     private void setModified(boolean modified) {
         this.modified.setValue(modified);
+        refreshTabText();
     }
 
     public boolean hasBeenModified() {
