@@ -12,7 +12,7 @@
     <artifactId>rssb-core</artifactId>
 
     <properties>
-        <kotlin.version>1.0.3</kotlin.version>
+        <kotlin.version>1.0.4</kotlin.version>
     </properties>
 
     <dependencies>
