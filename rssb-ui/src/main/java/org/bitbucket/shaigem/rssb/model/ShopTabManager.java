@@ -146,6 +146,7 @@ public final class ShopTabManager {
             alert.setTitle("Unsaved Changes");
             alert.setHeaderText("Save: " + shopPresenter.getShop());
             alert.setContentText("You have some unsaved changes. Would you like to save them before closing?");
+            alert.getDialogPane().setPrefWidth(520);
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent()) {
                 if (result.get() == ButtonType.YES) {
