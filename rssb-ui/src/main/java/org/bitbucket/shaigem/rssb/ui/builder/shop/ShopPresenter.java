@@ -15,11 +15,14 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.fx.ShopTab;
+import org.bitbucket.shaigem.rssb.fx.control.Fraction;
 import org.bitbucket.shaigem.rssb.fx.control.RuneScapeButton;
 import org.bitbucket.shaigem.rssb.fx.control.ShopDisplayRadioButton;
 import org.bitbucket.shaigem.rssb.fx.control.dialog.MaterialDesignInputDialog;
@@ -47,19 +50,14 @@ import java.util.stream.Collectors;
  */
 public class ShopPresenter implements Initializable {
 
-
     private Shop shop;
-
     private TextField nameTextField;
-
     private ShopItemSelectionModel selectionModel = new ShopItemSelectionModel();
-
     private ShopTab tab;
-
     private BooleanProperty modified;
-
     private BuilderWindowPresenter mainWindowPresenter;
-
+    private ObjectProperty<ShopDisplayRadioButton.DisplayMode> displayModeProperty;
+    private BooleanProperty generalStoreImageVisibility;
     private ObservableList<PropertySheet.Item> shopBeanProperties;
 
     @Inject
@@ -109,6 +107,8 @@ public class ShopPresenter implements Initializable {
     Label selectedItemNameLabel;
     @FXML
     Label selectedItemIdLabel;
+    //  @FXML
+    //  Label itemCountLabel;
     @FXML
     TilePane selectedItemInfoTilePane;
     @FXML
@@ -123,9 +123,19 @@ public class ShopPresenter implements Initializable {
     @Inject
     DefaultEventStudio eventStudio;
 
-    private ObjectProperty<ShopDisplayRadioButton.DisplayMode> displayModeProperty;
+    // TODO disallow duplicate shop items
 
-    private BooleanProperty generalStoreImageVisibility;
+    public static ListChangeListener<Shop> onPropertyChangeListener(ShopPresenter presenter) {
+        return c -> {
+            while (c.next()) {
+                if (c.wasUpdated()) {
+                    presenter.markAsModified();
+                }
+            }
+
+        };
+    }
+
 
     public void initialize(URL location, ResourceBundle resources) {
         displayModeProperty = new SimpleObjectProperty<>();
@@ -143,17 +153,6 @@ public class ShopPresenter implements Initializable {
         handleNameChangeEvents();
     }
 
-
-    public static ListChangeListener<Shop> onPropertyChangeListener(ShopPresenter presenter) {
-        return c -> {
-            while (c.next()) {
-                if (c.wasUpdated()) {
-                    presenter.markAsModified();
-                }
-            }
-
-        };
-    }
 
     public final void cleanup() {
         shopBeanProperties = null;
@@ -198,6 +197,9 @@ public class ShopPresenter implements Initializable {
      * @param resetSelection if selection should be reset
      */
     public void addItem(Item item, boolean resetSelection) {
+        if ((shopItemPane.getChildren().size() + 1) > shop.getMaxItemSize()) {
+            return;
+        }
         ShopItemView shopItemView = new ShopItemView();
         shopItemView.getPresenter().setShopPresenter(this);
         shopItemView.getPresenter().setItem(item.copy()); // create a copy
@@ -350,6 +352,7 @@ public class ShopPresenter implements Initializable {
         setShopNameLabel(shop.getName());
         generalStoreImageVisibility.bind(shop.generalStoreProperty());
         addItems(shop.getItems());
+        updateItemCountFraction();
         if (!shopItemPane.getChildren().isEmpty()) {
             ShopItemView firstShopItem = (ShopItemView) shopItemPane.getChildren().get(0);
             selectionModel.setSelected(firstShopItem);
@@ -440,6 +443,7 @@ public class ShopPresenter implements Initializable {
 
 
     private void setupActionsPane() {
+
       /*  RuneScapeButton addButton = new RuneScapeButton("Add By Id");
         addButton.setOnAction((e) -> openAddItemByIndexDialog());
 
@@ -545,8 +549,9 @@ public class ShopPresenter implements Initializable {
     private void listenForShopItemsChanges() {
         shopItemPane.getChildren().addListener((ListChangeListener<? super Node>) change -> {
             while (change.next()) {
-                if (!hasBeenModified())
+                if (!hasBeenModified()) {
                     markAsModified();
+                }
                 if (change.wasRemoved() && !change.wasReplaced()) {
                     List<? extends Node> removed = change.getRemoved();
                     removed.forEach((e) -> {
@@ -555,8 +560,27 @@ public class ShopPresenter implements Initializable {
                         item.getPresenter().onRemoval();
                     });
                 }
+                updateItemCountFraction();
             }
         });
+    }
+
+    private Fraction itemCountFraction;
+
+    private void setupItemCount() {
+        itemCountFraction = new Fraction(0, shop.getMaxItemSize());
+        itemCountFraction.getNumeratorText().getStyleClass().add("shop-item-count-numerator");
+        itemCountFraction.getDenominatorText().getStyleClass().add("shop-item-count-denominator");
+        bottomMiddlePane.setCenter(itemCountFraction);
+    }
+
+    private void updateItemCountFraction() {
+        if (itemCountFraction == null) {
+            setupItemCount();
+        }
+        final int count = shopItemPane.getChildren().size();
+        String text = String.valueOf(count);
+        itemCountFraction.setNumeratorText(text);
     }
 
     private void registerDropEvents() {

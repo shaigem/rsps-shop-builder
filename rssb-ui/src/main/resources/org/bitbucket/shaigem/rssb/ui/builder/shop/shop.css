@@ -2,8 +2,15 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 40.0, 0.0, 0.0, 0.0);
 }
 
-.shop-item-display-mode-label {
-    -fx-font-family: "Roboto";
+/**
+* Item Count Fraction
+*/
+.shop-item-count-denominator,
+.shop-item-count-numerator {
+    -fx-fill: #f7edb7;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Roboto Medium";
 }
 
 /**
@@ -74,4 +81,8 @@
     -fx-alignment: center;
     -fx-padding: 1;
     -fx-accent: #da6b0f;
+}
+
+.shop-item-display-mode-label {
+    -fx-font-family: "Roboto";
 }

@@ -14,41 +14,29 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="326.0" prefWidth="504.0" xmlns="http://javafx.com/javafx/8.0.102-ea"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="504.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bitbucket.shaigem.rssb.ui.builder.shop.ShopPresenter">
     <children>
-        <StackPane fx:id="stackPane" layoutX="152.0" layoutY="88.0" prefHeight="326.0" prefWidth="504.0"
-                   styleClass="shop-root" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <StackPane fx:id="stackPane" layoutX="152.0" layoutY="88.0" prefHeight="326.0" prefWidth="504.0" styleClass="shop-root" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <ImageView fx:id="shopImageView" fitHeight="326.0" fitWidth="504.0" pickOnBounds="true"
-                           preserveRatio="true" StackPane.alignment="CENTER">
+                <ImageView fx:id="shopImageView" fitHeight="326.0" fitWidth="504.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
                 </ImageView>
                 <AnchorPane prefHeight="200.0" prefWidth="200.0" StackPane.alignment="CENTER">
                     <children>
-                        <Label fx:id="shopNameLabel" alignment="CENTER" layoutX="26.0" layoutY="2.0" prefHeight="25.0"
-                               prefWidth="440.0" text="shop_name" textFill="#ebe0bc">
+                        <Label fx:id="shopNameLabel" alignment="CENTER" layoutX="26.0" layoutY="2.0" prefHeight="25.0" prefWidth="440.0" text="shop_name" textFill="#ebe0bc">
                             <font>
-                                <Font name="Trebuchet MS" size="20.0"/>
+                                <Font name="Trebuchet MS" size="20.0" />
                             </font>
                             <tooltip>
-                                <Tooltip text="Double-Click to Edit"/>
+                                <Tooltip text="Double-Click to Edit" />
                             </tooltip>
                         </Label>
-                        <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER"
-                                    layoutX="11.0" layoutY="58.0" prefHeight="158.0" prefWidth="485.0"
-                                    styleClass="shop-scroll-pane" AnchorPane.bottomAnchor="110.0"
-                                    AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="8.0"
-                                    AnchorPane.topAnchor="58.0">
+                        <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutX="11.0" layoutY="58.0" prefHeight="158.0" prefWidth="485.0" styleClass="shop-scroll-pane" AnchorPane.bottomAnchor="110.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="58.0">
                             <content>
                                 <AnchorPane fx:id="group">
                                     <children>
-                                        <TilePane fx:id="shopItemPane" hgap="4.0" prefHeight="156.0" prefWidth="467.0"
-                                                  tileAlignment="TOP_LEFT" vgap="4.0">
+                                        <TilePane fx:id="shopItemPane" hgap="4.0" prefHeight="156.0" prefWidth="467.0" tileAlignment="TOP_LEFT" vgap="4.0">
                                             <padding>
-                                                <Insets bottom="3.0" left="3.0" top="3.0"/>
+                                                <Insets bottom="3.0" left="3.0" top="3.0" />
                                             </padding>
                                         </TilePane>
                                     </children>
@@ -57,49 +45,35 @@
                             <contextMenu>
                                 <ContextMenu>
                                     <items>
-                                        <MenuItem fx:id="copyMenuItem" mnemonicParsing="false"
-                                                  text="Copy                                        CTRL+C"
-                                                  onAction="#onCopyAction"/>
-                                        <MenuItem fx:id="pasteMenuItem" mnemonicParsing="false"
-                                                  text="Paste                                       CTRL+V"
-                                                  onAction="#onPasteAction"/>
-                                        <MenuItem fx:id="deleteMenuItem" mnemonicParsing="false"
-                                                  onAction="#onDeleteAction" text="Delete..."/>
-                                        <MenuItem fx:id="changeAmountMenuItem" mnemonicParsing="false"
-                                                  onAction="#onChangeAmountAction"
-                                                  text="Change Amount...   CTRL+SHIFT+C"/>
+                                        <MenuItem fx:id="copyMenuItem" mnemonicParsing="false" onAction="#onCopyAction" text="Copy                                        CTRL+C" />
+                                        <MenuItem fx:id="pasteMenuItem" mnemonicParsing="false" onAction="#onPasteAction" text="Paste                                       CTRL+V" />
+                                        <MenuItem fx:id="deleteMenuItem" mnemonicParsing="false" onAction="#onDeleteAction" text="Delete..." />
+                                        <MenuItem fx:id="changeAmountMenuItem" mnemonicParsing="false" onAction="#onChangeAmountAction" text="Change Amount...   CTRL+SHIFT+C" />
                                     </items>
                                 </ContextMenu>
                             </contextMenu>
                         </ScrollPane>
-                        <ImageView fx:id="generalStoreImageView" fitHeight="23.0" fitWidth="87.0" layoutX="239.0"
-                                   layoutY="31.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                        <ImageView fx:id="generalStoreImageView" fitHeight="23.0" fitWidth="87.0" layoutX="239.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" visible="false">
                         </ImageView>
-                        <HBox fx:id="itemDisplayStyleHBox" layoutX="456.0" layoutY="34.0" prefHeight="18.0"
-                              prefWidth="37.0"/>
-                        <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="328.0" layoutY="34.0"
-                               prefHeight="17.0" prefWidth="121.0" styleClass="shop-item-display-mode-label"
-                               text="Item Display Mode:" textAlignment="CENTER" textFill="#f7edb7">
+                        <HBox fx:id="itemDisplayStyleHBox" layoutX="456.0" layoutY="34.0" prefHeight="18.0" prefWidth="37.0" />
+                        <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="328.0" layoutY="34.0" prefHeight="17.0" prefWidth="121.0" styleClass="shop-item-display-mode-label" text="Item Display Mode:" textAlignment="CENTER" textFill="#f7edb7">
                             <font>
-                                <Font name="Tahoma" size="13.0"/>
+                                <Font name="Tahoma" size="13.0" />
                             </font>
                         </Label>
-                        <TilePane fx:id="actionsPane" hgap="2.0" layoutX="324.0" layoutY="252.0" prefHeight="56.0"
-                                  prefWidth="179.0" vgap="7.0">
+                        <TilePane fx:id="actionsPane" hgap="2.0" layoutX="323.0" layoutY="229.0" prefHeight="56.0" prefWidth="179.0" vgap="7.0">
                             <padding>
-                                <Insets bottom="5.0" left="5.0"/>
+                                <Insets bottom="5.0" left="5.0" />
                             </padding>
                         </TilePane>
-                        <Label fx:id="selectedItemNameLabel" layoutX="67.0" layoutY="229.0" prefHeight="15.0"
-                               prefWidth="138.0" text="No Selection" textFill="#f7edb7"/>
-                        <Label fx:id="selectedItemIdLabel" layoutX="67.0" layoutY="249.0" prefHeight="15.0"
-                               prefWidth="138.0" text="No Selection" textFill="#f7edb7" visible="false"/>
-                        <ImageView fx:id="selectedItemImageView" fitHeight="32.0" fitWidth="32.0" layoutX="22.0"
-                                   layoutY="228.0" pickOnBounds="true" preserveRatio="true"/>
-                        <TilePane fx:id="selectedItemInfoTilePane" alignment="CENTER" layoutX="9.0" layoutY="268.0"
-                                  prefHeight="38.0" prefWidth="195.0"/>
-                        <BorderPane fx:id="bottomMiddlePane" layoutX="205.0" layoutY="228.0" prefHeight="88.0"
-                                    prefWidth="112.0"/>
+                        <Label fx:id="selectedItemNameLabel" layoutX="67.0" layoutY="229.0" prefHeight="15.0" prefWidth="138.0" text="No Selection" textFill="#f7edb7" />
+                        <Label fx:id="selectedItemIdLabel" layoutX="67.0" layoutY="249.0" prefHeight="15.0" prefWidth="138.0" text="No Selection" textFill="#f7edb7" visible="false" />
+                        <ImageView fx:id="selectedItemImageView" fitHeight="32.0" fitWidth="32.0" layoutX="22.0" layoutY="228.0" pickOnBounds="true" preserveRatio="true" />
+                        <TilePane fx:id="selectedItemInfoTilePane" alignment="CENTER" layoutX="9.0" layoutY="268.0" prefHeight="38.0" prefWidth="195.0" />
+                        <BorderPane fx:id="bottomMiddlePane" layoutX="205.0" layoutY="228.0" prefHeight="88.0" prefWidth="112.0">
+                     <top>
+                        <Label alignment="CENTER" prefHeight="15.0" prefWidth="138.0" text="Item Count" textFill="#f7edb7" BorderPane.alignment="CENTER" />
+                     </top></BorderPane>
                     </children>
                 </AnchorPane>
             </children>

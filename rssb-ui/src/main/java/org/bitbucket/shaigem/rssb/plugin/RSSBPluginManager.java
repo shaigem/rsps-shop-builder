@@ -27,7 +27,7 @@ public final class RSSBPluginManager {
             new File(System.getProperty("user.dir") + "/plugins/").toURI();
 
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private PluginManagerUtil pluginManager;
 
