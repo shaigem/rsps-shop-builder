@@ -42,6 +42,15 @@ public abstract class Shop {
     public abstract Shop copy();
 
     /**
+     * The maximum amount of items that this shop can hold.
+     *
+     * @return the maximum size
+     */
+    public int getMaxItemSize() {
+        return 40;
+    }
+
+    /**
      * Gets any custom properties that can be observed for changes.
      * <p>
      * This is important for plugins because if a plugin implements a custom {@link Shop}, it will
