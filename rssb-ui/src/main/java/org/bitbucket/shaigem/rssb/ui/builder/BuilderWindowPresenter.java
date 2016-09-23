@@ -192,6 +192,8 @@ public class BuilderWindowPresenter implements Initializable {
         final ShopFormat<Shop> shopFormat = activeFormatManager.getFormat();
         FileChooser chooser = new FileChooser();
         chooser.setInitialFileName(shopFormat.getDefaultFileName());
+        chooser.getExtensionFilters().addAll(shopFormat.getExtensions());
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*"));
         //TODO save last directory and use it here
         chooser.setTitle("Export All Shops to File");
         tabManager.getOpenShops().forEach(presenter -> {
