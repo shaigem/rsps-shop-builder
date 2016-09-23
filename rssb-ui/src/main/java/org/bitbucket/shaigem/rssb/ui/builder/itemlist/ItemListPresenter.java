@@ -147,14 +147,14 @@ public class ItemListPresenter implements Initializable {
     }
 
     private class ItemListCell extends ListCell<Item> {
-        private ImageView imageView;
 
+        private ImageView imageView;
 
         @Override
         protected void updateItem(Item item, boolean empty) {
             super.updateItem(item, empty);
             if (!empty && item != null) {
-                setText("[" + item.getId() + "] " + item.getName());
+                setText(item.toString());
                 // getImageFromFile() not getImage()
                 // Items from the item list are not cached in the global store in this case
                 // These are only cached when they are actually used (added to shop)
