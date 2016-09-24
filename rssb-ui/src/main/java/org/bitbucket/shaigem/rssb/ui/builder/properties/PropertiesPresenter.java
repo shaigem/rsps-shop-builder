@@ -123,7 +123,8 @@ public class PropertiesPresenter implements Initializable {
             beanProperties = BeanPropertyUtils.getProperties(shopToEdit, propertyDescriptor ->
                     !propertyDescriptor.getName().equals("name")
                             && !propertyDescriptor.getName().equals("items")
-                            && !propertyDescriptor.getName().equals("customPropertiesToObserve"));
+                            && !propertyDescriptor.getName().equals("customPropertiesToObserve")
+                            && !propertyDescriptor.getName().equals("maxItemSize"));
             propertiesManager.cacheProperties(shopPresenter, shopToEdit, beanProperties);
         }
         setShop(shopToEdit);

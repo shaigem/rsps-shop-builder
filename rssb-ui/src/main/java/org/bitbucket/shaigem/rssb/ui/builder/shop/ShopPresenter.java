@@ -707,9 +707,11 @@ public class ShopPresenter implements Initializable {
 
     public ObservableList<PropertySheet.Item> getPropertySheetItemsForShop() {
         if (shopBeanProperties == null) {
-            shopBeanProperties = BeanPropertyUtils.getProperties(shop, propertyDescriptor -> !propertyDescriptor.getName().equals("name")
-                    && !propertyDescriptor.getName().equals("items")
-                    && !propertyDescriptor.getName().equals("customPropertiesToObserve"));
+            shopBeanProperties = BeanPropertyUtils.getProperties(shop,
+                    propertyDescriptor -> !propertyDescriptor.getName().equals("name")
+                            && !propertyDescriptor.getName().equals("items")
+                            && !propertyDescriptor.getName().equals("customPropertiesToObserve")
+                            && !propertyDescriptor.getName().equals("maxItemSize"));
         }
         return shopBeanProperties;
     }
