@@ -13,16 +13,15 @@ import java.util.Objects;
  */
 public class Item {
 
-    private IntegerProperty id;
+    private int id;
+    private Integer _amount;
     private IntegerProperty amount;
-    private StringProperty name;
-    private ObjectProperty<Image> imageObjectProperty;
+    private String name;
+    private Image image;
 
     public Item(int id, int amount) {
-        this.id = new SimpleIntegerProperty(id);
-        this.amount = new SimpleIntegerProperty(amount);
-        this.name = new SimpleStringProperty();
-        this.imageObjectProperty = new SimpleObjectProperty<>();
+        this.id = id;
+        this._amount = amount;
     }
 
     public Item(int id) {
@@ -31,45 +30,46 @@ public class Item {
 
     public Item(int id, Image image) {
         this(id, 1);
-        imageObjectProperty.set(image);
-    }
-
-    public IntegerProperty idProperty()
-
-    {
-        return id;
+        this.image = image;
     }
 
     public IntegerProperty amountProperty() {
+        if (amount == null) {
+            amount = new SimpleIntegerProperty(this, "amount", _amount);
+            _amount = null;
+        }
         return amount;
     }
 
-    public StringProperty nameProperty() {
-        return name;
-    }
-
     public int getId() {
-        return id.get();
+        return id;
     }
 
     public int getAmount() {
-        return amount.get();
+        return amount == null ? _amount : amount.get();
     }
 
     public void setAmount(int amt) {
         if (amt < 0) {
             return;
         }
-        amount.set(amt);
+        if (amount == null) {
+            _amount = amt;
+        } else {
+            amount.set(amt);
+        }
     }
 
     public String getName() {
-        if (name.get() == null) {
-            name.set(ItemNameStore.getItemName(getId()));
+        if (name == null) {
+            name = (ItemNameStore.getItemName(getId()));
         }
-        return name.get();
+        return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
      * Lazily loads the image from the store.
@@ -80,35 +80,36 @@ public class Item {
      * @return the item's image.
      */
     public Image getImage() {
-        if (imageObjectProperty.get() == null) {
+        if (image == null) {
             setImage(ItemImageStore.getImageForId(getId()));
         }
-        return imageObjectProperty.get();
+        return image;
     }
 
 
     public void setImage(Image image) {
-        imageObjectProperty.set(image);
+        this.image = image;
     }
 
     /**
-     * Lazily load the image from a file.
+     * Lazily load the image from the store or zip file.
      * <p>
      * Note that images loaded by this method are not cached globally in the store and
-     * can result to unnecessary reads from the zip file.</p>
+     * can result to unnecessary reads from the zip file if the image was not already present in the
+     * store.</p>
      *
      * @return the item's image
      */
     public Image getImageFromFile() {
-        if (imageObjectProperty.get() == null) {
-            imageObjectProperty.set(ItemImageStore.getImageFromZipFile(getId()));
+        if (image == null) {
+            image = (ItemImageStore.getImageIfPresent(getId()));
         }
-        return imageObjectProperty.get();
+        return image;
     }
 
     public Item copy() {
         Item item = new Item(this.getId(), this.getAmount());
-        item.name.set(this.getName());
+        item.setName(this.getName());
         if (this.getImageNoFetch() != null) {
             // if the image exists and was fetched already from file
             // then we can set the image to the copy and cache the image for later use
@@ -125,7 +126,7 @@ public class Item {
      * @return the image
      */
     private Image getImageNoFetch() {
-        return imageObjectProperty.get();
+        return image;
     }
 
     @Override
