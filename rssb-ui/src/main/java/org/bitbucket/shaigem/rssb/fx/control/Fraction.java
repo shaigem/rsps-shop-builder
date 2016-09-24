@@ -14,9 +14,7 @@ public class Fraction extends VBox {
     private Text numeratorText;
     private Text denominatorText;
     private Line divider;
-
     private double offset;
-
 
     public Fraction(int numerator, int denominator) {
         init(numerator + "", denominator + "");
