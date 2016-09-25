@@ -213,7 +213,7 @@ public final class ShopItemPresenter {
             } else if (db.hasString() &&
                     !shopPresenter.getDragItemManager().getItems().isEmpty()) {
                 // supports items dragged from the item list
-                event.acceptTransferModes(TransferMode.COPY);
+                event.acceptTransferModes(TransferMode.MOVE);
                 event.consume();
             }
 
@@ -238,7 +238,12 @@ public final class ShopItemPresenter {
                         shopPresenter.getSelectionModel().clearSelection();
                     }
                 }
-                dragList.forEach((item -> shopPresenter.addItem(item, !multipleItems)));
+                TilePane parent = shopPresenter.getShopItemPane();
+                dragList.forEach(item -> {
+                    Integer toIndex = parent.getChildren().indexOf(shopItemView);
+                    // inserts the item
+                    shopPresenter.addItem(toIndex, item, !multipleItems);
+                });
                 shopPresenter.getDragItemManager().onDropComplete();
                 success = true;
             }

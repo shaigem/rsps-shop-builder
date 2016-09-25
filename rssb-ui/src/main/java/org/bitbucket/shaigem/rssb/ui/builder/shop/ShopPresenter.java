@@ -57,7 +57,6 @@ public class ShopPresenter implements Initializable {
     private BooleanProperty modified;
     private BuilderWindowPresenter mainWindowPresenter;
     private ObjectProperty<ShopDisplayRadioButton.DisplayMode> displayModeProperty;
-    private BooleanProperty generalStoreImageVisibility;
     private ObservableList<PropertySheet.Item> shopBeanProperties;
 
     @Inject
@@ -107,8 +106,7 @@ public class ShopPresenter implements Initializable {
     Label selectedItemNameLabel;
     @FXML
     Label selectedItemIdLabel;
-    //  @FXML
-    //  Label itemCountLabel;
+
     @FXML
     TilePane selectedItemInfoTilePane;
     @FXML
@@ -136,12 +134,9 @@ public class ShopPresenter implements Initializable {
         };
     }
 
-
     public void initialize(URL location, ResourceBundle resources) {
         displayModeProperty = new SimpleObjectProperty<>();
         modified = new SimpleBooleanProperty();
-        generalStoreImageVisibility = new SimpleBooleanProperty();
-        generalStoreImageView.visibleProperty().bind(generalStoreImageVisibility);
         bindDisablePropertyForMenuItems();
         setupActionsPane();
         setupSelectedItemInformationArea();
@@ -149,7 +144,6 @@ public class ShopPresenter implements Initializable {
         setupNameTextField();
         setupItemDisplayButtons();
         registerDropEvents();
-        //scrollWhenHeightIncreases();
         handleNameChangeEvents();
     }
 
@@ -191,24 +185,39 @@ public class ShopPresenter implements Initializable {
     }
 
     /**
-     * Add a item to be displayed in the shop.
+     * Add a item to be displayed in the shop. If a index is specified,
+     * then the item will be inserted to the specific index.
      *
+     * @param index          the index to add to
      * @param item           the {@link Item} to add
      * @param resetSelection if selection should be reset
      */
-    public void addItem(Item item, boolean resetSelection) {
+    public void addItem(int index, Item item, boolean resetSelection) {
         if ((shopItemPane.getChildren().size() + 1) > shop.getMaxItemSize()) {
             return;
         }
-        ShopItemView shopItemView = new ShopItemView();
-        shopItemView.getPresenter().setShopPresenter(this);
-        shopItemView.getPresenter().setItem(item.copy()); // create a copy
+        ShopItemView shopItemView = createShopItemView(item);
         if (resetSelection) { // sets only the newly added item as selected
             selectionModel.setSelected(shopItemView);
         } else {
             selectionModel.addToSelection(shopItemView, true);
         }
-        shopItemPane.getChildren().add(shopItemView);
+        if (index == -1) {
+            shopItemPane.getChildren().add(shopItemView);
+        } else {
+            shopItemPane.getChildren().add(index, shopItemView);
+        }
+    }
+
+    private void addItem(Item item, boolean resetSelection) {
+        this.addItem(-1, item, resetSelection);
+    }
+
+    private ShopItemView createShopItemView(Item item) {
+        ShopItemView shopItemView = new ShopItemView();
+        shopItemView.getPresenter().setShopPresenter(this);
+        shopItemView.getPresenter().setItem(item.copy()); // create a copy
+        return shopItemView;
     }
 
 
@@ -276,7 +285,6 @@ public class ShopPresenter implements Initializable {
 
 
     public void save() {
-        // mainWindowPresenter.getExplorerPresenter().checkForDuplicateKeys(shop);
         boolean needsSaving = hasBeenModified();
         if (needsSaving) {
             shop.getItems().clear();
@@ -331,17 +339,6 @@ public class ShopPresenter implements Initializable {
         shopItemPane.getChildren().clear();
     }
 
-    /**
-     * Changes the visibility of the general store images view.
-     *
-     * @param visible if true then the general store marker images will show.
-     *                Otherwise, it will be hidden from the shop.
-     */
-
-    public void setGeneralStoreVisibility(boolean visible) {
-        generalStoreImageView.setVisible(visible);
-
-    }
 
     public void setShopNameLabel(String name) {
         shopNameLabel.setText(name);
@@ -350,7 +347,7 @@ public class ShopPresenter implements Initializable {
     private void shopDidChange() {
         deleteAllItems(false);
         setShopNameLabel(shop.getName());
-        generalStoreImageVisibility.bind(shop.generalStoreProperty());
+        generalStoreImageView.visibleProperty().bind(shop.generalStoreProperty());
         addItems(shop.getItems());
         updateItemCountFraction();
         if (!shopItemPane.getChildren().isEmpty()) {
@@ -416,14 +413,6 @@ public class ShopPresenter implements Initializable {
         copyMenuItem.disableProperty().bind(selectionListIsEmpty);
         // disable menu items when there are no copied items in the item clipboard
         pasteMenuItem.disableProperty().bind(Bindings.isEmpty(ShopItemClipboardManager.getInstance().getItems()));
-    }
-
-    private void scrollWhenHeightIncreases() {
-        shopItemPane.heightProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue.doubleValue() > oldValue.doubleValue() && oldValue.doubleValue() != 0.0) { //if height got bigger
-                scrollPane.setVvalue(scrollPane.getVmax());
-            }
-        }));
     }
 
     private void setupSelectedItemInformationArea() {
