@@ -27,16 +27,16 @@ abstract class BaseShopFormatPlugin : ShopFormatPlugin {
      */
     @Init
     fun initialize() {
-        addColumnToExplorer()
+        populateExtraExplorerColumns()
     }
 
     /*
      * To be overridden by subclasses
      */
     /**
-     * Allows the creation of extra table columns that will be displayed in the shop explorer section.
+     * Allows the creation of extra table columns that will be displayed in the shop explorer table.
      */
-    open fun addColumnToExplorer() {
+    open fun populateExtraExplorerColumns() {
 
     }
 
@@ -46,7 +46,8 @@ abstract class BaseShopFormatPlugin : ShopFormatPlugin {
     }
 
     fun getVersion(): String {
-        return information.getInformation(PluginInformation.Information.VERSION, this).elementAtOrElse(0, { "v1.0.0" })
+        return information.getInformation(PluginInformation.Information.VERSION, this).elementAtOrElse(0,
+                { "v1.0.0" })
     }
 
     fun <S : Shop, T> column(title: String, cellValueProvider: (TableColumn.CellDataFeatures<S, T>) ->

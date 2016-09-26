@@ -1,6 +1,7 @@
 package org.bitbucket.shaigem.rssb.model.item;
 
-import javafx.beans.property.*;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.image.Image;
 import org.bitbucket.shaigem.rssb.store.ItemImageStore;
 import org.bitbucket.shaigem.rssb.store.ItemNameStore;
@@ -19,18 +20,23 @@ public class Item {
     private String name;
     private Image image;
 
-    public Item(int id, int amount) {
+    public Item(int id, String name, int amount, Image image) {
         this.id = id;
+        this.name = name;
         this._amount = amount;
+        this.image = image;
     }
 
     public Item(int id) {
-        this(id, 1);
+        this(id, null, 1, null);
+    }
+
+    public Item(int id, int amount) {
+        this(id, null, amount, null);
     }
 
     public Item(int id, Image image) {
-        this(id, 1);
-        this.image = image;
+        this(id, null, 1, image);
     }
 
     public IntegerProperty amountProperty() {
@@ -108,8 +114,7 @@ public class Item {
     }
 
     public Item copy() {
-        Item item = new Item(this.getId(), this.getAmount());
-        item.setName(this.getName());
+        Item item = new Item(this.getId(), this.getName(), this.getAmount(), null);
         if (this.getImageNoFetch() != null) {
             // if the image exists and was fetched already from file
             // then we can set the image to the copy and cache the image for later use

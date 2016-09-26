@@ -185,10 +185,10 @@ public class ShopPresenter implements Initializable {
     }
 
     /**
-     * Add a item to be displayed in the shop. If a index is specified,
-     * then the item will be inserted to the specific index.
+     * Adds a item to the shop. If a index is specified,
+     * then the item will be inserted to that specific index.
      *
-     * @param index          the index to add to
+     * @param index          the index to insert to
      * @param item           the {@link Item} to add
      * @param resetSelection if selection should be reset
      */
@@ -209,6 +209,12 @@ public class ShopPresenter implements Initializable {
         }
     }
 
+    /**
+     * Adds a item to the end of the shop.
+     *
+     * @param item           the {@link Item} to add
+     * @param resetSelection if selection should be reset
+     */
     private void addItem(Item item, boolean resetSelection) {
         this.addItem(-1, item, resetSelection);
     }

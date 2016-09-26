@@ -22,6 +22,11 @@
             <version>2.3.3</version>
         </dependency>
         <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.8.11.2</version>
+        </dependency>
+        <dependency>
             <groupId>net.xeon.jspf</groupId>
             <artifactId>jspf.core</artifactId>
             <version>1.0.3</version>
@@ -30,16 +35,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.1.7</version>
-        </dependency>
-        <dependency>
-            <groupId>de.schlichtherle.truezip</groupId>
-            <artifactId>truezip-path</artifactId>
-            <version>7.7.9</version>
-        </dependency>
-        <dependency>
-            <groupId>de.schlichtherle.truezip</groupId>
-            <artifactId>truezip-driver-zip</artifactId>
-            <version>7.7.9</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

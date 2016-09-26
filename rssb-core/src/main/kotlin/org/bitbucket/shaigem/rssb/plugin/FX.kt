@@ -5,6 +5,6 @@ import javafx.stage.FileChooser
 /**
  * Created on 10/09/16.
  */
-fun ext(description: String, extension: String): FileChooser.ExtensionFilter {
+fun extension(description: String, extension: String): FileChooser.ExtensionFilter {
     return FileChooser.ExtensionFilter(description, extension)
 }

@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.bitbucket.shaigem.rssb.plugin.RSSBPluginManager;
-import org.bitbucket.shaigem.rssb.store.ItemImageStore;
 import org.bitbucket.shaigem.rssb.store.ItemNameStore;
 import org.bitbucket.shaigem.rssb.ui.dashboard.DashboardView;
 
@@ -46,6 +45,5 @@ public class ShopBuilderApp extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ItemImageStore.setupStoreArchiveDetecter();
     }
 }

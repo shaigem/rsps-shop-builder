@@ -17,12 +17,11 @@ interface ShopFormat<S : Shop> {
 
     val extensions: List<FileChooser.ExtensionFilter>
 
+    fun descriptor(): ShopFormatDescriptor
+
     @Throws(ShopLoadException::class)
     fun load(selectedFile: File): ArrayList<S>
 
     @Throws(ShopExportException::class)
     fun export(selectedFile: File, shopsToExport: ObservableList<S>)
-
-    fun descriptor(): ShopFormatDescriptor
-
 }
