@@ -64,6 +64,7 @@ public final class ShopItemPresenter {
                 if (id != item.getId() && id > -1) {
                     setItem(new Item(id, item.getAmount()));
                     getShopPresenter().updateSelectionInformation();
+                    getShopPresenter().checkForWrongDuplicateMarking();
                     getShopPresenter().markAsModified();
                     return true;
                 }

@@ -141,7 +141,7 @@ public class Item {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getId(), this.getName(), this.getAmount());
+        return Objects.hash(this.getId(), this.getName());
     }
 
     @Override
@@ -157,7 +157,6 @@ public class Item {
         }
         final Item other = (Item) obj;
         return Objects.equals(this.getId(), other.getId())
-                && Objects.equals(this.getName(), other.getName())
-                && Objects.equals(this.getAmount(), other.getAmount());
+                && Objects.equals(this.getName(), other.getName());
     }
 }

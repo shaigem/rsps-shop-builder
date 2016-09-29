@@ -1,5 +1,6 @@
 package org.bitbucket.shaigem.rssb.ui.builder.shop;
 
+import com.google.common.collect.ImmutableList;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -20,6 +21,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import one.util.streamex.StreamEx;
 import org.bitbucket.shaigem.rssb.event.ShopSaveEvent;
 import org.bitbucket.shaigem.rssb.fx.ShopTab;
 import org.bitbucket.shaigem.rssb.fx.control.Fraction;
@@ -52,7 +54,7 @@ public class ShopPresenter implements Initializable {
 
     private Shop shop;
     private TextField nameTextField;
-    private ShopItemSelectionModel selectionModel = new ShopItemSelectionModel();
+    private ShopItemSelectionModel selectionModel;
     private ShopTab tab;
     private BooleanProperty modified;
     private BuilderWindowPresenter mainWindowPresenter;
@@ -135,6 +137,7 @@ public class ShopPresenter implements Initializable {
     }
 
     public void initialize(URL location, ResourceBundle resources) {
+        selectionModel = new ShopItemSelectionModel();
         displayModeProperty = new SimpleObjectProperty<>();
         modified = new SimpleBooleanProperty();
         bindDisablePropertyForMenuItems();
@@ -256,13 +259,7 @@ public class ShopPresenter implements Initializable {
      * Deletes all selected shop items.
      */
     public void deleteSelectedItems() {
-        final ObservableSet<ShopItemView> selectedItems =
-                selectionModel.getSelectedShopItems();
-
-        if (selectedItems.isEmpty()) {
-            return;
-        }
-
+        final ObservableSet<ShopItemView> selectedItems = selectionModel.getSelectedShopItems();
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.getButtonTypes().setAll(ButtonType.CANCEL, ButtonType.YES);
         alert.setTitle("Delete Item");
@@ -270,25 +267,32 @@ public class ShopPresenter implements Initializable {
                 selectedItems.size() > 1 ? "these items" : "this item"));
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType.equals(ButtonType.YES)) {
-                ShopItemView lastDeletedItem = null;
-                if (!selectedItems.isEmpty())
-                    lastDeletedItem = (ShopItemView) selectedItems.toArray()[selectedItems.size() - 1];
-                int lastDeletedIndex = shopItemPane.getChildren().indexOf(lastDeletedItem);
-
-                shopItemPane.getChildren().removeAll(selectedItems);
-
-                int indexToSelect = lastDeletedIndex;
-                if (lastDeletedIndex > shopItemPane.getChildren().size() - 1) {
-                    indexToSelect = shopItemPane.getChildren().size() - 1;
-                }
-
-                if (indexToSelect != -1) {
-                    selectionModel.setSelected((ShopItemView) shopItemPane.getChildren().get(indexToSelect));
-                }
+                deleteItems(selectedItems);
             }
         });
     }
 
+    private void deleteItems(Collection<ShopItemView> collection) {
+        if (collection.isEmpty()) {
+            return;
+        }
+
+        ShopItemView lastDeletedItem = null;
+        if (!collection.isEmpty())
+            lastDeletedItem = (ShopItemView) collection.toArray()[collection.size() - 1];
+        int lastDeletedIndex = shopItemPane.getChildren().indexOf(lastDeletedItem);
+
+        shopItemPane.getChildren().removeAll(collection);
+
+        int indexToSelect = lastDeletedIndex;
+        if (lastDeletedIndex > shopItemPane.getChildren().size() - 1) {
+            indexToSelect = shopItemPane.getChildren().size() - 1;
+        }
+
+        if (indexToSelect != -1) {
+            selectionModel.setSelected((ShopItemView) shopItemPane.getChildren().get(indexToSelect));
+        }
+    }
 
     public void save() {
         boolean needsSaving = hasBeenModified();
@@ -355,6 +359,7 @@ public class ShopPresenter implements Initializable {
         setShopNameLabel(shop.getName());
         generalStoreImageView.visibleProperty().bind(shop.generalStoreProperty());
         addItems(shop.getItems());
+        markDuplicates();
         updateItemCountFraction();
         if (!shopItemPane.getChildren().isEmpty()) {
             ShopItemView firstShopItem = (ShopItemView) shopItemPane.getChildren().get(0);
@@ -438,24 +443,43 @@ public class ShopPresenter implements Initializable {
 
 
     private void setupActionsPane() {
+        RuneScapeButton deleteAllButton = new RuneScapeButton("Clear Duplicates");
+        deleteAllButton.setTooltip(new Tooltip("Deletes all of the duplicated items"));
+        deleteAllButton.setOnAction(event -> {
+            if (getImmutableItems().stream().anyMatch(ShopItemView::isFaded)) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.getButtonTypes().setAll(ButtonType.CANCEL, ButtonType.YES);
+                alert.setTitle("Clear Duplicates");
+                alert.setContentText("Are you sure you want to clear the duplicates?");
+                alert.showAndWait().ifPresent(buttonType -> {
+                    if (buttonType.equals(ButtonType.YES)) {
+                        deleteItems(getImmutableItems().stream().
+                                filter(ShopItemView::isFaded).collect(Collectors.toList()));
+                    }
 
-      /*  RuneScapeButton addButton = new RuneScapeButton("Add By Id");
-        addButton.setOnAction((e) -> openAddItemByIndexDialog());
-
-        RuneScapeButton deleteButton = new RuneScapeButton("Delete Item");
-        deleteButton.disableProperty().bind(Bindings.isEmpty(selectionModel.getSelectedShopItems()));
-        deleteButton.setOnAction((event -> deleteItem(selectionModel.getSelectedShopItems())));
-        RuneScapeButton deleteAllButton = new RuneScapeButton("Delete All");
-        deleteAllButton.setOnAction((event1 -> clear()));
-
-        RuneScapeButton saveButton = new RuneScapeButton("Save");
-        saveButton.setFont(Font.font("Tahoma", FontWeight.SEMI_BOLD, 12));
-        saveButton.setOnAction((event -> save()));
-        actionsPane.getChildren().addAll(addButton, deleteAllButton);
-        bottomMiddlePane.setCenter(saveButton);
-        */
+                });
+            }
+        });
+        actionsPane.getChildren().addAll(deleteAllButton);
     }
 
+
+    private void markDuplicates() {
+        Set<Item> allItems = new HashSet<>();
+        getImmutableItems().stream().filter(shopItemView ->
+                !allItems.add(shopItemView.getPresenter().getItem())).forEach(shopItemView ->
+                shopItemView.setFaded(true));
+    }
+
+    public void checkForWrongDuplicateMarking() {
+        if (getImmutableItems().stream().anyMatch(ShopItemView::isFaded)) {
+            // check if there are items that are marked as a duplicate
+            // even though it is now distinct and removes the marking
+            StreamEx.of(getImmutableItems()).distinct
+                    (shopItemView -> (shopItemView.getPresenter().getItem())).filter(ShopItemView::isFaded).
+                    forEach(shopItemView -> shopItemView.setFaded(false));
+        }
+    }
 
     public void openAddItemByIndexDialog() {
         MaterialDesignInputDialog inputDialog = new MaterialDesignInputDialog("0");
@@ -547,6 +571,7 @@ public class ShopPresenter implements Initializable {
                 if (!hasBeenModified()) {
                     markAsModified();
                 }
+
                 if (change.wasRemoved() && !change.wasReplaced()) {
                     List<? extends Node> removed = change.getRemoved();
                     removed.forEach((e) -> {
@@ -556,6 +581,10 @@ public class ShopPresenter implements Initializable {
                     });
                 }
                 updateItemCountFraction();
+                if (!change.wasReplaced()) {
+                    markDuplicates();
+                    checkForWrongDuplicateMarking();
+                }
             }
         });
     }
@@ -658,6 +687,11 @@ public class ShopPresenter implements Initializable {
     private void setModified(boolean modified) {
         this.modified.setValue(modified);
         refreshTabText();
+    }
+
+    private ImmutableList<ShopItemView> getImmutableItems() {
+        return ImmutableList.copyOf(shopItemPane.getChildren().stream().map(node ->
+                (ShopItemView) node).collect(Collectors.toList()));
     }
 
     public boolean hasBeenModified() {

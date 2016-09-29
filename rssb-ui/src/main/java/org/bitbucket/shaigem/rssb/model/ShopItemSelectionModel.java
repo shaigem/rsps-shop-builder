@@ -86,13 +86,13 @@ public final class ShopItemSelectionModel {
                     if (change.wasAdded()) {
                         ShopItemView view = change.getElementAdded();
                         if (view != null) {
-                            view.getStyleClass().setAll("shop-item-selected");
+                            view.setSelected(true);
 
                         }
                     } else if (change.wasRemoved()) {
                         ShopItemView view = change.getElementRemoved();
                         if (view != null) {
-                            view.getStyleClass().setAll("shop-item-deselected");
+                            view.setSelected(false);
                         }
                     }
                 }));

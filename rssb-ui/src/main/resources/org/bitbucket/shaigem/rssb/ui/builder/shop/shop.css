@@ -55,23 +55,6 @@
 }
 
 /*
-* Shop item selection
-*/
-.shop-item-selected {
-    -fx-border-color: #ffd100; /*ff9900*/
-    -fx-border-insets: -1.5, -1.5, -1.5, -1.5;
-    -fx-border-width: 1.5;
-    -fx-border-style: solid;
-}
-
-.shop-item-deselected {
-    -fx-border-color: transparent;
-    -fx-border-insets: -1.5, -1.5, -1.5, -1.5;
-    -fx-border-width: 1.5;
-    -fx-border-style: solid;
-}
-
-/*
 * Text Fields
 */
 .name-text-field {

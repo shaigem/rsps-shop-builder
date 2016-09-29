@@ -1,5 +1,7 @@
 package org.bitbucket.shaigem.rssb.ui.builder.shop.item;
 
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.css.PseudoClass;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -29,6 +31,12 @@ public class ShopItemView extends Region {
     private static final Image ITEM_BACKGROUND_EXPANDED = new Image(ShopItemView.class.
             getClassLoader().getResourceAsStream("images/shop_holder_exp.png"));
 
+    private static final PseudoClass SELECTED_PSEUDOCLASS_STATE =
+            PseudoClass.getPseudoClass("selected");
+
+    private static final PseudoClass FADED_PSEUDOCLASS_STATE =
+            PseudoClass.getPseudoClass("faded");
+
     private PopOver popOver;
     private ShopItemInfoPopoverPresenter shopItemInfoPopoverPresenter;
 
@@ -44,7 +52,7 @@ public class ShopItemView extends Region {
 
     public ShopItemView() {
         super();
-        getStyleClass().addAll("shop-item-view");
+        getStyleClass().add("shop-item");
         amountLabel.getStyleClass().add("shop-item-amount-label");
         nameLabel.getStyleClass().add("shop-item-name-label");
         indexLabel.getStyleClass().add("shop-item-index-label");
@@ -61,7 +69,7 @@ public class ShopItemView extends Region {
             popOver = constructInfoPopOver();
             shopItemInfoPopoverPresenter.refreshNodes();
         }
-        if(Objects.nonNull(popOver)) {
+        if (Objects.nonNull(popOver)) {
             if (!popOver.isShowing()) {
                 popOver.show(this);
             }
@@ -77,6 +85,7 @@ public class ShopItemView extends Region {
         amountLabel.setText(ItemAmountUtil.getFormattedAmount(amount));
         amountLabel.setTextFill(ItemAmountUtil.getPaintForAmount(amount));
     }
+
 
     public void updateNameLabel(String name) {
         nameLabel.setText(name);
@@ -182,11 +191,37 @@ public class ShopItemView extends Region {
     private void handleShowContextMenu() {
         setOnMousePressed((event -> {
             if (event.isSecondaryButtonDown()) {
-                if(Objects.nonNull(popOver)) {
+                if (Objects.nonNull(popOver)) {
                     popOver.hide();
                 }
             }
         }));
+    }
+
+    private ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper(false) {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, get());
+        }
+    };
+
+    public void setSelected(boolean selected) {
+        this.selected.set(selected);
+    }
+
+    private ReadOnlyBooleanWrapper faded = new ReadOnlyBooleanWrapper(false) {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(FADED_PSEUDOCLASS_STATE, get());
+        }
+    };
+
+    public void setFaded(boolean faded) {
+        this.faded.set(faded);
+    }
+
+    public boolean isFaded() {
+        return faded.get();
     }
 
     @Override

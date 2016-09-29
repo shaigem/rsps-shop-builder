@@ -1,4 +1,22 @@
 /*
+* Shop item is faded when it is marked as a duplicate
+*/
+.shop-item:faded {
+    -fx-opacity: 0.5;
+    -fx-border-color: #ff0d00;
+    -fx-border-insets: -1.5, -1.5, -1.5, -1.5;
+    -fx-border-width: 1.5;
+    -fx-border-style: solid;
+}
+
+.shop-item:selected {
+    -fx-border-color: #ffd100; /*ff9900*/
+    -fx-border-insets: -1.5, -1.5, -1.5, -1.5;
+    -fx-border-width: 1.5;
+    -fx-border-style: solid;
+}
+
+/*
 * Labels
 */
 .shop-item-name-label {
